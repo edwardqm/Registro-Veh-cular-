@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a237e">
+    <title>Registro Vehicular - Sistema de Control</title>
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVnaXN0cm8gVmVoaWN1bGFyIiwic2hvcnRfbmFtZSI6IlJlZ1ZlaGljdWxvIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2Y1ZjVmNSIsInRoZW1lX2NvbG9yIjoiIzFhMjM3ZSIsInN0YXJ0X3VybCI6Ii4iLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxOTIgMTkyJyBmaWxsPScjZmZmJyUzRSUzQ3JlY3Qgd2lkdGg9JzE5MicgaGVpZ2h0PScxOTInIHJ4PScyNCcgZmlsbD0nIzFhMjM3ZSclM0UlM0MvcGF0aCUzRSUzQ3BhdGggZD0nTTQ0IDEzMnYxNmMwIDguOCA3LjIgMTYgMTYgMTZoMTZjOC44IDAgMTYtNy4yIDE2LTE2di0xNmgtNDh6bTgwIDB2MTZjMCA4LjggNy4yIDE2IDE2IDE2aDE2YzguOCAwIDE2LTcuMiAxNi0xNnYtMTZ6bS0zMi04MGg0OGMtOC44IDAtMTYtNy4yLTE2LTE2VjU2aC0zMnYxNmMwIDguOC03LjIgMTYtMTYgMTZ6bS04MCAwSDEyYzguOCAwIDE2LTcuMiAxNi0xNlY1Nkg5NnYxNmMwIDguOC03LjIgMTYtMTYgMTZ6Jy8lM0UlM0Mvc3ZnJTNF","sizes":"192x192","type":"image/svg+xml"}]}">
+    <style>
+        :root {
+            --primary: #1a237e;
+            --primary-light: #3949ab;
+            --primary-dark: #0d1642;
+            --accent: #ff6f00;
+            --accent-light: #ff9800;
+            --success: #2e7d32;
+            --danger: #c62828;
+            --warning: #f9a825;
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --text: #212121;
+            --text-light: #757575;
+            --border: #e0e0e0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 16px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: 0.5px; }
+        .header .subtitle { font-size: 0.75rem; opacity: 0.8; margin-top: 2px; }
+        .container { max-width: 800px; margin: 0 auto; padding: 16px; }
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            background: var(--card);
+            padding: 4px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(26,35,126,0.3);
+        }
+        .tab:hover:not(.active) { background: #f5f5f5; }
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .form-group label .required { color: var(--danger); }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(57,73,171,0.1);
+        }
+        textarea { resize: vertical; min-height: 80px; }
+        .radio-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .radio-option {
+            flex: 1;
+            min-width: 120px;
+        }
+        .radio-option input { display: none; }
+        .radio-option label {
+            display: block;
+            padding: 12px;
+            text-align: center;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+        .radio-option input:checked + label {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+        .radio-option.ingreso input:checked + label { background: var(--success); border-color: var(--success); }
+        .radio-option.salida input:checked + label { background: var(--danger); border-color: var(--danger); }
+        .radio-option.si input:checked + label { background: var(--success); border-color: var(--success); }
+        .radio-option.no input:checked + label { background: var(--danger); border-color: var(--danger); }
+        .radio-option.empresa input:checked + label { background: var(--warning); border-color: var(--warning); color: #333; }
+        .hidden { display: none !important; }
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(26,35,126,0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(26,35,126,0.4); }
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #43a047 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(46,125,50,0.3);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #e53935 100%);
+            color: white;
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #fbc02d 100%);
+            color: #333;
+        }
+        .btn-secondary {
+            background: #e0e0e0;
+            color: var(--text);
+        }
+        .btn-sm { padding: 8px 14px; font-size: 0.85rem; }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .dynamic-section {
+            background: #f8f9ff;
+            border: 2px dashed var(--primary-light);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+        .dynamic-item {
+            background: white;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+        .dynamic-item .remove-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: var(--danger);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dynamic-item .remove-btn:hover { background: #b71c1c; }
+        .add-btn {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed var(--primary-light);
+            background: transparent;
+            color: var(--primary);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .add-btn:hover { background: rgba(57,73,171,0.05); }
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .search-bar input, .search-bar select {
+            flex: 1;
+            min-width: 150px;
+        }
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 0.85rem;
+        }
+        th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+        tr:hover td { background: #f5f5f5; }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-ingreso { background: #e8f5e9; color: var(--success); }
+        .badge-salida { background: #ffebee; color: var(--danger); }
+        .badge-empresa { background: #fff8e1; color: #f57f17; }
+        .badge-empresa { background: #e3f2fd; color: #1565c0; }
+        .badge-si { background: #e8f5e9; color: var(--success); }
+        .badge-no { background: #ffebee; color: var(--danger); }
+        .action-btns { display: flex; gap: 6px; }
+        .action-btns button {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .btn-edit { background: #e3f2fd; color: #1565c0; }
+        .btn-delete { background: #ffebee; color: var(--danger); }
+        .btn-pdf { background: #ffebee; color: var(--danger); }
+        .btn-excel { background: #e8f5e9; color: var(--success); }
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal h3 { margin-bottom: 16px; color: var(--primary); }
+        .modal .btn-group { margin-top: 20px; justify-content: flex-end; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+        }
+        .stat-card .number { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+        .stat-card .label { font-size: 0.8rem; color: var(--text-light); margin-top: 4px; }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+        .footer .dev { color: var(--primary); font-weight: 600; }
+        .footer .version { background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+        .empty-state svg { width: 80px; height: 80px; margin-bottom: 16px; opacity: 0.3; }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            z-index: 2000;
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+        }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(20px); } }
+        @keyframes toastOut { to { opacity: 0; transform: translateX(-50%) translateY(20px); } }
+        .details-list { font-size: 0.8rem; }
+        .details-list li { margin-bottom: 2px; }
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.1rem; }
+            .tab { font-size: 0.8rem; padding: 10px 8px; }
+            .card { padding: 16px; }
+            th, td { padding: 8px 6px; font-size: 0.75rem; }
+            .action-btns button { padding: 4px 6px; font-size: 0.7rem; }
+        }
+        .pin-input {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 16px 0;
+        }
+        .pin-input input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+        }
+        .pin-input input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26,35,126,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚗 REGISTRO VEHICULAR</h1>
+        <div class="subtitle">Sistema de Control de Ingresos y Salidas</div>
+    </div>
+
+    <div class="container">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('registro')">
+                <span>📝</span> Registro
+            </button>
+            <button class="tab" onclick="showTab('lista')">
+                <span>📋</span> Registros
+            </button>
+            <button class="tab" onclick="showTab('reportes')">
+                <span>📊</span> Reportes
+            </button>
+        </div>
+
+        <!-- TAB: REGISTRO -->
+        <div id="tab-registro">
+            <form id="formRegistro" onsubmit="guardarRegistro(event)">
+                <input type="hidden" id="editId" value="">
+
+                <!-- Datos Básicos -->
+                <div class="card">
+                    <div class="card-title">📅 Datos del Registro</div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label>Fecha <span class="required">*</span></label>
+                            <input type="date" id="fecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Hora <span class="required">*</span></label>
+                            <input type="time" id="hora" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Movimiento <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <div class="radio-option ingreso">
+                                <input type="radio" name="tipo" id="tipoIngreso" value="INGRESO" checked onchange="actualizarDestino()">
+                                <label for="tipoIngreso">🚪 INGRESO</label>
+                            </div>
+                            <div class="radio-option salida">
+                                <input type="radio" name="tipo" id="tipoSalida" value="SALIDA" onchange="actualizarDestino()">
+                                <label for="tipoSalida">🏃 SALIDA</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vehículo y Conductor -->
+                <div class="card">
+                    <div class="card-title">🚙 Información del Vehículo</div>
+                    <div class="form-group">
+                        <label>Placa <span class="required">*</span></label>
+                        <input type="text" id="placa" placeholder="ABC-1234" maxlength="8" required 
+                               oninput="formatearPlaca(this)" onblur="this.value = this.value.toUpperCase()">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre del Conductor <span class="required">*</span></label>
+                        <input type="text" id="conductor" placeholder="NOMBRE COMPLETO" required 
+                               oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                    <div class="form-group">
+                        <label id="labelDestino">Procedencia <span class="required">*</span></label>
+                        <input type="text" id="destino" placeholder="LUGAR DE PROCEDENCIA" required 
+                               oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                    <div class="form-group">
+                        <label>Empresa <span class="required">*</span></label>
+                        <input type="text" id="empresa" placeholder="NOMBRE DE LA EMPRESA" required 
+                               oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                </div>
+
+                <!-- Materiales -->
+                <div class="card">
+                    <div class="card-title">📦 Materiales</div>
+                    <div class="form-group">
+                        <label>¿Trae materiales?</label>
+                        <div class="radio-group">
+                            <div class="radio-option si">
+                                <input type="radio" name="materiales" id="matSi" value="SI" onchange="toggleMateriales(true)" onclick="toggleMateriales(true)">
+                                <label for="matSi">✅ SÍ</label>
+                            </div>
+                            <div class="radio-option no">
+                                <input type="radio" name="materiales" id="matNo" value="NO" checked onchange="toggleMateriales(false)" onclick="toggleMateriales(false)">
+                                <label for="matNo">❌ NO</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="seccionMateriales" class="hidden">
+                        <!-- Pregunta de precintos -->
+                        <div class="form-group" style="margin-top: 16px;">
+                            <label>¿Trae precintos?</label>
+                            <div class="radio-group">
+                                <div class="radio-option si">
+                                    <input type="radio" name="precintos" id="precSi" value="SI" onchange="togglePrecintos(true)" onclick="togglePrecintos(true)">
+                                    <label for="precSi">✅ SÍ</label>
+                                </div>
+                                <div class="radio-option no">
+                                    <input type="radio" name="precintos" id="precNo" value="NO" checked onchange="togglePrecintos(false)" onclick="togglePrecintos(false)">
+                                    <label for="precNo">❌ NO</label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Campo N° de Precintos (solo si precintos = SI) -->
+                        <div id="seccionPrecintos" class="hidden" style="margin-top: 12px;">
+                            <div class="form-group">
+                                <label>N° de Precintos</label>
+                                <input type="number" id="numPrecintos" placeholder="NÚMERO DE PRECINTOS" min="0">
+                            </div>
+                        </div>
+                        <!-- Lista dinámica de materiales -->
+                        <div id="seccionListaMateriales" class="hidden" style="margin-top: 12px;">
+                            <div id="listaMateriales"></div>
+                            <button type="button" class="add-btn" onclick="agregarMaterial()">+ Agregar Material</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acompañantes -->
+                <div class="card">
+                    <div class="card-title">👥 Acompañantes</div>
+                    <div class="form-group">
+                        <label>¿Viene con acompañantes?</label>
+                        <div class="radio-group">
+                            <div class="radio-option si">
+                                <input type="radio" name="acompanantes" id="acompSi" value="SI" onchange="toggleAcompanantes(true)" onclick="toggleAcompanantes(true)">
+                                <label for="acompSi">✅ SÍ</label>
+                            </div>
+                            <div class="radio-option no">
+                                <input type="radio" name="acompanantes" id="acompNo" value="NO" checked onchange="toggleAcompanantes(false)" onclick="toggleAcompanantes(false)">
+                                <label for="acompNo">❌ NO</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="seccionAcompanantes" class="dynamic-section hidden">
+                        <div id="listaAcompanantes"></div>
+                        <button type="button" class="add-btn" onclick="agregarAcompanante()">+ Agregar Persona</button>
+                    </div>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="card">
+                    <div class="card-title">📝 Observaciones</div>
+                    <div class="form-group">
+                        <textarea id="observaciones" placeholder="INGRESE OBSERVACIONES ADICIONALES..." 
+                                  oninput="this.value = this.value.toUpperCase()"></textarea>
+                    </div>
+                </div>
+
+                <div class="btn-group" style="margin-bottom: 20px;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">
+                        <span>💾</span> <span id="btnTexto">GUARDAR REGISTRO</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">
+                        <span>🔄</span> LIMPIAR
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- TAB: LISTA -->
+        <div id="tab-lista" class="hidden">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number" id="statTotal">0</div>
+                    <div class="label">Total Registros</div>
+                </div>
+                <div class="stat-card" style="border-left-color: var(--success);">
+                    <div class="number" id="statIngresos">0</div>
+                    <div class="label">Ingresos</div>
+                </div>
+                <div class="stat-card" style="border-left-color: var(--danger);">
+                    <div class="number" id="statSalidas">0</div>
+                    <div class="label">Salidas</div>
+                </div>
+                <div class="stat-card" style="border-left-color: var(--warning);">
+                    <div class="number" id="statEmpresas">0</div>
+                    <div class="label">Con Empresa</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🔍 Filtros de Búsqueda</div>
+                <div class="search-bar">
+                    <input type="text" id="filtroPlaca" placeholder="🔍 PLACA..." oninput="this.value = this.value.toUpperCase(); filtrarRegistros()">
+                    <input type="text" id="filtroConductor" placeholder="🔍 CONDUCTOR..." oninput="this.value = this.value.toUpperCase(); filtrarRegistros()">
+                    <input type="date" id="filtroFecha" onchange="filtrarRegistros()">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="limpiarFiltros()">🔄</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📋 Listado de Registros</div>
+                <div id="tablaRegistros">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                        <p>No hay registros disponibles</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: REPORTES -->
+        <div id="tab-reportes" class="hidden">
+            <div class="card">
+                <div class="card-title">📊 Generar Reportes</div>
+                <p style="color: var(--text-light); margin-bottom: 16px; font-size: 0.9rem;">
+                    Descargue los registros filtrados o el historial completo en formato PDF o Excel.
+                </p>
+                <div class="btn-group">
+                    <button class="btn btn-danger" onclick="generarPDF()">
+                        <span>📄</span> DESCARGAR PDF
+                    </button>
+                    <button class="btn btn-success" onclick="generarExcel()">
+                        <span>📊</span> DESCARGAR EXCEL
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📈 Resumen del Día</div>
+                <div id="resumenDia">
+                    <div class="empty-state">
+                        <p>No hay datos para mostrar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div>Desarrollado por <span class="dev">Edward Quezada M.</span></div>
+        <div style="margin-top: 6px;">Seguridad Patrimonial <span class="version">v2.0.0</span></div>
+        <div style="margin-top: 4px; font-size: 0.7rem;">© 2025 - Todos los derechos reservados</div>
+    </div>
+
+    <!-- Modal PIN -->
+    <div id="modalPIN" class="modal-overlay hidden">
+        <div class="modal">
+            <h3>🔐 Ingrese Clave de Acceso</h3>
+            <p style="color: var(--text-light); font-size: 0.9rem;">Se requiere autorización para esta acción</p>
+            <div class="pin-input">
+                <input type="password" maxlength="1" class="pin-digit" oninput="moverPIN(this, 0)" onkeydown="moverPINBack(event, 0)">
+                <input type="password" maxlength="1" class="pin-digit" oninput="moverPIN(this, 1)" onkeydown="moverPINBack(event, 1)">
+                <input type="password" maxlength="1" class="pin-digit" oninput="moverPIN(this, 2)" onkeydown="moverPINBack(event, 2)">
+                <input type="password" maxlength="1" class="pin-digit" oninput="moverPIN(this, 3)" onkeydown="moverPINBack(event, 3)">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="cerrarModalPIN()">CANCELAR</button>
+                <button class="btn btn-primary" onclick="verificarPIN()">CONFIRMAR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmación -->
+    <div id="modalConfirm" class="modal-overlay hidden">
+        <div class="modal">
+            <h3 id="confirmTitle">⚠️ Confirmar Acción</h3>
+            <p id="confirmMsg" style="margin: 12px 0; color: var(--text-light);"></p>
+            <div class="btn-group" style="justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="cerrarModalConfirm()">CANCELAR</button>
+                <button class="btn btn-danger" id="confirmBtn" onclick="">CONFIRMAR</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== VARIABLES GLOBALES ====================
+        const CLAVE_ADMIN = '0000';
+        let registros = JSON.parse(localStorage.getItem('registrosVehiculares')) || [];
+        let accionPendiente = null;
+        let idPendiente = null;
+        let pinCallback = null;
+
+        // ==================== INICIALIZACIÓN ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            const hoy = new Date();
+            document.getElementById('fecha').value = hoy.toISOString().split('T')[0];
+            document.getElementById('hora').value = hoy.toTimeString().slice(0,5);
+            actualizarDestino();
+            renderizarTabla();
+            actualizarStats();
+
+            // Service Worker para PWA
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
+                    self.addEventListener('install', e => self.skipWaiting());
+                    self.addEventListener('activate', e => e.waitUntil(clients.claim()));
+                    self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => new Response('Offline'))));
+                `)).catch(() => {});
+            }
+        });
+
+        // ==================== NAVEGACIÓN ====================
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.closest('.tab').classList.add('active');
+            document.getElementById('tab-registro').classList.add('hidden');
+            document.getElementById('tab-lista').classList.add('hidden');
+            document.getElementById('tab-reportes').classList.add('hidden');
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            if (tab === 'lista') { renderizarTabla(); actualizarStats(); }
+            if (tab === 'reportes') { generarResumenDia(); }
+        }
+
+        // ==================== FORMATEO DE PLACA ====================
+        function formatearPlaca(input) {
+            let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (val.length > 3) {
+                val = val.slice(0, 3) + '-' + val.slice(3, 7);
+            }
+            input.value = val;
+        }
+
+        // ==================== ACTUALIZAR DESTINO/PROCEDENCIA ====================
+        function actualizarDestino() {
+            const tipo = document.querySelector('input[name="tipo"]:checked').value;
+            const label = document.getElementById('labelDestino');
+            const input = document.getElementById('destino');
+            if (tipo === 'INGRESO') {
+                label.textContent = 'Procedencia *';
+                input.placeholder = 'LUGAR DE PROCEDENCIA';
+            } else {
+                label.textContent = 'Destino *';
+                input.placeholder = 'LUGAR DE DESTINO';
+            }
+        }
+
+        // ==================== MATERIALES ====================
+        function toggleMateriales(mostrar) {
+            const seccion = document.getElementById('seccionMateriales');
+            const seccionPrecintos = document.getElementById('seccionPrecintos');
+            const seccionLista = document.getElementById('seccionListaMateriales');
+            const lista = document.getElementById('listaMateriales');
+
+            if (mostrar) {
+                seccion.classList.remove('hidden');
+                // Mostrar lista de materiales por defecto
+                seccionLista.classList.remove('hidden');
+                // Verificar estado de precintos
+                const precintosVal = document.querySelector('input[name="precintos"]:checked')?.value || 'NO';
+                if (precintosVal === 'SI') {
+                    seccionPrecintos.classList.remove('hidden');
+                } else {
+                    seccionPrecintos.classList.add('hidden');
+                }
+                // Agregar primer material si la lista está vacía
+                if (lista.children.length === 0) {
+                    agregarMaterial();
+                }
+            } else {
+                seccion.classList.add('hidden');
+                seccionPrecintos.classList.add('hidden');
+                seccionLista.classList.add('hidden');
+                lista.innerHTML = '';
+                document.getElementById('numPrecintos').value = '';
+                document.getElementById('precNo').checked = true;
+            }
+        }
+
+        function togglePrecintos(mostrar) {
+            const seccionPrec = document.getElementById('seccionPrecintos');
+            const seccionLista = document.getElementById('seccionListaMateriales');
+            const lista = document.getElementById('listaMateriales');
+            if (mostrar) {
+                seccionPrec.classList.remove('hidden');
+                seccionLista.classList.remove('hidden');
+            } else {
+                seccionPrec.classList.add('hidden');
+                seccionLista.classList.remove('hidden');
+            }
+            if (lista.children.length === 0) {
+                agregarMaterial();
+            }
+        }
+
+        function agregarMaterial() {
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 2fr; gap: 10px;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="font-size:0.75rem;">N° Guía</label>
+                        <input type="number" class="mat-guia" placeholder="N° GUÍA" min="0">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="font-size:0.75rem;">N° Precintos</label>
+                        <input type="number" class="mat-precinto" placeholder="N° PRECINTOS" min="0">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="font-size:0.75rem;">Descripción del Material</label>
+                        <input type="text" class="mat-detalle" placeholder="DESCRIPCIÓN DEL MATERIAL" oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                </div>
+            `;
+            document.getElementById('listaMateriales').appendChild(div);
+        }
+
+        // ==================== ACOMPAÑANTES ====================
+        function toggleAcompanantes(mostrar) {
+            const seccion = document.getElementById('seccionAcompanantes');
+            const lista = document.getElementById('listaAcompanantes');
+            if (mostrar) {
+                seccion.classList.remove('hidden');
+                if (lista.children.length === 0) {
+                    agregarAcompanante();
+                }
+            } else {
+                seccion.classList.add('hidden');
+                lista.innerHTML = '';
+            }
+        }
+
+        function agregarAcompanante() {
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label style="font-size:0.75rem;">Nombre Completo</label>
+                    <input type="text" class="acomp-nombre" placeholder="NOMBRE DEL ACOMPAÑANTE" oninput="this.value = this.value.toUpperCase()">
+                </div>
+            `;
+            document.getElementById('listaAcompanantes').appendChild(div);
+        }
+
+        // ==================== GUARDAR REGISTRO ====================
+        function guardarRegistro(e) {
+            e.preventDefault();
+
+            const editId = document.getElementById('editId').value;
+
+            // Recolectar precintos
+            const traePrecintos = document.querySelector('input[name="precintos"]:checked')?.value || 'NO';
+            const numPrecintos = document.getElementById('numPrecintos')?.value || '';
+
+            // Recolectar materiales
+            const materiales = [];
+            document.querySelectorAll('#listaMateriales .dynamic-item').forEach(item => {
+                const guia = item.querySelector('.mat-guia').value.trim();
+                const precinto = item.querySelector('.mat-precinto').value.trim();
+                const detalle = item.querySelector('.mat-detalle').value.trim();
+                if (guia || precinto || detalle) {
+                    materiales.push({ guia, precinto, detalle });
+                }
+            });
+
+            // Recolectar acompañantes
+            const acompanantes = [];
+            document.querySelectorAll('#listaAcompanantes .dynamic-item').forEach(item => {
+                const nombre = item.querySelector('.acomp-nombre').value.trim();
+                if (nombre) acompanantes.push(nombre);
+            });
+
+            const registro = {
+                id: editId || Date.now().toString(),
+                fecha: document.getElementById('fecha').value,
+                hora: document.getElementById('hora').value,
+                tipo: document.querySelector('input[name="tipo"]:checked').value,
+                placa: document.getElementById('placa').value.toUpperCase(),
+                conductor: document.getElementById('conductor').value.toUpperCase(),
+                destino: document.getElementById('destino').value.toUpperCase(),
+                empresa: document.getElementById('empresa').value.toUpperCase(),
+                traeMateriales: document.querySelector('input[name="materiales"]:checked').value,
+                traePrecintos: traePrecintos,
+                numPrecintos: numPrecintos,
+                materiales: materiales,
+                tieneAcompanantes: document.querySelector('input[name="acompanantes"]:checked').value,
+                acompanantes: acompanantes,
+                observaciones: document.getElementById('observaciones').value.toUpperCase(),
+                timestamp: new Date().toISOString()
+            };
+
+            if (editId) {
+                const idx = registros.findIndex(r => r.id === editId);
+                if (idx !== -1) registros[idx] = registro;
+                mostrarToast('✅ Registro actualizado correctamente');
+            } else {
+                registros.unshift(registro);
+                mostrarToast('✅ Registro guardado correctamente');
+            }
+
+            localStorage.setItem('registrosVehiculares', JSON.stringify(registros));
+            limpiarFormulario();
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('formRegistro').reset();
+            document.getElementById('editId').value = '';
+            document.getElementById('btnTexto').textContent = 'GUARDAR REGISTRO';
+            document.getElementById('listaMateriales').innerHTML = '';
+            document.getElementById('listaAcompanantes').innerHTML = '';
+            document.getElementById('seccionMateriales').classList.add('hidden');
+            document.getElementById('seccionPrecintos').classList.add('hidden');
+            document.getElementById('seccionListaMateriales').classList.add('hidden');
+            document.getElementById('seccionAcompanantes').classList.add('hidden');
+            document.getElementById('numPrecintos').value = '';
+            const hoy = new Date();
+            document.getElementById('fecha').value = hoy.toISOString().split('T')[0];
+            document.getElementById('hora').value = hoy.toTimeString().slice(0,5);
+            actualizarDestino();
+        }
+
+        // ==================== RENDERIZAR TABLA ====================
+        function renderizarTabla(data = null) {
+            const registrosMostrar = data || registros;
+            const container = document.getElementById('tablaRegistros');
+
+            if (registrosMostrar.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                        <p>No hay registros disponibles</p>
+                    </div>`;
+                return;
+            }
+
+            let html = '<div class="table-container"><table><thead><tr>';
+            html += '<th>Fecha/Hora</th><th>Tipo</th><th>Placa</th><th>Conductor</th><th>Proc/Dest</th><th>Empresa</th><th>Mat.</th><th>Acomp.</th><th>Acciones</th>';
+            html += '</tr></thead><tbody>';
+
+            registrosMostrar.forEach(r => {
+                const badgeTipo = r.tipo === 'INGRESO' ? 'badge-ingreso' : 'badge-salida';
+                const badgeEstado = 'badge-empresa';
+                const badgeMat = r.traeMateriales === 'SI' ? 'badge-si' : 'badge-no';
+                const badgeAcomp = r.tieneAcompanantes === 'SI' ? 'badge-si' : 'badge-no';
+
+                html += `<tr>
+                    <td><strong>${r.fecha}</strong><br><small>${r.hora}</small></td>
+                    <td><span class="badge ${badgeTipo}">${r.tipo}</span></td>
+                    <td><strong>${r.placa}</strong></td>
+                    <td>${r.conductor}</td>
+                    <td>${r.destino}</td>
+                    <td><span class="badge ${badgeEstado}">${r.empresa || 'N/A'}</span></td>
+                    <td><span class="badge ${badgeMat}">${r.traeMateriales}</span>${r.traeMateriales === 'SI' && r.traePrecintos === 'SI' ? '<br><small>Precintos: ' + (r.numPrecintos || 'N/A') + '</small>' : ''}</td>
+                    <td><span class="badge ${badgeAcomp}">${r.tieneAcompanantes}</span></td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="btn-edit" onclick="editarRegistro('${r.id}')">✏️</button>
+                            <button class="btn-delete" onclick="eliminarRegistro('${r.id}')">🗑️</button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        }
+
+        // ==================== FILTROS ====================
+        function filtrarRegistros() {
+            const placa = document.getElementById('filtroPlaca').value.toUpperCase();
+            const conductor = document.getElementById('filtroConductor').value.toUpperCase();
+            const fecha = document.getElementById('filtroFecha').value;
+
+            const filtrados = registros.filter(r => {
+                const matchPlaca = !placa || r.placa.includes(placa);
+                const matchConductor = !conductor || r.conductor.includes(conductor);
+                const matchFecha = !fecha || r.fecha === fecha;
+                return matchPlaca && matchConductor && matchFecha;
+            });
+
+            renderizarTabla(filtrados);
+        }
+
+        function limpiarFiltros() {
+            document.getElementById('filtroPlaca').value = '';
+            document.getElementById('filtroConductor').value = '';
+            document.getElementById('filtroFecha').value = '';
+            renderizarTabla();
+        }
+
+        // ==================== ESTADÍSTICAS ====================
+        function actualizarStats() {
+            document.getElementById('statTotal').textContent = registros.length;
+            document.getElementById('statIngresos').textContent = registros.filter(r => r.tipo === 'INGRESO').length;
+            document.getElementById('statSalidas').textContent = registros.filter(r => r.tipo === 'SALIDA').length;
+            document.getElementById('statEmpresas').textContent = registros.filter(r => r.empresa).length;
+        }
+
+        // ==================== EDITAR / ELIMINAR ====================
+        function editarRegistro(id) {
+            solicitarPIN(() => {
+                const r = registros.find(x => x.id === id);
+                if (!r) return;
+
+                document.getElementById('editId').value = r.id;
+                document.getElementById('fecha').value = r.fecha;
+                document.getElementById('hora').value = r.hora;
+                document.querySelector(`input[name="tipo"][value="${r.tipo}"]`).checked = true;
+                document.getElementById('placa').value = r.placa;
+                document.getElementById('conductor').value = r.conductor;
+                document.getElementById('destino').value = r.destino;
+                document.getElementById('empresa').value = r.empresa || '';
+
+                // Materiales
+                document.querySelector(`input[name="materiales"][value="${r.traeMateriales}"]`).checked = true;
+                toggleMateriales(r.traeMateriales === 'SI');
+                if (r.traeMateriales === 'SI') {
+                    document.querySelector(`input[name="precintos"][value="${r.traePrecintos || 'NO'}"]`).checked = true;
+                    togglePrecintos(r.traePrecintos === 'SI');
+                    document.getElementById('numPrecintos').value = r.numPrecintos || '';
+                    document.getElementById('listaMateriales').innerHTML = '';
+                    r.materiales.forEach(m => {
+                        agregarMaterial();
+                        const items = document.querySelectorAll('#listaMateriales .dynamic-item');
+                        const last = items[items.length - 1];
+                        last.querySelector('.mat-guia').value = m.guia || '';
+                        last.querySelector('.mat-precinto').value = m.precinto || '';
+                        last.querySelector('.mat-detalle').value = m.detalle || '';
+                    });
+                }
+
+                // Acompañantes
+                document.querySelector(`input[name="acompanantes"][value="${r.tieneAcompanantes}"]`).checked = true;
+                toggleAcompanantes(r.tieneAcompanantes === 'SI');
+                document.getElementById('listaAcompanantes').innerHTML = '';
+                r.acompanantes.forEach(nombre => {
+                    agregarAcompanante();
+                    const items = document.querySelectorAll('#listaAcompanantes .dynamic-item');
+                    items[items.length - 1].querySelector('.acomp-nombre').value = nombre;
+                });
+
+                document.getElementById('observaciones').value = r.observaciones;
+                document.getElementById('btnTexto').textContent = 'ACTUALIZAR REGISTRO';
+                actualizarDestino();
+                showTab('registro');
+                document.querySelector('.tab').click();
+            });
+        }
+
+        function eliminarRegistro(id) {
+            solicitarPIN(() => {
+                if (confirm('¿Está seguro de eliminar este registro?')) {
+                    registros = registros.filter(r => r.id !== id);
+                    localStorage.setItem('registrosVehiculares', JSON.stringify(registros));
+                    renderizarTabla();
+                    actualizarStats();
+                    mostrarToast('🗑️ Registro eliminado');
+                }
+            });
+        }
+
+        // ==================== PIN / SEGURIDAD ====================
+        function solicitarPIN(callback) {
+            pinCallback = callback;
+            document.getElementById('modalPIN').classList.remove('hidden');
+            document.querySelectorAll('.pin-digit').forEach(i => i.value = '');
+            document.querySelectorAll('.pin-digit')[0].focus();
+        }
+
+        function cerrarModalPIN() {
+            document.getElementById('modalPIN').classList.add('hidden');
+            pinCallback = null;
+        }
+
+        function moverPIN(input, index) {
+            if (input.value && index < 3) {
+                document.querySelectorAll('.pin-digit')[index + 1].focus();
+            }
+        }
+
+        function moverPINBack(e, index) {
+            if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                document.querySelectorAll('.pin-digit')[index - 1].focus();
+            }
+        }
+
+        function verificarPIN() {
+            const pin = Array.from(document.querySelectorAll('.pin-digit')).map(i => i.value).join('');
+            if (pin === CLAVE_ADMIN) {
+                cerrarModalPIN();
+                if (pinCallback) pinCallback();
+            } else {
+                mostrarToast('❌ Clave incorrecta');
+                document.querySelectorAll('.pin-digit').forEach(i => i.value = '');
+                document.querySelectorAll('.pin-digit')[0].focus();
+            }
+        }
+
+        // ==================== TOAST ====================
+        function mostrarToast(msg) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ==================== PDF ====================
+        function generarPDF() {
+            const filtrados = obtenerFiltrados();
+            if (filtrados.length === 0) { mostrarToast('❌ No hay registros para exportar'); return; }
+
+            let html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+            <title>Reporte Vehicular</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 30px; color: #333; }
+                .header { text-align: center; border-bottom: 3px solid #1a237e; padding-bottom: 15px; margin-bottom: 20px; }
+                .header h1 { color: #1a237e; margin: 0; font-size: 22px; }
+                .header p { color: #666; margin: 5px 0 0; font-size: 12px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 10px; }
+                th { background: #1a237e; color: white; padding: 8px; text-align: left; }
+                td { padding: 6px 8px; border-bottom: 1px solid #ddd; vertical-align: top; }
+                tr:nth-child(even) { background: #f5f5f5; }
+                .badge { padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: bold; }
+                .ingreso { background: #e8f5e9; color: #2e7d32; }
+                .salida { background: #ffebee; color: #c62828; }
+                .footer { margin-top: 30px; text-align: center; font-size: 10px; color: #999; border-top: 1px solid #ddd; padding-top: 15px; }
+                .section-title { font-weight: bold; color: #1a237e; margin-top: 8px; font-size: 9px; }
+                .detail { margin-left: 10px; font-size: 9px; color: #555; }
+            </style></head><body>
+            <div class="header">
+                <h1>🚗 REPORTE DE REGISTRO VEHICULAR</h1>
+                <p>Generado: ${new Date().toLocaleString('es-ES')} | Total registros: ${filtrados.length}</p>
+            </div>
+            <table>
+            <thead><tr>
+                <th>#</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Placa</th><th>Conductor</th><th>Proc/Dest</th><th>Empresa</th><th>Mat.</th><th>Acomp.</th><th>Observaciones</th>
+            </tr></thead><tbody>`;
+
+            filtrados.forEach((r, i) => {
+                const matDetalle = r.materiales.map(m => `Guía: ${m.guia || '-'}, Precinto: ${m.precinto || '-'}, ${m.detalle || '-'}`).join('; ') || 'N/A';
+                const precintoInfo = r.traePrecintos === 'SI' ? ` (Precintos: ${r.numPrecintos || 'N/A'})` : '';
+                const acompDetalle = r.acompanantes.join(', ') || 'N/A';
+                html += `<tr>
+                    <td>${i+1}</td>
+                    <td>${r.fecha}</td>
+                    <td>${r.hora}</td>
+                    <td><span class="badge ${r.tipo === 'INGRESO' ? 'ingreso' : 'salida'}">${r.tipo}</span></td>
+                    <td><strong>${r.placa}</strong></td>
+                    <td>${r.conductor}</td>
+                    <td>${r.destino}</td>
+                    <td>${r.empresa || 'N/A'}</td>
+                    <td>${r.traeMateriales}<br><span class="detail">${matDetalle}</span></td>
+                    <td>${r.tieneAcompanantes}<br><span class="detail">${acompDetalle}</span></td>
+                    <td>${r.observaciones || '-'}</td>
+                </tr>`;
+            });
+
+            html += `</tbody></table>
+            <div class="footer">
+                <strong>Edward Quezada M.</strong> | Seguridad Patrimonial | v2.0.0<br>
+                Sistema de Control de Ingresos y Salidas Vehiculares
+            </div>
+            </body></html>`;
+
+            const ventana = window.open('', '_blank');
+            ventana.document.write(html);
+            ventana.document.close();
+            ventana.print();
+            mostrarToast('📄 Reporte PDF generado');
+        }
+
+        // ==================== EXCEL ====================
+        function generarExcel() {
+            const filtrados = obtenerFiltrados();
+            if (filtrados.length === 0) { mostrarToast('❌ No hay registros para exportar'); return; }
+
+            let csv = 'N°,FECHA,HORA,TIPO,PLACA,CONDUCTOR,PROCEDENCIA/DESTINO,EMPRESA,TRAE MATERIALES,GUIAS Y DETALLES,ACOMPAÑANTES,NOMBRES ACOMPAÑANTES,OBSERVACIONES\n';
+
+            filtrados.forEach((r, i) => {
+                const matDetalle = r.materiales.map(m => `Guía:${m.guia || '-'}, Prec:${m.precinto || '-'}, Desc:${m.detalle || '-'}`).join(' | ');
+                const acompDetalle = r.acompanantes.join(' | ');
+                csv += `${i+1},${r.fecha},${r.hora},${r.tipo},${r.placa},"${r.conductor}","${r.destino}",${r.empresa || 'N/A'},${r.traeMateriales},"${matDetalle}",${r.tieneAcompanantes},"${acompDetalle}","${r.observaciones || ''}"\n`;
+            });
+
+            const blob = new Blob([\ufeff + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Registro_Vehicular_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            mostrarToast('📊 Reporte Excel generado');
+        }
+
+        function obtenerFiltrados() {
+            const placa = document.getElementById('filtroPlaca').value.toUpperCase();
+            const conductor = document.getElementById('filtroConductor').value.toUpperCase();
+            const fecha = document.getElementById('filtroFecha').value;
+
+            if (!placa && !conductor && !fecha) return [...registros];
+
+            return registros.filter(r => {
+                const matchPlaca = !placa || r.placa.includes(placa);
+                const matchConductor = !conductor || r.conductor.includes(conductor);
+                const matchFecha = !fecha || r.fecha === fecha;
+                return matchPlaca && matchConductor && matchFecha;
+            });
+        }
+
+        // ==================== RESUMEN DEL DÍA ====================
+        function generarResumenDia() {
+            const hoy = new Date().toISOString().split('T')[0];
+            const delDia = registros.filter(r => r.fecha === hoy);
+
+            if (delDia.length === 0) {
+                document.getElementById('resumenDia').innerHTML = '<div class="empty-state"><p>No hay registros hoy</p></div>';
+                return;
+            }
+
+            const ingresos = delDia.filter(r => r.tipo === 'INGRESO').length;
+            const salidas = delDia.filter(r => r.tipo === 'SALIDA').length;
+            const empresas = delDia.filter(r => r.empresa).length;
+            const conMat = delDia.filter(r => r.traeMateriales === 'SI').length;
+            const conAcomp = delDia.filter(r => r.tieneAcompanantes === 'SI').length;
+
+            document.getElementById('resumenDia').innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="number">${delDia.length}</div><div class="label">Total Hoy</div></div>
+                    <div class="stat-card" style="border-left-color: var(--success);"><div class="number">${ingresos}</div><div class="label">Ingresos</div></div>
+                    <div class="stat-card" style="border-left-color: var(--danger);"><div class="number">${salidas}</div><div class="label">Salidas</div></div>
+                    <div class="stat-card" style="border-left-color: var(--warning);"><div class="number">${empresas}</div><div class="label">Con Empresa</div></div>
+                    <div class="stat-card" style="border-left-color: var(--accent);"><div class="number">${conMat}</div><div class="label">Con Materiales</div></div>
+                    <div class="stat-card" style="border-left-color: #8e24aa;"><div class="number">${conAcomp}</div><div class="label">Con Acompañantes</div></div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
