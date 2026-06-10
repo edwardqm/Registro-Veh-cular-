@@ -2,1223 +2,1085 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1a237e">
-    <title>Registro Vehicular - Sistema de Control</title>
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVnaXN0cm8gVmVoaWN1bGFyIiwic2hvcnRfbmFtZSI6IlJlZ1ZlaGljdWxvIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2Y1ZjVmNSIsInRoZW1lX2NvbG9yIjoiIzFhMjM3ZSIsInN0YXJ0X3VybCI6Ii4iLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxOTIgMTkyJyBmaWxsPScjZmZmJyUzRSUzQ3JlY3Qgd2lkdGg9JzE5MicgaGVpZ2h0PScxOTInIHJ4PScyNCcgZmlsbD0nIzFhMjM3ZSclM0UlM0MvcGF0aCUzRSUzQ3BhdGggZD0nTTQ0IDEzMnYxNmMwIDguOCA3LjIgMTYgMTYgMTZoMTZjOC44IDAgMTYtNy4yIDE2LTE2di0xNmgtNDh6bTgwIDB2MTZjMCA4LjggNy4yIDE2IDE2IDE2aDE2YzguOCAwIDE2LTcuMiAxNi0xNnYtMTZ6bS0zMi04MGg0OGMtOC44IDAtMTYtNy4yLTE2LTE2VjU2aC0zMnYxNmMwIDguOC03LjIgMTYtMTYgMTZ6bS04MCAwSDEyYzguOCAwIDE2LTcuMiAxNi0xNlY1Nkg5NnYxNmMwIDguOC03LjIgMTYtMTYgMTZ6Jy8lM0UlM0Mvc3ZnJTNF","sizes":"192x192","type":"image/svg+xml"}]}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Registro Vehicular - Control de Acceso</title>
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVnaXN0cm8gVmVoaWN1bGFyIiwic2hvcnRfbmFtZSI6IlJlZ1ZlaGljdWxvIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmZmZmZmYiLCJ0aGVtZV9jb2xvciI6IiMxYTIzN2UiLCJpY29ucyI6W3sic3JjIjoiaWNvbi0xOTJ4MTkyLnBuZyIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9wbmcifSx7InNyYyI6Imljb24tNTEyeDUxMi5wbmciLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIn1dfQ==">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
             --primary: #1a237e;
             --primary-light: #3949ab;
-            --primary-dark: #0d1642;
             --accent: #ff6f00;
-            --accent-light: #ff9800;
-            --success: #2e7d32;
             --danger: #c62828;
+            --success: #2e7d32;
             --warning: #f9a825;
-            --bg: #f0f2f5;
+            --bg: #f5f5f5;
             --card: #ffffff;
             --text: #212121;
-            --text-light: #757575;
             --border: #e0e0e0;
-            --shadow: 0 2px 8px rgba(0,0,0,0.1);
-            --shadow-lg: 0 4px 16px rgba(0,0,0,0.15);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            padding-bottom: 80px;
-        }
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 16px;
-            text-align: center;
-            box-shadow: var(--shadow-lg);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .header h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: 0.5px; }
-        .header .subtitle { font-size: 0.75rem; opacity: 0.8; margin-top: 2px; }
-        .container { max-width: 800px; margin: 0 auto; padding: 16px; }
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            background: var(--card);
-            padding: 4px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-        }
-        .tab {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: transparent;
-            color: var(--text-light);
-            font-size: 0.9rem;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .tab.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 2px 8px rgba(26,35,126,0.3);
-        }
-        .tab:hover:not(.active) { background: #f5f5f5; }
-        .card {
-            background: var(--card);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow);
-        }
-        .card-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .form-group { margin-bottom: 16px; }
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 6px;
-        }
-        .form-group label .required { color: var(--danger); }
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 14px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: all 0.2s;
-            background: #fafafa;
-        }
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary-light);
-            background: white;
-            box-shadow: 0 0 0 3px rgba(57,73,171,0.1);
-        }
-        textarea { resize: vertical; min-height: 80px; }
-        .radio-group {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .radio-option {
-            flex: 1;
-            min-width: 120px;
-        }
-        .radio-option input { display: none; }
-        .radio-option label {
-            display: block;
-            padding: 12px;
-            text-align: center;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
-            background: #fafafa;
-        }
-        .radio-option input:checked + label {
-            border-color: var(--primary);
-            background: var(--primary);
-            color: white;
-        }
-        .radio-option.ingreso input:checked + label { background: var(--success); border-color: var(--success); }
-        .radio-option.salida input:checked + label { background: var(--danger); border-color: var(--danger); }
-        .radio-option.si input:checked + label { background: var(--success); border-color: var(--success); }
-        .radio-option.no input:checked + label { background: var(--danger); border-color: var(--danger); }
-        .radio-option.empresa input:checked + label { background: var(--warning); border-color: var(--warning); color: #333; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        body { background: var(--bg); color: var(--text); line-height: 1.6; -webkit-tap-highlight-color: transparent; }
+        .container { max-width: 900px; margin: 0 auto; padding: 15px; padding-bottom: 100px; }
+        header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; padding: 25px 20px; text-align: center; border-radius: 0 0 20px 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 100; }
+        header h1 { font-size: 1.4rem; margin-bottom: 5px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        header p { opacity: 0.9; font-size: 0.85rem; }
+        .card { background: var(--card); border-radius: 12px; padding: 18px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .card-title { font-size: 1rem; color: var(--primary); font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; color: #444; }
+        input, select, textarea { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 1rem; transition: all 0.3s; background: white; -webkit-appearance: none; appearance: none; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(57,73,171,0.15); }
+        textarea { resize: vertical; min-height: 90px; font-size: 1rem; }
+        .radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
+        .radio-option { flex: 1; min-width: 80px; }
+        .radio-option input[type="radio"] { display: none; }
+        .radio-option label { display: block; text-align: center; padding: 14px 10px; border: 2px solid var(--border); border-radius: 10px; cursor: pointer; font-weight: 700; transition: all 0.3s; margin-bottom: 0; font-size: 0.95rem; user-select: none; }
+        .radio-option input[type="radio"]:checked + label { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(26,35,126,0.25); }
+        .radio-option label:hover { border-color: var(--primary-light); background: #f5f5f5; }
+        .radio-option input[type="radio"]:checked + label:hover { background: var(--primary); }
         .hidden { display: none !important; }
-        .btn {
-            padding: 14px 24px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+        .conditional-box { background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%); border-left: 4px solid var(--primary); padding: 15px; border-radius: 0 10px 10px 0; margin-top: 12px; animation: slideDown 0.35s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+        .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+        .file-input-wrapper input[type=file] { position: absolute; left: -9999px; }
+        .file-input-label { display: block; padding: 16px; background: white; border: 2px dashed var(--primary-light); border-radius: 10px; text-align: center; cursor: pointer; color: var(--primary); font-weight: 700; transition: all 0.3s; font-size: 0.95rem; }
+        .file-input-label:hover { background: #e8eaf6; border-style: solid; }
+        .file-input-label.has-file { background: #e8f5e9; border-color: var(--success); border-style: solid; color: var(--success); }
+        .file-input-label .camera-icon { font-size: 1.5rem; display: block; margin-bottom: 5px; }
+        .preview-img { max-width: 100%; max-height: 160px; border-radius: 10px; margin-top: 10px; border: 2px solid var(--border); display: block; margin-left: auto; margin-right: auto; }
+        .btn { padding: 16px 24px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; justify-content: center; touch-action: manipulation; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; box-shadow: 0 4px 12px rgba(26,35,126,0.25); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(26,35,126,0.35); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-success { background: linear-gradient(135deg, var(--success) 0%, #43a047 100%); color: white; box-shadow: 0 4px 12px rgba(46,125,50,0.25); }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(46,125,50,0.35); }
+        .btn-danger { background: linear-gradient(135deg, var(--danger) 0%, #e53935 100%); color: white; box-shadow: 0 4px 12px rgba(198,40,40,0.25); }
+        .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(198,40,40,0.35); }
+        .btn-accent { background: linear-gradient(135deg, var(--accent) 0%, #ff8f00 100%); color: white; box-shadow: 0 4px 12px rgba(255,111,0,0.25); }
+        .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255,111,0,0.35); }
+        .btn-warning { background: linear-gradient(135deg, var(--warning) 0%, #fbc02d 100%); color: #333; }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+        .table-container { overflow-x: auto; margin-top: 15px; -webkit-overflow-scrolling: touch; border-radius: 10px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        th { background: var(--primary); color: white; font-weight: 600; position: sticky; top: 0; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        tr:hover { background: #f5f5f5; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-ingreso { background: #e8f5e9; color: var(--success); border: 1px solid #a5d6a7; }
+        .badge-salida { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .search-box input { flex: 1; min-width: 180px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.65); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(5px); }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; padding: 30px; border-radius: 16px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: modalIn 0.3s ease; }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .modal h3 { margin-bottom: 15px; color: var(--primary); font-size: 1.2rem; }
+        .modal input { margin-bottom: 15px; text-align: center; font-size: 1.4rem; letter-spacing: 6px; font-weight: 700; }
+        .footer { text-align: center; padding: 25px 20px; color: #777; font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 20px; background: white; border-radius: 20px 20px 0 0; }
+        .footer strong { color: var(--primary); }
+        .empty-state { text-align: center; padding: 40px; color: #999; font-size: 1rem; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 15px; }
+        .stat-card { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; padding: 18px 10px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(26,35,126,0.2); }
+        .stat-card h3 { font-size: 1.8rem; margin-bottom: 4px; font-weight: 800; }
+        .stat-card p { font-size: 0.8rem; opacity: 0.9; font-weight: 500; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: white; padding: 16px 28px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.3); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999; font-weight: 600; font-size: 0.95rem; max-width: 90%; text-align: center; }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .img-thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid var(--border); transition: transform 0.2s; }
+        .img-thumb:hover { transform: scale(1.1); border-color: var(--primary); }
+        .img-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .img-viewer.active { display: flex; }
+        .img-viewer img { max-width: 92%; max-height: 92%; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .img-viewer .close-viewer { position: absolute; top: 15px; right: 20px; color: white; font-size: 2.5rem; cursor: pointer; text-shadow: 0 2px 10px rgba(0,0,0,0.5); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; }
+        .section-divider { height: 1px; background: var(--border); margin: 20px 0; }
+        .info-text { font-size: 0.8rem; color: #666; margin-top: 4px; font-style: italic; }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .btn-group { flex-direction: column; }
+            .btn { width: 100%; padding: 16px; }
+            header h1 { font-size: 1.2rem; }
+            .stats { grid-template-columns: 1fr; }
+            .search-box { flex-direction: column; }
+            .search-box input { min-width: 100%; }
+            .radio-group { gap: 8px; }
+            .radio-option label { padding: 12px 8px; font-size: 0.9rem; }
         }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(26,35,126,0.3);
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(26,35,126,0.4); }
-        .btn-success {
-            background: linear-gradient(135deg, var(--success) 0%, #43a047 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(46,125,50,0.3);
-        }
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger) 0%, #e53935 100%);
-            color: white;
-        }
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning) 0%, #fbc02d 100%);
-            color: #333;
-        }
-        .btn-secondary {
-            background: #e0e0e0;
-            color: var(--text);
-        }
-        .btn-sm { padding: 8px 14px; font-size: 0.85rem; }
-        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
-        .dynamic-section {
-            background: #f8f9ff;
-            border: 2px dashed var(--primary-light);
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 12px;
-        }
-        .dynamic-item {
-            background: white;
-            border-radius: 10px;
-            padding: 14px;
-            margin-bottom: 10px;
-            border: 1px solid var(--border);
-            position: relative;
-        }
-        .dynamic-item .remove-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: none;
-            background: var(--danger);
-            color: white;
-            font-size: 1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .dynamic-item .remove-btn:hover { background: #b71c1c; }
-        .add-btn {
-            width: 100%;
-            padding: 10px;
-            border: 2px dashed var(--primary-light);
-            background: transparent;
-            color: var(--primary);
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .add-btn:hover { background: rgba(57,73,171,0.05); }
-        .search-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-        .search-bar input, .search-bar select {
-            flex: 1;
-            min-width: 150px;
-        }
-        .table-container {
-            overflow-x: auto;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            font-size: 0.85rem;
-        }
-        th {
-            background: var(--primary);
-            color: white;
-            padding: 12px 10px;
-            text-align: left;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        td {
-            padding: 10px;
-            border-bottom: 1px solid var(--border);
-            vertical-align: top;
-        }
-        tr:hover td { background: #f5f5f5; }
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        .badge-ingreso { background: #e8f5e9; color: var(--success); }
-        .badge-salida { background: #ffebee; color: var(--danger); }
-        .badge-empresa { background: #fff8e1; color: #f57f17; }
-        .badge-empresa { background: #e3f2fd; color: #1565c0; }
-        .badge-si { background: #e8f5e9; color: var(--success); }
-        .badge-no { background: #ffebee; color: var(--danger); }
-        .action-btns { display: flex; gap: 6px; }
-        .action-btns button {
-            padding: 6px 10px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .btn-edit { background: #e3f2fd; color: #1565c0; }
-        .btn-delete { background: #ffebee; color: var(--danger); }
-        .btn-pdf { background: #ffebee; color: var(--danger); }
-        .btn-excel { background: #e8f5e9; color: var(--success); }
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 16px;
-        }
-        .modal {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            max-width: 400px;
-            width: 100%;
-            box-shadow: var(--shadow-lg);
-            animation: modalIn 0.3s ease;
-        }
-        @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        .modal h3 { margin-bottom: 16px; color: var(--primary); }
-        .modal .btn-group { margin-top: 20px; justify-content: flex-end; }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            border-left: 4px solid var(--primary);
-        }
-        .stat-card .number { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
-        .stat-card .label { font-size: 0.8rem; color: var(--text-light); margin-top: 4px; }
-        .footer {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-light);
-            font-size: 0.8rem;
-        }
-        .footer .dev { color: var(--primary); font-weight: 600; }
-        .footer .version { background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; }
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-light);
-        }
-        .empty-state svg { width: 80px; height: 80px; margin-bottom: 16px; opacity: 0.3; }
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--text);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-weight: 600;
-            z-index: 2000;
-            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
-        }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(20px); } }
-        @keyframes toastOut { to { opacity: 0; transform: translateX(-50%) translateY(20px); } }
-        .details-list { font-size: 0.8rem; }
-        .details-list li { margin-bottom: 2px; }
-        @media (max-width: 600px) {
-            .header h1 { font-size: 1.1rem; }
-            .tab { font-size: 0.8rem; padding: 10px 8px; }
-            .card { padding: 16px; }
-            th, td { padding: 8px 6px; font-size: 0.75rem; }
-            .action-btns button { padding: 4px 6px; font-size: 0.7rem; }
-        }
-        .pin-input {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin: 16px 0;
-        }
-        .pin-input input {
-            width: 50px;
-            height: 50px;
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: 700;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-        }
-        .pin-input input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(26,35,126,0.1);
+        @media (max-width: 400px) {
+            .container { padding: 10px; }
+            .card { padding: 14px; }
+            header { padding: 18px 15px; }
         }
     </style>
 </head>
 <body>
-    <div class="header">
+    <header>
         <h1>🚗 REGISTRO VEHICULAR</h1>
-        <div class="subtitle">Sistema de Control de Ingresos y Salidas</div>
-    </div>
+        <p>Control de Ingreso y Salida de Vehículos</p>
+    </header>
 
     <div class="container">
-        <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('registro')">
-                <span>📝</span> Registro
-            </button>
-            <button class="tab" onclick="showTab('lista')">
-                <span>📋</span> Registros
-            </button>
-            <button class="tab" onclick="showTab('reportes')">
-                <span>📊</span> Reportes
-            </button>
+        <!-- Estadísticas -->
+        <div class="stats" id="statsContainer">
+            <div class="stat-card">
+                <h3 id="statTotal">0</h3>
+                <p>Total Registros</p>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, var(--success) 0%, #43a047 100%);">
+                <h3 id="statIngresos">0</h3>
+                <p>Ingresos Hoy</p>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, var(--accent) 0%, #ff8f00 100%);">
+                <h3 id="statSalidas">0</h3>
+                <p>Salidas Hoy</p>
+            </div>
         </div>
 
-        <!-- TAB: REGISTRO -->
-        <div id="tab-registro">
-            <form id="formRegistro" onsubmit="guardarRegistro(event)">
+        <!-- Formulario -->
+        <div class="card">
+            <div class="card-title">📝 Nuevo Registro</div>
+            <form id="registroForm">
                 <input type="hidden" id="editId" value="">
 
-                <!-- Datos Básicos -->
-                <div class="card">
-                    <div class="card-title">📅 Datos del Registro</div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div class="form-group">
-                            <label>Fecha <span class="required">*</span></label>
-                            <input type="date" id="fecha" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Hora <span class="required">*</span></label>
-                            <input type="time" id="hora" required>
-                        </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="date" id="fecha" required>
                     </div>
                     <div class="form-group">
-                        <label>Tipo de Movimiento <span class="required">*</span></label>
-                        <div class="radio-group">
-                            <div class="radio-option ingreso">
-                                <input type="radio" name="tipo" id="tipoIngreso" value="INGRESO" checked onchange="actualizarDestino()">
-                                <label for="tipoIngreso">🚪 INGRESO</label>
-                            </div>
-                            <div class="radio-option salida">
-                                <input type="radio" name="tipo" id="tipoSalida" value="SALIDA" onchange="actualizarDestino()">
-                                <label for="tipoSalida">🏃 SALIDA</label>
-                            </div>
+                        <label>Hora</label>
+                        <input type="time" id="hora" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de Movimiento</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="tipo" id="tipoIngreso" value="INGRESO" required>
+                            <label for="tipoIngreso">📥 INGRESO</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="tipo" id="tipoSalida" value="SALIDA" required>
+                            <label for="tipoSalida">📤 SALIDA</label>
                         </div>
                     </div>
                 </div>
 
-                <!-- Vehículo y Conductor -->
-                <div class="card">
-                    <div class="card-title">🚙 Información del Vehículo</div>
+                <div class="grid-2">
                     <div class="form-group">
-                        <label>Placa <span class="required">*</span></label>
-                        <input type="text" id="placa" placeholder="ABC-1234" maxlength="8" required 
-                               oninput="formatearPlaca(this)" onblur="this.value = this.value.toUpperCase()">
+                        <label>Placa del Vehículo</label>
+                        <input type="text" id="placa" placeholder="ABC-1234" maxlength="8" required>
+                        <div class="info-text">Formato automático: 3 letras + guión + números</div>
                     </div>
                     <div class="form-group">
-                        <label>Nombre del Conductor <span class="required">*</span></label>
-                        <input type="text" id="conductor" placeholder="NOMBRE COMPLETO" required 
-                               oninput="this.value = this.value.toUpperCase()">
-                    </div>
-                    <div class="form-group">
-                        <label id="labelDestino">Procedencia <span class="required">*</span></label>
-                        <input type="text" id="destino" placeholder="LUGAR DE PROCEDENCIA" required 
-                               oninput="this.value = this.value.toUpperCase()">
-                    </div>
-                    <div class="form-group">
-                        <label>Empresa <span class="required">*</span></label>
-                        <input type="text" id="empresa" placeholder="NOMBRE DE LA EMPRESA" required 
-                               oninput="this.value = this.value.toUpperCase()">
+                        <label>Nombre del Conductor</label>
+                        <input type="text" id="conductor" placeholder="NOMBRE COMPLETO" required>
                     </div>
                 </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Empresa</label>
+                        <input type="text" id="empresa" placeholder="EMPRESA" required>
+                    </div>
+                    <div class="form-group" id="procedenciaDestinoGroup">
+                        <label id="lblProcedenciaDestino">Procedencia / Destino</label>
+                        <input type="text" id="procedenciaDestino" placeholder="LUGAR" required>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
 
                 <!-- Materiales -->
-                <div class="card">
-                    <div class="card-title">📦 Materiales</div>
-                    <div class="form-group">
-                        <label>¿Trae materiales?</label>
-                        <div class="radio-group">
-                            <div class="radio-option si">
-                                <input type="radio" name="materiales" id="matSi" value="SI" onchange="toggleMateriales(true)" onclick="toggleMateriales(true)">
-                                <label for="matSi">✅ SÍ</label>
-                            </div>
-                            <div class="radio-option no">
-                                <input type="radio" name="materiales" id="matNo" value="NO" checked onchange="toggleMateriales(false)" onclick="toggleMateriales(false)">
-                                <label for="matNo">❌ NO</label>
-                            </div>
+                <div class="form-group">
+                    <label id="lblMateriales">¿Trae Materiales?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="materiales" id="matSi" value="SI">
+                            <label for="matSi">✅ SI</label>
                         </div>
-                    </div>
-                    <div id="seccionMateriales" class="hidden">
-                        <!-- Pregunta de precintos -->
-                        <div class="form-group" style="margin-top: 16px;">
-                            <label>¿Trae precintos?</label>
-                            <div class="radio-group">
-                                <div class="radio-option si">
-                                    <input type="radio" name="precintos" id="precSi" value="SI" onchange="togglePrecintos(true)" onclick="togglePrecintos(true)">
-                                    <label for="precSi">✅ SÍ</label>
-                                </div>
-                                <div class="radio-option no">
-                                    <input type="radio" name="precintos" id="precNo" value="NO" checked onchange="togglePrecintos(false)" onclick="togglePrecintos(false)">
-                                    <label for="precNo">❌ NO</label>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Campo N° de Precintos (solo si precintos = SI) -->
-                        <div id="seccionPrecintos" class="hidden" style="margin-top: 12px;">
-                            <div class="form-group">
-                                <label>N° de Precintos</label>
-                                <input type="number" id="numPrecintos" placeholder="NÚMERO DE PRECINTOS" min="0">
-                            </div>
-                        </div>
-                        <!-- Lista dinámica de materiales -->
-                        <div id="seccionListaMateriales" class="hidden" style="margin-top: 12px;">
-                            <div id="listaMateriales"></div>
-                            <button type="button" class="add-btn" onclick="agregarMaterial()">+ Agregar Material</button>
+                        <div class="radio-option">
+                            <input type="radio" name="materiales" id="matNo" value="NO" checked>
+                            <label for="matNo">❌ NO</label>
                         </div>
                     </div>
                 </div>
+
+                <div id="materialesBox" class="conditional-box hidden">
+                    <div class="form-group">
+                        <label>Descripción de Materiales</label>
+                        <textarea id="descMateriales" placeholder="DESCRIBA LOS MATERIALES QUE TRAE/LEVA..."></textarea>
+                        <div class="info-text">Obligatorio cuando no hay precintos o guía</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label id="lblPrecintos">¿Viene con Precintos?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="precintos" id="precSi" value="SI">
+                                <label for="precSi">✅ SI</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="precintos" id="precNo" value="NO" checked>
+                                <label for="precNo">❌ NO</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="precintosBox" class="hidden">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Foto Precinto 1</label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" id="fotoPrecinto1" accept="image/*" capture="environment">
+                                    <label for="fotoPrecinto1" class="file-input-label" id="lblPrecinto1">
+                                        <span class="camera-icon">📷</span>
+                                        TOMAR FOTO PRECINTO 1
+                                    </label>
+                                </div>
+                                <img id="previewPrecinto1" class="preview-img hidden">
+                            </div>
+                            <div class="form-group">
+                                <label>Foto Precinto 2</label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" id="fotoPrecinto2" accept="image/*" capture="environment">
+                                    <label for="fotoPrecinto2" class="file-input-label" id="lblPrecinto2">
+                                        <span class="camera-icon">📷</span>
+                                        TOMAR FOTO PRECINTO 2
+                                    </label>
+                                </div>
+                                <img id="previewPrecinto2" class="preview-img hidden">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label id="lblGuia">¿Viene con Guía?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="guia" id="guiaSi" value="SI">
+                                <label for="guiaSi">✅ SI</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="guia" id="guiaNo" value="NO" checked>
+                                <label for="guiaNo">❌ NO</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="guiaBox" class="hidden">
+                        <div class="form-group">
+                            <label>Guía Escaneada / Adjuntada</label>
+                            <div class="info-text" style="margin-bottom:8px;">
+                                💡 Use apps como <strong>CamScanner, Adobe Scan, Fotoscan</strong> o su escáner nativo, 
+                                luego adjunte el archivo PDF o imagen aquí.
+                            </div>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="fotoGuia" accept="application/pdf,image/*">
+                                <label for="fotoGuia" class="file-input-label" id="lblGuiaFoto">
+                                    <span class="camera-icon">📄</span>
+                                    ESCANEAR / ADJUNTAR GUÍA
+                                </label>
+                            </div>
+                            <img id="previewGuia" class="preview-img hidden">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
 
                 <!-- Acompañantes -->
-                <div class="card">
-                    <div class="card-title">👥 Acompañantes</div>
-                    <div class="form-group">
-                        <label>¿Viene con acompañantes?</label>
-                        <div class="radio-group">
-                            <div class="radio-option si">
-                                <input type="radio" name="acompanantes" id="acompSi" value="SI" onchange="toggleAcompanantes(true)" onclick="toggleAcompanantes(true)">
-                                <label for="acompSi">✅ SÍ</label>
-                            </div>
-                            <div class="radio-option no">
-                                <input type="radio" name="acompanantes" id="acompNo" value="NO" checked onchange="toggleAcompanantes(false)" onclick="toggleAcompanantes(false)">
-                                <label for="acompNo">❌ NO</label>
-                            </div>
+                <div class="form-group">
+                    <label id="lblAcompanantes">¿Viene con Acompañantes?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="acompanantes" id="acompSi" value="SI">
+                            <label for="acompSi">✅ SI</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="acompanantes" id="acompNo" value="NO" checked>
+                            <label for="acompNo">❌ NO</label>
                         </div>
                     </div>
-                    <div id="seccionAcompanantes" class="dynamic-section hidden">
-                        <div id="listaAcompanantes"></div>
-                        <button type="button" class="add-btn" onclick="agregarAcompanante()">+ Agregar Persona</button>
-                    </div>
                 </div>
 
-                <!-- Observaciones -->
-                <div class="card">
-                    <div class="card-title">📝 Observaciones</div>
+                <div id="acompanantesBox" class="conditional-box hidden">
                     <div class="form-group">
-                        <textarea id="observaciones" placeholder="INGRESE OBSERVACIONES ADICIONALES..." 
-                                  oninput="this.value = this.value.toUpperCase()"></textarea>
+                        <label>Registro de Personas Acompañantes</label>
+                        <textarea id="personasAcompanantes" placeholder="NOMBRE 1, NOMBRE 2, ... (UNO POR LÍNEA O SEPARADOS POR COMAS)"></textarea>
                     </div>
                 </div>
 
-                <div class="btn-group" style="margin-bottom: 20px;">
-                    <button type="submit" class="btn btn-primary" style="flex:1;">
-                        <span>💾</span> <span id="btnTexto">GUARDAR REGISTRO</span>
+                <div class="section-divider"></div>
+
+                <div class="form-group">
+                    <label>Observaciones</label>
+                    <textarea id="observaciones" placeholder="OBSERVACIONES ADICIONALES..."></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary" id="btnGuardar">
+                        <span>💾</span> GUARDAR REGISTRO
                     </button>
-                    <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">
-                        <span>🔄</span> LIMPIAR
+                    <button type="button" class="btn btn-accent" id="btnCancelar" style="display:none;">
+                        <span>❌</span> CANCELAR EDICIÓN
                     </button>
                 </div>
             </form>
         </div>
 
-        <!-- TAB: LISTA -->
-        <div id="tab-lista" class="hidden">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="number" id="statTotal">0</div>
-                    <div class="label">Total Registros</div>
-                </div>
-                <div class="stat-card" style="border-left-color: var(--success);">
-                    <div class="number" id="statIngresos">0</div>
-                    <div class="label">Ingresos</div>
-                </div>
-                <div class="stat-card" style="border-left-color: var(--danger);">
-                    <div class="number" id="statSalidas">0</div>
-                    <div class="label">Salidas</div>
-                </div>
-                <div class="stat-card" style="border-left-color: var(--warning);">
-                    <div class="number" id="statEmpresas">0</div>
-                    <div class="label">Con Empresa</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">🔍 Filtros de Búsqueda</div>
-                <div class="search-bar">
-                    <input type="text" id="filtroPlaca" placeholder="🔍 PLACA..." oninput="this.value = this.value.toUpperCase(); filtrarRegistros()">
-                    <input type="text" id="filtroConductor" placeholder="🔍 CONDUCTOR..." oninput="this.value = this.value.toUpperCase(); filtrarRegistros()">
-                    <input type="date" id="filtroFecha" onchange="filtrarRegistros()">
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="limpiarFiltros()">🔄</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">📋 Listado de Registros</div>
-                <div id="tablaRegistros">
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-                        <p>No hay registros disponibles</p>
-                    </div>
-                </div>
+        <!-- Búsqueda y Filtros -->
+        <div class="card">
+            <div class="card-title">🔍 Búsqueda y Filtros</div>
+            <div class="search-box">
+                <input type="text" id="searchPlaca" placeholder="🔍 Buscar por PLACA..." oninput="filtrarRegistros()">
+                <input type="text" id="searchConductor" placeholder="🔍 Buscar por CONDUCTOR..." oninput="filtrarRegistros()">
+                <input type="date" id="searchFecha" onchange="filtrarRegistros()">
+                <button type="button" class="btn btn-warning" onclick="limpiarFiltros()">
+                    <span>🧹</span> LIMPIAR
+                </button>
             </div>
         </div>
 
-        <!-- TAB: REPORTES -->
-        <div id="tab-reportes" class="hidden">
-            <div class="card">
-                <div class="card-title">📊 Generar Reportes</div>
-                <p style="color: var(--text-light); margin-bottom: 16px; font-size: 0.9rem;">
-                    Descargue los registros filtrados o el historial completo en formato PDF o Excel.
-                </p>
-                <div class="btn-group">
-                    <button class="btn btn-danger" onclick="generarPDF()">
-                        <span>📄</span> DESCARGAR PDF
-                    </button>
-                    <button class="btn btn-success" onclick="generarExcel()">
-                        <span>📊</span> DESCARGAR EXCEL
-                    </button>
-                </div>
+        <!-- Lista de Registros -->
+        <div class="card">
+            <div class="card-title">📋 Registros Guardados</div>
+            <div class="btn-group" style="margin-bottom: 20px;">
+                <button type="button" class="btn btn-success" onclick="exportarExcel()">
+                    <span>📊</span> EXPORTAR EXCEL
+                </button>
+                <button type="button" class="btn btn-danger" onclick="exportarPDF()">
+                    <span>📄</span> EXPORTAR PDF
+                </button>
             </div>
-
-            <div class="card">
-                <div class="card-title">📈 Resumen del Día</div>
-                <div id="resumenDia">
-                    <div class="empty-state">
-                        <p>No hay datos para mostrar</p>
-                    </div>
-                </div>
+            <div class="table-container">
+                <table id="tablaRegistros">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Tipo</th>
+                            <th>Placa</th>
+                            <th>Conductor</th>
+                            <th>Empresa</th>
+                            <th>Proc/Dest</th>
+                            <th>Mat.</th>
+                            <th>Desc. Mat.</th>
+                            <th>Prec.</th>
+                            <th>Guía</th>
+                            <th>Acomp.</th>
+                            <th>Fotos</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyRegistros">
+                        <tr><td colspan="15" class="empty-state">No hay registros guardados</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+
+    <!-- Modal de Contraseña -->
+    <div class="modal-overlay" id="modalClave">
+        <div class="modal">
+            <h3>🔒 Ingrese la Clave</h3>
+            <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">Para editar o eliminar registros</p>
+            <input type="password" id="inputClave" placeholder="0000" maxlength="4" inputmode="numeric">
+            <div class="btn-group" style="justify-content: center;">
+                <button class="btn btn-primary" onclick="verificarClave()">✅ ACEPTAR</button>
+                <button class="btn btn-danger" onclick="cerrarModal()">❌ CANCELAR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Visor de Imágenes -->
+    <div class="img-viewer" id="imgViewer" onclick="this.classList.remove('active')">
+        <span class="close-viewer">&times;</span>
+        <img id="imgViewerSrc" src="" alt="Vista previa">
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
 
     <div class="footer">
-        <div>Desarrollado por <span class="dev">Edward Quezada M.</span></div>
-        <div style="margin-top: 6px;">Seguridad Patrimonial <span class="version">v2.0.0</span></div>
-        <div style="margin-top: 4px; font-size: 0.7rem;">© 2025 - Todos los derechos reservados</div>
-    </div>
-
-    <!-- Modal PIN -->
-    <div id="modalPIN" class="modal-overlay hidden">
-        <div class="modal">
-            <h3>🔐 Ingrese Clave de Acceso</h3>
-            <p style="color: var(--text-light); font-size: 0.9rem;">Se requiere autorización para esta acción</p>
-            <div class="pin-input">
-                <input type="password" maxlength="1" class="pin-digit" oninput="moverPIN(this, 0)" onkeydown="moverPINBack(event, 0)">
-                <input type="password" maxlength="1" class="pin-digit" oninput="moverPIN(this, 1)" onkeydown="moverPINBack(event, 1)">
-                <input type="password" maxlength="1" class="pin-digit" oninput="moverPIN(this, 2)" onkeydown="moverPINBack(event, 2)">
-                <input type="password" maxlength="1" class="pin-digit" oninput="moverPIN(this, 3)" onkeydown="moverPINBack(event, 3)">
-            </div>
-            <div class="btn-group">
-                <button class="btn btn-secondary" onclick="cerrarModalPIN()">CANCELAR</button>
-                <button class="btn btn-primary" onclick="verificarPIN()">CONFIRMAR</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Confirmación -->
-    <div id="modalConfirm" class="modal-overlay hidden">
-        <div class="modal">
-            <h3 id="confirmTitle">⚠️ Confirmar Acción</h3>
-            <p id="confirmMsg" style="margin: 12px 0; color: var(--text-light);"></p>
-            <div class="btn-group" style="justify-content: flex-end;">
-                <button class="btn btn-secondary" onclick="cerrarModalConfirm()">CANCELAR</button>
-                <button class="btn btn-danger" id="confirmBtn" onclick="">CONFIRMAR</button>
-            </div>
-        </div>
+        <p>Desarrollado por <strong>Edward Quezada M.</strong></p>
+        <p>Versión 2.0.0 | Registro Vehicular PWA</p>
+        <p style="margin-top: 5px; font-size: 0.75rem;">© 2026 - Todos los derechos reservados</p>
     </div>
 
     <script>
-        // ==================== VARIABLES GLOBALES ====================
-        const CLAVE_ADMIN = '0000';
-        let registros = JSON.parse(localStorage.getItem('registrosVehiculares')) || [];
-        let accionPendiente = null;
-        let idPendiente = null;
-        let pinCallback = null;
+        // ==================== BASE DE DATOS ====================
+        const DB_NAME = 'RegistroVehicularDB';
+        const DB_VERSION = 2; // Incrementado para nueva estructura
+        const STORE_NAME = 'registros';
+        let db;
+        let pendingAction = null;
+        let pendingId = null;
 
-        // ==================== INICIALIZACIÓN ====================
-        document.addEventListener('DOMContentLoaded', () => {
-            const hoy = new Date();
-            document.getElementById('fecha').value = hoy.toISOString().split('T')[0];
-            document.getElementById('hora').value = hoy.toTimeString().slice(0,5);
-            actualizarDestino();
-            renderizarTabla();
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => { db = request.result; resolve(db); };
+                request.onupgradeneeded = (e) => {
+                    const database = e.target.result;
+                    if (!database.objectStoreNames.contains(STORE_NAME)) {
+                        const store = database.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                        store.createIndex('placa', 'placa', { unique: false });
+                        store.createIndex('conductor', 'conductor', { unique: false });
+                        store.createIndex('fecha', 'fecha', { unique: false });
+                    }
+                };
+            });
+        }
+
+        async function guardarRegistro(data) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction([STORE_NAME], 'readwrite');
+                const store = tx.objectStore(STORE_NAME);
+                const request = store.put(data);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function obtenerRegistros() {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction([STORE_NAME], 'readonly');
+                const store = tx.objectStore(STORE_NAME);
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result.reverse());
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function eliminarRegistro(id) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction([STORE_NAME], 'readwrite');
+                const store = tx.objectStore(STORE_NAME);
+                const request = store.delete(id);
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function obtenerRegistro(id) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction([STORE_NAME], 'readonly');
+                const store = tx.objectStore(STORE_NAME);
+                const request = store.get(id);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // ==================== UTILIDADES ====================
+        function mostrarToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function toUpperInput(e) {
+            e.target.value = e.target.value.toUpperCase();
+        }
+
+        function formatearPlaca(e) {
+            let val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (val.length > 3) {
+                val = val.substring(0, 3) + '-' + val.substring(3, 7);
+            }
+            e.target.value = val;
+        }
+
+        function leerImagen(file) {
+            return new Promise((resolve) => {
+                if (!file) return resolve(null);
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function previewFile(inputId, previewId, labelId) {
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            const label = document.getElementById(labelId);
+
+            input.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const base64 = await leerImagen(file);
+                    preview.src = base64;
+                    preview.classList.remove('hidden');
+                    label.classList.add('has-file');
+                    label.innerHTML = '<span class="camera-icon">✅</span>FOTO CARGADA';
+                }
+            });
+        }
+
+        function previewFileGuia() {
+            const input = document.getElementById('fotoGuia');
+            const preview = document.getElementById('previewGuia');
+            const label = document.getElementById('lblGuiaFoto');
+
+            input.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                label.classList.add('has-file');
+
+                if (file.type === 'application/pdf') {
+                    // Para PDFs mostrar icono en lugar de preview
+                    preview.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2MzMjgyOCI+PHBhdGggZD0iTTE0IDJINmMtMS4xIDAtMiAuOS0yIDJ2MTZjMCAxLjEuOSAyIDIgMmgxMmMxLjEgMCAyLS45IDItMlY4bC02LTZ6bTQuNSAxOC41aC0xM1YzaDExbDQuNSA0LjV2MTMuNXpNMTQgM1Y5aDZ6Ii8+PHBhdGggZD0iTTE2LjUgMTEuNWgtOWwuNSAzaDhsLS41LTN6IiBmaWxsPSIjZmZmIi8+PC9zdmc+';
+                    preview.classList.remove('hidden');
+                    preview.style.maxHeight = '80px';
+                    preview.style.width = '80px';
+                    preview.style.objectFit = 'contain';
+                    label.innerHTML = '<span class="camera-icon">✅</span>PDF ADJUNTADO';
+                } else {
+                    const base64 = await leerImagen(file);
+                    preview.src = base64;
+                    preview.classList.remove('hidden');
+                    preview.style.maxHeight = '160px';
+                    preview.style.width = 'auto';
+                    label.innerHTML = '<span class="camera-icon">✅</span>GUÍA ADJUNTADA';
+                }
+            });
+        }
+
+        // ==================== ACTUALIZAR TEXTOS SEGÚN TIPO ====================
+        function actualizarTextosPorTipo(tipo) {
+            const esIngreso = tipo === 'INGRESO';
+            const esSalida = tipo === 'SALIDA';
+
+            if (!esIngreso && !esSalida) return;
+
+            const verbos = {
+                materiales: esIngreso ? 'Trae' : 'Lleva',
+                precintos: esIngreso ? 'Viene con' : 'Va con',
+                guia: esIngreso ? 'Viene con' : 'Va con',
+                acompanantes: esIngreso ? 'Viene con' : 'Va con'
+            };
+
+            document.getElementById('lblMateriales').textContent = `¿${verbos.materiales} Materiales?`;
+            document.getElementById('lblPrecintos').textContent = `¿${verbos.precintos} Precintos?`;
+            document.getElementById('lblGuia').textContent = `¿${verbos.guia} Guía?`;
+            document.getElementById('lblAcompanantes').textContent = `¿${verbos.acompanantes} Acompañantes?`;
+
+            // Actualizar labels de los radio buttons también
+            const matLabels = document.querySelectorAll('input[name="materiales"] + label');
+            const precLabels = document.querySelectorAll('input[name="precintos"] + label');
+            const guiaLabels = document.querySelectorAll('input[name="guia"] + label');
+            const acompLabels = document.querySelectorAll('input[name="acompanantes"] + label');
+
+            // Procedencia/Destino
+            document.getElementById('lblProcedenciaDestino').textContent = esIngreso ? 'Procedencia' : 'Destino';
+        }
+
+        // ==================== EVENTOS ====================
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initDB();
+
+            // Fecha y hora actual
+            const now = new Date();
+            document.getElementById('fecha').value = now.toISOString().split('T')[0];
+            document.getElementById('hora').value = now.toTimeString().slice(0, 5);
+
+            // Mayúsculas automáticas
+            document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+                el.addEventListener('input', toUpperInput);
+            });
+
+            // Formato placa
+            document.getElementById('placa').addEventListener('input', formatearPlaca);
+
+            // Previews de fotos
+            previewFile('fotoPrecinto1', 'previewPrecinto1', 'lblPrecinto1');
+            previewFile('fotoPrecinto2', 'previewPrecinto2', 'lblPrecinto2');
+            previewFileGuia();
+
+            // Lógica condicional - Tipo
+            document.querySelectorAll('input[name="tipo"]').forEach(r => {
+                r.addEventListener('change', (e) => {
+                    actualizarTextosPorTipo(e.target.value);
+                });
+            });
+
+            // Lógica condicional - Materiales
+            document.querySelectorAll('input[name="materiales"]').forEach(r => {
+                r.addEventListener('change', (e) => {
+                    const mostrar = e.target.value === 'SI';
+                    document.getElementById('materialesBox').classList.toggle('hidden', !mostrar);
+                    if (!mostrar) {
+                        document.getElementById('precintosBox').classList.add('hidden');
+                        document.getElementById('guiaBox').classList.add('hidden');
+                        document.getElementById('precNo').checked = true;
+                        document.getElementById('guiaNo').checked = true;
+                        document.getElementById('descMateriales').value = '';
+                    }
+                });
+            });
+
+            // Lógica condicional - Precintos
+            document.querySelectorAll('input[name="precintos"]').forEach(r => {
+                r.addEventListener('change', (e) => {
+                    document.getElementById('precintosBox').classList.toggle('hidden', e.target.value !== 'SI');
+                });
+            });
+
+            // Lógica condicional - Guía
+            document.querySelectorAll('input[name="guia"]').forEach(r => {
+                r.addEventListener('change', (e) => {
+                    document.getElementById('guiaBox').classList.toggle('hidden', e.target.value !== 'SI');
+                });
+            });
+
+            // Lógica condicional - Acompañantes
+            document.querySelectorAll('input[name="acompanantes"]').forEach(r => {
+                r.addEventListener('change', (e) => {
+                    document.getElementById('acompanantesBox').classList.toggle('hidden', e.target.value !== 'SI');
+                });
+            });
+
+            // Form submit
+            document.getElementById('registroForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await procesarFormulario();
+            });
+
+            // Cancelar edición
+            document.getElementById('btnCancelar').addEventListener('click', limpiarFormulario);
+
+            // Cargar registros
+            await cargarRegistros();
             actualizarStats();
 
-            // Service Worker para PWA
+            // Service Worker
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
-                    self.addEventListener('install', e => self.skipWaiting());
-                    self.addEventListener('activate', e => e.waitUntil(clients.claim()));
-                    self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => new Response('Offline'))));
-                `)).catch(() => {});
+                navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`self.addEventListener('install', e=>self.skipWaiting());self.addEventListener('activate', e=>e.waitUntil(clients.claim()));self.addEventListener('fetch', e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));`));
             }
         });
 
-        // ==================== NAVEGACIÓN ====================
-        function showTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.closest('.tab').classList.add('active');
-            document.getElementById('tab-registro').classList.add('hidden');
-            document.getElementById('tab-lista').classList.add('hidden');
-            document.getElementById('tab-reportes').classList.add('hidden');
-            document.getElementById('tab-' + tab).classList.remove('hidden');
-            if (tab === 'lista') { renderizarTabla(); actualizarStats(); }
-            if (tab === 'reportes') { generarResumenDia(); }
-        }
-
-        // ==================== FORMATEO DE PLACA ====================
-        function formatearPlaca(input) {
-            let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-            if (val.length > 3) {
-                val = val.slice(0, 3) + '-' + val.slice(3, 7);
-            }
-            input.value = val;
-        }
-
-        // ==================== ACTUALIZAR DESTINO/PROCEDENCIA ====================
-        function actualizarDestino() {
-            const tipo = document.querySelector('input[name="tipo"]:checked').value;
-            const label = document.getElementById('labelDestino');
-            const input = document.getElementById('destino');
-            if (tipo === 'INGRESO') {
-                label.textContent = 'Procedencia *';
-                input.placeholder = 'LUGAR DE PROCEDENCIA';
-            } else {
-                label.textContent = 'Destino *';
-                input.placeholder = 'LUGAR DE DESTINO';
-            }
-        }
-
-        // ==================== MATERIALES ====================
-        function toggleMateriales(mostrar) {
-            const seccion = document.getElementById('seccionMateriales');
-            const seccionPrecintos = document.getElementById('seccionPrecintos');
-            const seccionLista = document.getElementById('seccionListaMateriales');
-            const lista = document.getElementById('listaMateriales');
-
-            if (mostrar) {
-                seccion.classList.remove('hidden');
-                // Mostrar lista de materiales por defecto
-                seccionLista.classList.remove('hidden');
-                // Verificar estado de precintos
-                const precintosVal = document.querySelector('input[name="precintos"]:checked')?.value || 'NO';
-                if (precintosVal === 'SI') {
-                    seccionPrecintos.classList.remove('hidden');
-                } else {
-                    seccionPrecintos.classList.add('hidden');
-                }
-                // Agregar primer material si la lista está vacía
-                if (lista.children.length === 0) {
-                    agregarMaterial();
-                }
-            } else {
-                seccion.classList.add('hidden');
-                seccionPrecintos.classList.add('hidden');
-                seccionLista.classList.add('hidden');
-                lista.innerHTML = '';
-                document.getElementById('numPrecintos').value = '';
-                document.getElementById('precNo').checked = true;
-            }
-        }
-
-        function togglePrecintos(mostrar) {
-            const seccionPrec = document.getElementById('seccionPrecintos');
-            const seccionLista = document.getElementById('seccionListaMateriales');
-            const lista = document.getElementById('listaMateriales');
-            if (mostrar) {
-                seccionPrec.classList.remove('hidden');
-                seccionLista.classList.remove('hidden');
-            } else {
-                seccionPrec.classList.add('hidden');
-                seccionLista.classList.remove('hidden');
-            }
-            if (lista.children.length === 0) {
-                agregarMaterial();
-            }
-        }
-
-        function agregarMaterial() {
-            const div = document.createElement('div');
-            div.className = 'dynamic-item';
-            div.innerHTML = `
-                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 2fr; gap: 10px;">
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label style="font-size:0.75rem;">N° Guía</label>
-                        <input type="number" class="mat-guia" placeholder="N° GUÍA" min="0">
-                    </div>
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label style="font-size:0.75rem;">N° Precintos</label>
-                        <input type="number" class="mat-precinto" placeholder="N° PRECINTOS" min="0">
-                    </div>
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label style="font-size:0.75rem;">Descripción del Material</label>
-                        <input type="text" class="mat-detalle" placeholder="DESCRIPCIÓN DEL MATERIAL" oninput="this.value = this.value.toUpperCase()">
-                    </div>
-                </div>
-            `;
-            document.getElementById('listaMateriales').appendChild(div);
-        }
-
-        // ==================== ACOMPAÑANTES ====================
-        function toggleAcompanantes(mostrar) {
-            const seccion = document.getElementById('seccionAcompanantes');
-            const lista = document.getElementById('listaAcompanantes');
-            if (mostrar) {
-                seccion.classList.remove('hidden');
-                if (lista.children.length === 0) {
-                    agregarAcompanante();
-                }
-            } else {
-                seccion.classList.add('hidden');
-                lista.innerHTML = '';
-            }
-        }
-
-        function agregarAcompanante() {
-            const div = document.createElement('div');
-            div.className = 'dynamic-item';
-            div.innerHTML = `
-                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>
-                <div class="form-group" style="margin-bottom:0;">
-                    <label style="font-size:0.75rem;">Nombre Completo</label>
-                    <input type="text" class="acomp-nombre" placeholder="NOMBRE DEL ACOMPAÑANTE" oninput="this.value = this.value.toUpperCase()">
-                </div>
-            `;
-            document.getElementById('listaAcompanantes').appendChild(div);
-        }
-
-        // ==================== GUARDAR REGISTRO ====================
-        function guardarRegistro(e) {
-            e.preventDefault();
-
+        // ==================== FORMULARIO ====================
+        async function procesarFormulario() {
             const editId = document.getElementById('editId').value;
+            const tipo = document.querySelector('input[name="tipo"]:checked')?.value || '';
+            const materiales = document.querySelector('input[name="materiales"]:checked')?.value || 'NO';
 
-            // Recolectar precintos
-            const traePrecintos = document.querySelector('input[name="precintos"]:checked')?.value || 'NO';
-            const numPrecintos = document.getElementById('numPrecintos')?.value || '';
+            // Validación: si hay materiales pero no precintos ni guía, la descripción es obligatoria
+            if (materiales === 'SI') {
+                const precintos = document.querySelector('input[name="precintos"]:checked')?.value || 'NO';
+                const guia = document.querySelector('input[name="guia"]:checked')?.value || 'NO';
+                const descMateriales = document.getElementById('descMateriales').value.trim();
 
-            // Recolectar materiales
-            const materiales = [];
-            document.querySelectorAll('#listaMateriales .dynamic-item').forEach(item => {
-                const guia = item.querySelector('.mat-guia').value.trim();
-                const precinto = item.querySelector('.mat-precinto').value.trim();
-                const detalle = item.querySelector('.mat-detalle').value.trim();
-                if (guia || precinto || detalle) {
-                    materiales.push({ guia, precinto, detalle });
+                if (precintos === 'NO' && guia === 'NO' && !descMateriales) {
+                    mostrarToast('❌ Debe describir los materiales cuando no hay precintos ni guía');
+                    document.getElementById('descMateriales').focus();
+                    return;
                 }
-            });
+            }
 
-            // Recolectar acompañantes
-            const acompanantes = [];
-            document.querySelectorAll('#listaAcompanantes .dynamic-item').forEach(item => {
-                const nombre = item.querySelector('.acomp-nombre').value.trim();
-                if (nombre) acompanantes.push(nombre);
-            });
-
-            const registro = {
-                id: editId || Date.now().toString(),
+            const data = {
                 fecha: document.getElementById('fecha').value,
                 hora: document.getElementById('hora').value,
-                tipo: document.querySelector('input[name="tipo"]:checked').value,
-                placa: document.getElementById('placa').value.toUpperCase(),
-                conductor: document.getElementById('conductor').value.toUpperCase(),
-                destino: document.getElementById('destino').value.toUpperCase(),
-                empresa: document.getElementById('empresa').value.toUpperCase(),
-                traeMateriales: document.querySelector('input[name="materiales"]:checked').value,
-                traePrecintos: traePrecintos,
-                numPrecintos: numPrecintos,
+                tipo: tipo,
+                placa: document.getElementById('placa').value,
+                conductor: document.getElementById('conductor').value,
+                empresa: document.getElementById('empresa').value,
+                procedenciaDestino: document.getElementById('procedenciaDestino').value,
                 materiales: materiales,
-                tieneAcompanantes: document.querySelector('input[name="acompanantes"]:checked').value,
-                acompanantes: acompanantes,
-                observaciones: document.getElementById('observaciones').value.toUpperCase(),
+                descMateriales: document.getElementById('descMateriales').value,
+                precintos: document.querySelector('input[name="precintos"]:checked')?.value || 'NO',
+                fotoPrecinto1: await leerImagen(document.getElementById('fotoPrecinto1').files[0]),
+                fotoPrecinto2: await leerImagen(document.getElementById('fotoPrecinto2').files[0]),
+                guia: document.querySelector('input[name="guia"]:checked')?.value || 'NO',
+                fotoGuia: await leerImagen(document.getElementById('fotoGuia').files[0]),
+                acompanantes: document.querySelector('input[name="acompanantes"]:checked')?.value || 'NO',
+                personasAcompanantes: document.getElementById('personasAcompanantes').value,
+                observaciones: document.getElementById('observaciones').value,
                 timestamp: new Date().toISOString()
             };
 
             if (editId) {
-                const idx = registros.findIndex(r => r.id === editId);
-                if (idx !== -1) registros[idx] = registro;
-                mostrarToast('✅ Registro actualizado correctamente');
-            } else {
-                registros.unshift(registro);
-                mostrarToast('✅ Registro guardado correctamente');
+                data.id = parseInt(editId);
+                // Mantener fotos existentes si no se seleccionaron nuevas
+                const existente = await obtenerRegistro(data.id);
+                if (!data.fotoPrecinto1 && existente.fotoPrecinto1) data.fotoPrecinto1 = existente.fotoPrecinto1;
+                if (!data.fotoPrecinto2 && existente.fotoPrecinto2) data.fotoPrecinto2 = existente.fotoPrecinto2;
+                if (!data.fotoGuia && existente.fotoGuia) data.fotoGuia = existente.fotoGuia;
             }
 
-            localStorage.setItem('registrosVehiculares', JSON.stringify(registros));
+            await guardarRegistro(data);
+            mostrarToast(editId ? '✅ Registro actualizado correctamente' : '✅ Registro guardado correctamente');
             limpiarFormulario();
+            await cargarRegistros();
+            actualizarStats();
         }
 
         function limpiarFormulario() {
-            document.getElementById('formRegistro').reset();
+            document.getElementById('registroForm').reset();
             document.getElementById('editId').value = '';
-            document.getElementById('btnTexto').textContent = 'GUARDAR REGISTRO';
-            document.getElementById('listaMateriales').innerHTML = '';
-            document.getElementById('listaAcompanantes').innerHTML = '';
-            document.getElementById('seccionMateriales').classList.add('hidden');
-            document.getElementById('seccionPrecintos').classList.add('hidden');
-            document.getElementById('seccionListaMateriales').classList.add('hidden');
-            document.getElementById('seccionAcompanantes').classList.add('hidden');
-            document.getElementById('numPrecintos').value = '';
-            const hoy = new Date();
-            document.getElementById('fecha').value = hoy.toISOString().split('T')[0];
-            document.getElementById('hora').value = hoy.toTimeString().slice(0,5);
-            actualizarDestino();
+            document.getElementById('btnGuardar').innerHTML = '<span>💾</span> GUARDAR REGISTRO';
+            document.getElementById('btnCancelar').style.display = 'none';
+
+            const now = new Date();
+            document.getElementById('fecha').value = now.toISOString().split('T')[0];
+            document.getElementById('hora').value = now.toTimeString().slice(0, 5);
+
+            document.getElementById('materialesBox').classList.add('hidden');
+            document.getElementById('precintosBox').classList.add('hidden');
+            document.getElementById('guiaBox').classList.add('hidden');
+            document.getElementById('acompanantesBox').classList.add('hidden');
+
+            ['previewPrecinto1', 'previewPrecinto2', 'previewGuia'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+                document.getElementById(id).src = '';
+            });
+            ['lblPrecinto1', 'lblPrecinto2', 'lblGuiaFoto'].forEach(id => {
+                document.getElementById(id).classList.remove('has-file');
+                document.getElementById(id).innerHTML = '<span class="camera-icon">📷</span>TOMAR FOTO';
+            });
+
+            document.getElementById('lblProcedenciaDestino').textContent = 'Procedencia / Destino';
+            document.getElementById('lblMateriales').textContent = '¿Trae Materiales?';
+            document.getElementById('lblPrecintos').textContent = '¿Viene con Precintos?';
+            document.getElementById('lblGuia').textContent = '¿Viene con Guía?';
+            document.getElementById('lblAcompanantes').textContent = '¿Viene con Acompañantes?';
         }
 
-        // ==================== RENDERIZAR TABLA ====================
-        function renderizarTabla(data = null) {
-            const registrosMostrar = data || registros;
-            const container = document.getElementById('tablaRegistros');
+        // ==================== TABLA ====================
+        async function cargarRegistros() {
+            const registros = await obtenerRegistros();
+            renderizarTabla(registros);
+        }
 
-            if (registrosMostrar.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-                        <p>No hay registros disponibles</p>
-                    </div>`;
+        function renderizarTabla(registros) {
+            const tbody = document.getElementById('tbodyRegistros');
+            if (registros.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="15" class="empty-state">No hay registros guardados</td></tr>';
                 return;
             }
 
-            let html = '<div class="table-container"><table><thead><tr>';
-            html += '<th>Fecha/Hora</th><th>Tipo</th><th>Placa</th><th>Conductor</th><th>Proc/Dest</th><th>Empresa</th><th>Mat.</th><th>Acomp.</th><th>Acciones</th>';
-            html += '</tr></thead><tbody>';
+            tbody.innerHTML = registros.map((r, i) => {
+                const fotos = [];
+                if (r.fotoPrecinto1) fotos.push({src: r.fotoPrecinto1, label: 'P1'});
+                if (r.fotoPrecinto2) fotos.push({src: r.fotoPrecinto2, label: 'P2'});
+                if (r.fotoGuia) {
+                    const isPdf = r.fotoGuia.includes('data:application/pdf') || r.fotoGuia.includes('pdf');
+                    fotos.push({src: r.fotoGuia, label: isPdf ? 'PDF' : 'G'});
+                }
 
-            registrosMostrar.forEach(r => {
-                const badgeTipo = r.tipo === 'INGRESO' ? 'badge-ingreso' : 'badge-salida';
-                const badgeEstado = 'badge-empresa';
-                const badgeMat = r.traeMateriales === 'SI' ? 'badge-si' : 'badge-no';
-                const badgeAcomp = r.tieneAcompanantes === 'SI' ? 'badge-si' : 'badge-no';
+                const fotosHtml = fotos.length > 0 
+                    ? fotos.map(f => {
+                        const isPdf = f.label === 'PDF';
+                        if (isPdf) {
+                            return `<span style="display:inline-block;padding:4px 8px;background:#c62828;color:white;border-radius:4px;font-size:0.7rem;font-weight:bold;cursor:pointer;" onclick="verImagen('${f.src}')" title="PDF">PDF</span>`;
+                        }
+                        return `<img src="${f.src}" class="img-thumb" onclick="verImagen('${f.src}')" title="${f.label}">`;
+                    }).join(' ')
+                    : '<span style="color:#999">-</span>';
 
-                html += `<tr>
-                    <td><strong>${r.fecha}</strong><br><small>${r.hora}</small></td>
-                    <td><span class="badge ${badgeTipo}">${r.tipo}</span></td>
-                    <td><strong>${r.placa}</strong></td>
-                    <td>${r.conductor}</td>
-                    <td>${r.destino}</td>
-                    <td><span class="badge ${badgeEstado}">${r.empresa || 'N/A'}</span></td>
-                    <td><span class="badge ${badgeMat}">${r.traeMateriales}</span>${r.traeMateriales === 'SI' && r.traePrecintos === 'SI' ? '<br><small>Precintos: ' + (r.numPrecintos || 'N/A') + '</small>' : ''}</td>
-                    <td><span class="badge ${badgeAcomp}">${r.tieneAcompanantes}</span></td>
-                    <td>
-                        <div class="action-btns">
-                            <button class="btn-edit" onclick="editarRegistro('${r.id}')">✏️</button>
-                            <button class="btn-delete" onclick="eliminarRegistro('${r.id}')">🗑️</button>
-                        </div>
-                    </td>
-                </tr>`;
-            });
+                const badgeClass = r.tipo === 'INGRESO' ? 'badge-ingreso' : 'badge-salida';
+                const descMat = r.descMateriales ? r.descMateriales.substring(0, 25) + (r.descMateriales.length > 25 ? '...' : '') : '-';
 
-            html += '</tbody></table></div>';
-            container.innerHTML = html;
+                return `
+                    <tr>
+                        <td>${registros.length - i}</td>
+                        <td>${r.fecha}</td>
+                        <td>${r.hora}</td>
+                        <td><span class="badge ${badgeClass}">${r.tipo}</span></td>
+                        <td><strong>${r.placa}</strong></td>
+                        <td>${r.conductor}</td>
+                        <td>${r.empresa}</td>
+                        <td>${r.procedenciaDestino}</td>
+                        <td>${r.materiales}</td>
+                        <td title="${r.descMateriales || ''}">${descMat}</td>
+                        <td>${r.precintos}</td>
+                        <td>${r.guia}</td>
+                        <td>${r.acompanantes}</td>
+                        <td>${fotosHtml}</td>
+                        <td>
+                            <button class="btn" style="padding:6px 12px;font-size:0.8rem;background:var(--primary);color:white;" onclick="solicitarEditar(${r.id})">✏️</button>
+                            <button class="btn" style="padding:6px 12px;font-size:0.8rem;background:var(--danger);color:white;" onclick="solicitarEliminar(${r.id})">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function verImagen(src) {
+            document.getElementById('imgViewerSrc').src = src;
+            document.getElementById('imgViewer').classList.add('active');
         }
 
         // ==================== FILTROS ====================
-        function filtrarRegistros() {
-            const placa = document.getElementById('filtroPlaca').value.toUpperCase();
-            const conductor = document.getElementById('filtroConductor').value.toUpperCase();
-            const fecha = document.getElementById('filtroFecha').value;
+        async function filtrarRegistros() {
+            const placa = document.getElementById('searchPlaca').value.toUpperCase();
+            const conductor = document.getElementById('searchConductor').value.toUpperCase();
+            const fecha = document.getElementById('searchFecha').value;
 
-            const filtrados = registros.filter(r => {
-                const matchPlaca = !placa || r.placa.includes(placa);
-                const matchConductor = !conductor || r.conductor.includes(conductor);
-                const matchFecha = !fecha || r.fecha === fecha;
-                return matchPlaca && matchConductor && matchFecha;
-            });
+            let registros = await obtenerRegistros();
 
-            renderizarTabla(filtrados);
+            if (placa) registros = registros.filter(r => r.placa.includes(placa));
+            if (conductor) registros = registros.filter(r => r.conductor.includes(conductor));
+            if (fecha) registros = registros.filter(r => r.fecha === fecha);
+
+            renderizarTabla(registros);
         }
 
         function limpiarFiltros() {
-            document.getElementById('filtroPlaca').value = '';
-            document.getElementById('filtroConductor').value = '';
-            document.getElementById('filtroFecha').value = '';
-            renderizarTabla();
+            document.getElementById('searchPlaca').value = '';
+            document.getElementById('searchConductor').value = '';
+            document.getElementById('searchFecha').value = '';
+            cargarRegistros();
         }
 
-        // ==================== ESTADÍSTICAS ====================
-        function actualizarStats() {
-            document.getElementById('statTotal').textContent = registros.length;
-            document.getElementById('statIngresos').textContent = registros.filter(r => r.tipo === 'INGRESO').length;
-            document.getElementById('statSalidas').textContent = registros.filter(r => r.tipo === 'SALIDA').length;
-            document.getElementById('statEmpresas').textContent = registros.filter(r => r.empresa).length;
+        // ==================== EDICIÓN / ELIMINACIÓN ====================
+        function solicitarEditar(id) {
+            pendingAction = 'editar';
+            pendingId = id;
+            document.getElementById('modalClave').classList.add('active');
+            document.getElementById('inputClave').value = '';
+            document.getElementById('inputClave').focus();
         }
 
-        // ==================== EDITAR / ELIMINAR ====================
-        function editarRegistro(id) {
-            solicitarPIN(() => {
-                const r = registros.find(x => x.id === id);
-                if (!r) return;
-
-                document.getElementById('editId').value = r.id;
-                document.getElementById('fecha').value = r.fecha;
-                document.getElementById('hora').value = r.hora;
-                document.querySelector(`input[name="tipo"][value="${r.tipo}"]`).checked = true;
-                document.getElementById('placa').value = r.placa;
-                document.getElementById('conductor').value = r.conductor;
-                document.getElementById('destino').value = r.destino;
-                document.getElementById('empresa').value = r.empresa || '';
-
-                // Materiales
-                document.querySelector(`input[name="materiales"][value="${r.traeMateriales}"]`).checked = true;
-                toggleMateriales(r.traeMateriales === 'SI');
-                if (r.traeMateriales === 'SI') {
-                    document.querySelector(`input[name="precintos"][value="${r.traePrecintos || 'NO'}"]`).checked = true;
-                    togglePrecintos(r.traePrecintos === 'SI');
-                    document.getElementById('numPrecintos').value = r.numPrecintos || '';
-                    document.getElementById('listaMateriales').innerHTML = '';
-                    r.materiales.forEach(m => {
-                        agregarMaterial();
-                        const items = document.querySelectorAll('#listaMateriales .dynamic-item');
-                        const last = items[items.length - 1];
-                        last.querySelector('.mat-guia').value = m.guia || '';
-                        last.querySelector('.mat-precinto').value = m.precinto || '';
-                        last.querySelector('.mat-detalle').value = m.detalle || '';
-                    });
-                }
-
-                // Acompañantes
-                document.querySelector(`input[name="acompanantes"][value="${r.tieneAcompanantes}"]`).checked = true;
-                toggleAcompanantes(r.tieneAcompanantes === 'SI');
-                document.getElementById('listaAcompanantes').innerHTML = '';
-                r.acompanantes.forEach(nombre => {
-                    agregarAcompanante();
-                    const items = document.querySelectorAll('#listaAcompanantes .dynamic-item');
-                    items[items.length - 1].querySelector('.acomp-nombre').value = nombre;
-                });
-
-                document.getElementById('observaciones').value = r.observaciones;
-                document.getElementById('btnTexto').textContent = 'ACTUALIZAR REGISTRO';
-                actualizarDestino();
-                showTab('registro');
-                document.querySelector('.tab').click();
-            });
+        function solicitarEliminar(id) {
+            pendingAction = 'eliminar';
+            pendingId = id;
+            document.getElementById('modalClave').classList.add('active');
+            document.getElementById('inputClave').value = '';
+            document.getElementById('inputClave').focus();
         }
 
-        function eliminarRegistro(id) {
-            solicitarPIN(() => {
-                if (confirm('¿Está seguro de eliminar este registro?')) {
-                    registros = registros.filter(r => r.id !== id);
-                    localStorage.setItem('registrosVehiculares', JSON.stringify(registros));
-                    renderizarTabla();
-                    actualizarStats();
-                    mostrarToast('🗑️ Registro eliminado');
-                }
-            });
+        function cerrarModal() {
+            document.getElementById('modalClave').classList.remove('active');
+            pendingAction = null;
+            pendingId = null;
         }
 
-        // ==================== PIN / SEGURIDAD ====================
-        function solicitarPIN(callback) {
-            pinCallback = callback;
-            document.getElementById('modalPIN').classList.remove('hidden');
-            document.querySelectorAll('.pin-digit').forEach(i => i.value = '');
-            document.querySelectorAll('.pin-digit')[0].focus();
-        }
-
-        function cerrarModalPIN() {
-            document.getElementById('modalPIN').classList.add('hidden');
-            pinCallback = null;
-        }
-
-        function moverPIN(input, index) {
-            if (input.value && index < 3) {
-                document.querySelectorAll('.pin-digit')[index + 1].focus();
-            }
-        }
-
-        function moverPINBack(e, index) {
-            if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                document.querySelectorAll('.pin-digit')[index - 1].focus();
-            }
-        }
-
-        function verificarPIN() {
-            const pin = Array.from(document.querySelectorAll('.pin-digit')).map(i => i.value).join('');
-            if (pin === CLAVE_ADMIN) {
-                cerrarModalPIN();
-                if (pinCallback) pinCallback();
-            } else {
+        async function verificarClave() {
+            const clave = document.getElementById('inputClave').value;
+            if (clave !== '0000') {
                 mostrarToast('❌ Clave incorrecta');
-                document.querySelectorAll('.pin-digit').forEach(i => i.value = '');
-                document.querySelectorAll('.pin-digit')[0].focus();
-            }
-        }
-
-        // ==================== TOAST ====================
-        function mostrarToast(msg) {
-            const existing = document.querySelector('.toast');
-            if (existing) existing.remove();
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = msg;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        // ==================== PDF ====================
-        function generarPDF() {
-            const filtrados = obtenerFiltrados();
-            if (filtrados.length === 0) { mostrarToast('❌ No hay registros para exportar'); return; }
-
-            let html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
-            <title>Reporte Vehicular</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 30px; color: #333; }
-                .header { text-align: center; border-bottom: 3px solid #1a237e; padding-bottom: 15px; margin-bottom: 20px; }
-                .header h1 { color: #1a237e; margin: 0; font-size: 22px; }
-                .header p { color: #666; margin: 5px 0 0; font-size: 12px; }
-                table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 10px; }
-                th { background: #1a237e; color: white; padding: 8px; text-align: left; }
-                td { padding: 6px 8px; border-bottom: 1px solid #ddd; vertical-align: top; }
-                tr:nth-child(even) { background: #f5f5f5; }
-                .badge { padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: bold; }
-                .ingreso { background: #e8f5e9; color: #2e7d32; }
-                .salida { background: #ffebee; color: #c62828; }
-                .footer { margin-top: 30px; text-align: center; font-size: 10px; color: #999; border-top: 1px solid #ddd; padding-top: 15px; }
-                .section-title { font-weight: bold; color: #1a237e; margin-top: 8px; font-size: 9px; }
-                .detail { margin-left: 10px; font-size: 9px; color: #555; }
-            </style></head><body>
-            <div class="header">
-                <h1>🚗 REPORTE DE REGISTRO VEHICULAR</h1>
-                <p>Generado: ${new Date().toLocaleString('es-ES')} | Total registros: ${filtrados.length}</p>
-            </div>
-            <table>
-            <thead><tr>
-                <th>#</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Placa</th><th>Conductor</th><th>Proc/Dest</th><th>Empresa</th><th>Mat.</th><th>Acomp.</th><th>Observaciones</th>
-            </tr></thead><tbody>`;
-
-            filtrados.forEach((r, i) => {
-                const matDetalle = r.materiales.map(m => `Guía: ${m.guia || '-'}, Precinto: ${m.precinto || '-'}, ${m.detalle || '-'}`).join('; ') || 'N/A';
-                const precintoInfo = r.traePrecintos === 'SI' ? ` (Precintos: ${r.numPrecintos || 'N/A'})` : '';
-                const acompDetalle = r.acompanantes.join(', ') || 'N/A';
-                html += `<tr>
-                    <td>${i+1}</td>
-                    <td>${r.fecha}</td>
-                    <td>${r.hora}</td>
-                    <td><span class="badge ${r.tipo === 'INGRESO' ? 'ingreso' : 'salida'}">${r.tipo}</span></td>
-                    <td><strong>${r.placa}</strong></td>
-                    <td>${r.conductor}</td>
-                    <td>${r.destino}</td>
-                    <td>${r.empresa || 'N/A'}</td>
-                    <td>${r.traeMateriales}<br><span class="detail">${matDetalle}</span></td>
-                    <td>${r.tieneAcompanantes}<br><span class="detail">${acompDetalle}</span></td>
-                    <td>${r.observaciones || '-'}</td>
-                </tr>`;
-            });
-
-            html += `</tbody></table>
-            <div class="footer">
-                <strong>Edward Quezada M.</strong> | Seguridad Patrimonial | v2.0.0<br>
-                Sistema de Control de Ingresos y Salidas Vehiculares
-            </div>
-            </body></html>`;
-
-            const ventana = window.open('', '_blank');
-            ventana.document.write(html);
-            ventana.document.close();
-            ventana.print();
-            mostrarToast('📄 Reporte PDF generado');
-        }
-
-        // ==================== EXCEL ====================
-        function generarExcel() {
-            const filtrados = obtenerFiltrados();
-            if (filtrados.length === 0) { mostrarToast('❌ No hay registros para exportar'); return; }
-
-            let csv = 'N°,FECHA,HORA,TIPO,PLACA,CONDUCTOR,PROCEDENCIA/DESTINO,EMPRESA,TRAE MATERIALES,GUIAS Y DETALLES,ACOMPAÑANTES,NOMBRES ACOMPAÑANTES,OBSERVACIONES\n';
-
-            filtrados.forEach((r, i) => {
-                const matDetalle = r.materiales.map(m => `Guía:${m.guia || '-'}, Prec:${m.precinto || '-'}, Desc:${m.detalle || '-'}`).join(' | ');
-                const acompDetalle = r.acompanantes.join(' | ');
-                csv += `${i+1},${r.fecha},${r.hora},${r.tipo},${r.placa},"${r.conductor}","${r.destino}",${r.empresa || 'N/A'},${r.traeMateriales},"${matDetalle}",${r.tieneAcompanantes},"${acompDetalle}","${r.observaciones || ''}"\n`;
-            });
-
-            const blob = new Blob([\ufeff + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `Registro_Vehicular_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-            mostrarToast('📊 Reporte Excel generado');
-        }
-
-        function obtenerFiltrados() {
-            const placa = document.getElementById('filtroPlaca').value.toUpperCase();
-            const conductor = document.getElementById('filtroConductor').value.toUpperCase();
-            const fecha = document.getElementById('filtroFecha').value;
-
-            if (!placa && !conductor && !fecha) return [...registros];
-
-            return registros.filter(r => {
-                const matchPlaca = !placa || r.placa.includes(placa);
-                const matchConductor = !conductor || r.conductor.includes(conductor);
-                const matchFecha = !fecha || r.fecha === fecha;
-                return matchPlaca && matchConductor && matchFecha;
-            });
-        }
-
-        // ==================== RESUMEN DEL DÍA ====================
-        function generarResumenDia() {
-            const hoy = new Date().toISOString().split('T')[0];
-            const delDia = registros.filter(r => r.fecha === hoy);
-
-            if (delDia.length === 0) {
-                document.getElementById('resumenDia').innerHTML = '<div class="empty-state"><p>No hay registros hoy</p></div>';
                 return;
             }
 
-            const ingresos = delDia.filter(r => r.tipo === 'INGRESO').length;
-            const salidas = delDia.filter(r => r.tipo === 'SALIDA').length;
-            const empresas = delDia.filter(r => r.empresa).length;
-            const conMat = delDia.filter(r => r.traeMateriales === 'SI').length;
-            const conAcomp = delDia.filter(r => r.tieneAcompanantes === 'SI').length;
+            cerrarModal();
 
-            document.getElementById('resumenDia').innerHTML = `
-                <div class="stats-grid">
-                    <div class="stat-card"><div class="number">${delDia.length}</div><div class="label">Total Hoy</div></div>
-                    <div class="stat-card" style="border-left-color: var(--success);"><div class="number">${ingresos}</div><div class="label">Ingresos</div></div>
-                    <div class="stat-card" style="border-left-color: var(--danger);"><div class="number">${salidas}</div><div class="label">Salidas</div></div>
-                    <div class="stat-card" style="border-left-color: var(--warning);"><div class="number">${empresas}</div><div class="label">Con Empresa</div></div>
-                    <div class="stat-card" style="border-left-color: var(--accent);"><div class="number">${conMat}</div><div class="label">Con Materiales</div></div>
-                    <div class="stat-card" style="border-left-color: #8e24aa;"><div class="number">${conAcomp}</div><div class="label">Con Acompañantes</div></div>
-                </div>
-            `;
+            if (pendingAction === 'editar') {
+                await editarRegistro(pendingId);
+            } else if (pendingAction === 'eliminar') {
+                await confirmarEliminar(pendingId);
+            }
+        }
+
+        document.getElementById('inputClave').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') verificarClave();
+        });
+
+        async function editarRegistro(id) {
+            const r = await obtenerRegistro(id);
+            if (!r) return;
+
+            document.getElementById('editId').value = r.id;
+            document.getElementById('fecha').value = r.fecha;
+            document.getElementById('hora').value = r.hora;
+            document.getElementById('placa').value = r.placa;
+            document.getElementById('conductor').value = r.conductor;
+            document.getElementById('empresa').value = r.empresa;
+            document.getElementById('procedenciaDestino').value = r.procedenciaDestino;
+            document.getElementById('observaciones').value = r.observaciones || '';
+            document.getElementById('personasAcompanantes').value = r.personasAcompanantes || '';
+            document.getElementById('descMateriales').value = r.descMateriales || '';
+
+            // Actualizar textos según tipo
+            actualizarTextosPorTipo(r.tipo);
+
+            // Tipo
+            if (r.tipo === 'INGRESO') document.getElementById('tipoIngreso').checked = true;
+            else document.getElementById('tipoSalida').checked = true;
+
+            // Materiales
+            if (r.materiales === 'SI') {
+                document.getElementById('matSi').checked = true;
+                document.getElementById('materialesBox').classList.remove('hidden');
+            } else {
+                document.getElementById('matNo').checked = true;
+                document.getElementById('materialesBox').classList.add('hidden');
+            }
+
+            // Precintos
+            if (r.precintos === 'SI') {
+                document.getElementById('precSi').checked = true;
+                document.getElementById('precintosBox').classList.remove('hidden');
+            } else {
+                document.getElementById('precNo').checked = true;
+                document.getElementById('precintosBox').classList.add('hidden');
+            }
+
+            if (r.fotoPrecinto1) {
+                document.getElementById('previewPrecinto1').src = r.fotoPrecinto1;
+                document.getElementById('previewPrecinto1').classList.remove('hidden');
+                document.getElementById('lblPrecinto1').classList.add('has-file');
+                document.getElementById('lblPrecinto1').innerHTML = '<span class="camera-icon">✅</span>FOTO CARGADA';
+            }
+            if (r.fotoPrecinto2) {
+                document.getElementById('previewPrecinto2').src = r.fotoPrecinto2;
+                document.getElementById('previewPrecinto2').classList.remove('hidden');
+                document.getElementById('lblPrecinto2').classList.add('has-file');
+                document.getElementById('lblPrecinto2').innerHTML = '<span class="camera-icon">✅</span>FOTO CARGADA';
+            }
+
+            // Guía
+            if (r.guia === 'SI') {
+                document.getElementById('guiaSi').checked = true;
+                document.getElementById('guiaBox').classList.remove('hidden');
+            } else {
+                document.getElementById('guiaNo').checked = true;
+                document.getElementById('guiaBox').classList.add('hidden');
+            }
+            if (r.fotoGuia) {
+                document.getElementById('previewGuia').src = r.fotoGuia;
+                document.getElementById('previewGuia').classList.remove('hidden');
+                document.getElementById('lblGuiaFoto').classList.add('has-file');
+                document.getElementById('lblGuiaFoto').innerHTML = '<span class="camera-icon">✅</span>GUÍA ADJUNTADA';
+            }
+
+            // Acompañantes
+            if (r.acompanantes === 'SI') {
+                document.getElementById('acompSi').checked = true;
+                document.getElementById('acompanantesBox').classList.remove('hidden');
+            } else {
+                document.getElementById('acompNo').checked = true;
+                document.getElementById('acompanantesBox').classList.add('hidden');
+            }
+
+            document.getElementById('btnGuardar').innerHTML = '<span>💾</span> ACTUALIZAR REGISTRO';
+            document.getElementById('btnCancelar').style.display = 'inline-flex';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function confirmarEliminar(id) {
+            await eliminarRegistro(id);
+            mostrarToast('🗑️ Registro eliminado');
+            await cargarRegistros();
+            actualizarStats();
+        }
+
+        // ==================== ESTADÍSTICAS ====================
+        async function actualizarStats() {
+            const registros = await obtenerRegistros();
+            const hoy = new Date().toISOString().split('T')[0];
+
+            document.getElementById('statTotal').textContent = registros.length;
+            document.getElementById('statIngresos').textContent = registros.filter(r => r.fecha === hoy && r.tipo === 'INGRESO').length;
+            document.getElementById('statSalidas').textContent = registros.filter(r => r.fecha === hoy && r.tipo === 'SALIDA').length;
+        }
+
+        // ==================== EXPORTAR EXCEL ====================
+        async function exportarExcel() {
+            const registros = await obtenerRegistros();
+            if (registros.length === 0) {
+                mostrarToast('❌ No hay registros para exportar');
+                return;
+            }
+
+            const data = registros.map(r => ({
+                'FECHA': r.fecha,
+                'HORA': r.hora,
+                'TIPO': r.tipo,
+                'PLACA': r.placa,
+                'CONDUCTOR': r.conductor,
+                'EMPRESA': r.empresa,
+                'PROCEDENCIA/DESTINO': r.procedenciaDestino,
+                'MATERIALES': r.materiales,
+                'DESCRIPCION MATERIALES': r.descMateriales || '',
+                'PRECINTOS': r.precintos,
+                'GUÍA': r.guia,
+                'ACOMPAÑANTES': r.acompanantes,
+                'PERSONAS ACOMPAÑANTES': r.personasAcompanantes || '',
+                'OBSERVACIONES': r.observaciones || ''
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Registros');
+
+            const fecha = new Date().toISOString().split('T')[0];
+            XLSX.writeFile(wb, `Registro_Vehicular_${fecha}.xlsx`);
+            mostrarToast('📊 Excel descargado correctamente');
+        }
+
+        // ==================== EXPORTAR PDF ====================
+        async function exportarPDF() {
+            const registros = await obtenerRegistros();
+            if (registros.length === 0) {
+                mostrarToast('❌ No hay registros para exportar');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape' });
+
+            // Encabezado
+            doc.setFillColor(26, 35, 126);
+            doc.rect(0, 0, 297, 25, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(18);
+            doc.text('REGISTRO VEHICULAR - CONTROL DE ACCESO', 148, 15, { align: 'center' });
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, 14, 32);
+            doc.text('Desarrollado por Edward Quezada M.', 280, 32, { align: 'right' });
+
+            const data = registros.map(r => [
+                r.fecha, r.hora, r.tipo, r.placa, r.conductor, r.empresa,
+                r.procedenciaDestino, r.materiales, (r.descMateriales || '-').substring(0, 20),
+                r.precintos, r.guia, r.acompanantes,
+                (r.personasAcompanantes || '-').substring(0, 20),
+                (r.observaciones || '-').substring(0, 30)
+            ]);
+
+            doc.autoTable({
+                head: [['FECHA', 'HORA', 'TIPO', 'PLACA', 'CONDUCTOR', 'EMPRESA', 'PROC/DEST', 'MAT.', 'DESC.MAT.', 'PREC.', 'GUÍA', 'ACOMP.', 'PERSONAS', 'OBSERV.']],
+                body: data,
+                startY: 38,
+                styles: { fontSize: 7, cellPadding: 2 },
+                headStyles: { fillColor: [26, 35, 126], textColor: 255, fontStyle: 'bold' },
+                alternateRowStyles: { fillColor: [245, 245, 245] },
+                columnStyles: {
+                    0: { cellWidth: 18 },
+                    1: { cellWidth: 13 },
+                    2: { cellWidth: 16 },
+                    3: { cellWidth: 20 },
+                    4: { cellWidth: 28 },
+                    5: { cellWidth: 22 },
+                    6: { cellWidth: 22 },
+                    7: { cellWidth: 11 },
+                    8: { cellWidth: 24 },
+                    9: { cellWidth: 11 },
+                    10: { cellWidth: 11 },
+                    11: { cellWidth: 12 },
+                    12: { cellWidth: 26 },
+                    13: { cellWidth: 30 }
+                }
+            });
+
+            const fecha = new Date().toISOString().split('T')[0];
+            doc.save(`Registro_Vehicular_${fecha}.pdf`);
+            mostrarToast('📄 PDF descargado correctamente');
         }
     </script>
 </body>
