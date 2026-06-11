@@ -224,6 +224,70 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 </div>
 </div>
 
+
+<div class="modal-overlay" id="modalPDF">
+<div class="modal" style="max-width:500px;text-align:left;max-height:90vh;overflow-y:auto">
+<h3 style="text-align:center;margin-bottom:18px">📄 Exportar PDF — Filtros</h3>
+
+<div style="margin-bottom:14px">
+  <label style="font-weight:700;font-size:0.85rem;color:#444;display:block;margin-bottom:8px">📅 RANGO DE FECHAS</label>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div><label style="font-size:0.78rem;color:#666">Desde</label><input type="date" id="pdfFechaDesde" onchange="actualizarConteoPDF()" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:0.9rem"></div>
+    <div><label style="font-size:0.78rem;color:#666">Hasta</label><input type="date" id="pdfFechaHasta" onchange="actualizarConteoPDF()" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:0.9rem"></div>
+  </div>
+</div>
+
+<div style="margin-bottom:14px">
+  <label style="font-weight:700;font-size:0.85rem;color:#444;display:block;margin-bottom:8px">🔄 TIPO DE MOVIMIENTO</label>
+  <div style="display:flex;gap:8px">
+    <label style="flex:1;display:flex;align-items:center;gap:6px;padding:10px;border:2px solid #e0e0e0;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.9rem">
+      <input type="radio" name="pdfTipo" value="TODOS" checked onchange="actualizarConteoPDF()"> Todos
+    </label>
+    <label style="flex:1;display:flex;align-items:center;gap:6px;padding:10px;border:2px solid #e0e0e0;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.9rem">
+      <input type="radio" name="pdfTipo" value="INGRESO" onchange="actualizarConteoPDF()"> 📥 Ingresos
+    </label>
+    <label style="flex:1;display:flex;align-items:center;gap:6px;padding:10px;border:2px solid #e0e0e0;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.9rem">
+      <input type="radio" name="pdfTipo" value="SALIDA" onchange="actualizarConteoPDF()"> 📤 Salidas
+    </label>
+  </div>
+</div>
+
+<div style="margin-bottom:14px">
+  <label style="font-weight:700;font-size:0.85rem;color:#444;display:block;margin-bottom:8px">🔍 FILTROS ADICIONALES</label>
+  <input type="text" id="pdfFiltroConductor" placeholder="Conductor (dejar vacío = todos)" oninput="actualizarConteoPDF()" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:0.9rem;margin-bottom:8px">
+  <input type="text" id="pdfFiltroPlaca" placeholder="Placa (dejar vacío = todas)" oninput="actualizarConteoPDF()" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:0.9rem">
+</div>
+
+<div style="margin-bottom:18px">
+  <label style="font-weight:700;font-size:0.85rem;color:#444;display:block;margin-bottom:8px">📋 COLUMNAS A INCLUIR</label>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px" id="pdfColumnas">
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="fecha" checked> Fecha</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="hora" checked> Hora</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="tipo" checked> Tipo</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="placa" checked> Placa</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="placa2" checked> Segunda Placa</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="conductor" checked> Conductor</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="empresa" checked> Empresa</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="procedenciaDestino" checked> Proc/Destino</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="materiales"> Materiales</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="descMateriales"> Desc. Mat.</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="precintos"> Precintos</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="guia"> Guía</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="acompanantes"> Acompañantes</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="personasAcompanantes"> Personas Acomp.</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="observaciones" checked> Observaciones</label>
+  </div>
+</div>
+
+<div id="pdfConteo" style="text-align:center;padding:8px;background:#e8eaf6;border-radius:8px;font-weight:700;color:#1a237e;font-size:0.9rem;margin-bottom:14px">Calculando registros...</div>
+
+<div style="display:flex;gap:10px">
+  <button class="btn btn-primary" style="flex:1" onclick="generarPDFFiltrado()">📄 GENERAR PDF</button>
+  <button class="btn btn-danger" style="flex:1" onclick="cerrarModalPDF()">❌ CANCELAR</button>
+</div>
+</div>
+</div>
+
 <div class="img-viewer" id="imgViewer" onclick="this.classList.remove('active')"><span class="close-viewer">&times;</span><img id="imgViewerSrc" src="" alt="Vista previa"></div>
 <div class="toast" id="toast"></div>
 
@@ -824,47 +888,178 @@ async function exportarExcel() {
     if (regs.length === 0) { mostrarToast('❌ No hay registros'); return; }
     const data = regs.map(function(r) {
         return {
-            'FECHA': r.fecha, 'HORA': r.hora, 'TIPO': r.tipo, 'PLACA': r.placa,
-            'SEGUNDA PLACA': r.segundaPlaca === 'SI' ? r.placa2 : 'NO',
-            'CONDUCTOR': r.conductor, 'EMPRESA': r.empresa, 'PROCEDENCIA/DESTINO': r.procedenciaDestino,
-            'MATERIALES': r.materiales, 'DESCRIPCION MATERIALES': r.descMateriales || '',
-            'PRECINTOS': r.precintos, 'GUIA': r.guia, 'ACOMPANANTES': r.acompanantes,
-            'PERSONAS ACOMPANANTES': r.personasAcompanantes || '', 'OBSERVACIONES': r.observaciones || ''
+            'FECHA': r.fecha,
+            'HORA': r.hora,
+            'TIPO': r.tipo,
+            'PLACA': r.placa,
+            'SEGUNDA PLACA': r.segundaPlaca === 'SI' ? (r.placa2 || '') : 'NO',
+            'CONDUCTOR': r.conductor || '',
+            'EMPRESA': r.empresa || '',
+            'PROCEDENCIA/DESTINO': r.procedenciaDestino || '',
+            'MATERIALES': r.materiales || '',
+            'DESCRIPCION MATERIALES': r.descMateriales || '',
+            'PRECINTOS': r.precintos || '',
+            'GUIA': r.guia || '',
+            'ACOMPANANTES': r.acompanantes || '',
+            'PERSONAS ACOMPANANTES': r.personasAcompanantes || '',
+            'OBSERVACIONES': r.observaciones || ''
         };
     });
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Registros');
-    XLSX.writeFile(wb, 'Registro_Vehicular_' + new Date().toISOString().split('T')[0] + '.xlsx');
-    mostrarToast('📊 Excel descargado');
+    try {
+        const ws = XLSX.utils.json_to_sheet(data);
+        // Ajustar ancho de columnas
+        const colWidths = [10,8,10,12,12,28,22,22,12,28,10,8,12,30,35];
+        ws['!cols'] = colWidths.map(function(w){ return {wch: w}; });
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Registros');
+        // Generar como array buffer y descargar con Blob para evitar error de formato
+        const wbout = XLSX.write(wb, {bookType: 'xlsx', type: 'array'});
+        const blob = new Blob([wbout], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Registro_Vehicular_' + new Date().toISOString().split('T')[0] + '.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        mostrarToast('📊 Excel descargado (' + regs.length + ' registros)');
+    } catch(e) {
+        mostrarToast('❌ Error al generar Excel: ' + e.message);
+    }
 }
+
+// Mapeo columna → etiqueta y extractor
+var PDF_COLS = {
+    fecha:               {label: 'FECHA',        fn: function(r){ return r.fecha || '-'; }},
+    hora:                {label: 'HORA',         fn: function(r){ return r.hora || '-'; }},
+    tipo:                {label: 'TIPO',         fn: function(r){ return r.tipo || '-'; }},
+    placa:               {label: 'PLACA',        fn: function(r){ return r.placa || '-'; }},
+    placa2:              {label: 'PLACA 2',      fn: function(r){ return r.segundaPlaca === 'SI' ? (r.placa2 || '-') : '-'; }},
+    conductor:           {label: 'CONDUCTOR',    fn: function(r){ return r.conductor || '-'; }},
+    empresa:             {label: 'EMPRESA',      fn: function(r){ return r.empresa || '-'; }},
+    procedenciaDestino:  {label: 'PROC/DEST',    fn: function(r){ return r.procedenciaDestino || '-'; }},
+    materiales:          {label: 'MAT.',         fn: function(r){ return r.materiales || '-'; }},
+    descMateriales:      {label: 'DESC.MAT.',    fn: function(r){ return (r.descMateriales || '-').substring(0,22); }},
+    precintos:           {label: 'PREC.',        fn: function(r){ return r.precintos || '-'; }},
+    guia:                {label: 'GUIA',         fn: function(r){ return r.guia || '-'; }},
+    acompanantes:        {label: 'ACOMP.',       fn: function(r){ return r.acompanantes || '-'; }},
+    personasAcompanantes:{label: 'PERSONAS',     fn: function(r){ return (r.personasAcompanantes || '-').substring(0,22); }},
+    observaciones:       {label: 'OBSERV.',      fn: function(r){ return (r.observaciones || '-').substring(0,30); }}
+};
 
 async function exportarPDF() {
     const regs = await obtenerRegistros();
     if (regs.length === 0) { mostrarToast('❌ No hay registros'); return; }
+    // Precargar fechas con rango existente
+    const fechas = regs.map(function(r){ return r.fecha; }).filter(Boolean).sort();
+    document.getElementById('pdfFechaDesde').value = fechas[0] || '';
+    document.getElementById('pdfFechaHasta').value = fechas[fechas.length-1] || '';
+    document.getElementById('pdfFiltroConductor').value = '';
+    document.getElementById('pdfFiltroPlaca').value = '';
+    document.querySelector('input[name="pdfTipo"][value="TODOS"]').checked = true;
+    actualizarConteoPDF();
+    document.getElementById('modalPDF').classList.add('active');
+}
+
+async function actualizarConteoPDF() {
+    const regs = await obtenerRegistros();
+    const filtrados = filtrarParaPDF(regs);
+    document.getElementById('pdfConteo').textContent = '📋 Se exportarán ' + filtrados.length + ' registros';
+}
+
+function filtrarParaPDF(regs) {
+    const desde = document.getElementById('pdfFechaDesde').value;
+    const hasta = document.getElementById('pdfFechaHasta').value;
+    const tipo = document.querySelector('input[name="pdfTipo"]:checked').value;
+    const conductor = document.getElementById('pdfFiltroConductor').value.trim().toUpperCase();
+    const placa = document.getElementById('pdfFiltroPlaca').value.trim().toUpperCase();
+    return regs.filter(function(r) {
+        if (desde && r.fecha < desde) return false;
+        if (hasta && r.fecha > hasta) return false;
+        if (tipo !== 'TODOS' && r.tipo !== tipo) return false;
+        if (conductor && (!r.conductor || r.conductor.toUpperCase().indexOf(conductor) < 0)) return false;
+        if (placa && (!r.placa || r.placa.toUpperCase().indexOf(placa) < 0)) return false;
+        return true;
+    });
+}
+
+function cerrarModalPDF() {
+    document.getElementById('modalPDF').classList.remove('active');
+}
+
+async function generarPDFFiltrado() {
+    const regs = await obtenerRegistros();
+    const filtrados = filtrarParaPDF(regs);
+    if (filtrados.length === 0) { mostrarToast('❌ No hay registros con esos filtros'); return; }
+
+    // Columnas seleccionadas
+    const checks = document.querySelectorAll('#pdfColumnas input[type=checkbox]:checked');
+    if (checks.length === 0) { mostrarToast('❌ Seleccione al menos una columna'); return; }
+    const colKeys = Array.from(checks).map(function(c){ return c.value; });
+
+    cerrarModalPDF();
+
     const jsPDF = window.jspdf.jsPDF;
     const doc = new jsPDF({orientation: 'landscape'});
+
+    // Cabecera
     doc.setFillColor(26, 35, 126);
     doc.rect(0, 0, 297, 25, 'F');
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(18);
-    doc.text('REGISTRO VEHICULAR - CONTROL DE ACCESO', 148, 15, {align: 'center'});
+    doc.setFontSize(16);
+    doc.text('REGISTRO VEHICULAR - CONTROL DE ACCESO', 148, 12, {align: 'center'});
+    doc.setFontSize(9);
+    const desde2 = document.getElementById('pdfFechaDesde').value;
+    const hasta2 = document.getElementById('pdfFechaHasta').value;
+    const tipoLabel = document.querySelector('input[name="pdfTipo"]:checked').value;
+    const subtitulo = 'Periodo: ' + (desde2 || 'inicio') + ' al ' + (hasta2 || 'hoy') + '  |  Tipo: ' + tipoLabel + '  |  Registros: ' + filtrados.length;
+    doc.text(subtitulo, 148, 21, {align: 'center'});
+
     doc.setTextColor(0, 0, 0);
-    doc.setFontSize(10);
-    doc.text('Generado: ' + new Date().toLocaleString('es-ES'), 14, 32);
-    doc.text('Desarrollado por Edward Quezada M.', 280, 32, {align: 'right'});
-    const data = regs.map(function(r) {
-        return [r.fecha, r.hora, r.tipo, r.placa, r.segundaPlaca === 'SI' ? r.placa2 : '-', r.conductor, r.empresa, r.procedenciaDestino, r.materiales, (r.descMateriales || '-').substring(0, 20), r.precintos, r.guia, r.acompanantes, (r.personasAcompanantes || '-').substring(0, 20), (r.observaciones || '-').substring(0, 30)];
+    doc.setFontSize(8);
+    doc.text('Generado: ' + new Date().toLocaleString('es-ES'), 14, 31);
+    doc.text('Edward Quezada M. — Seguridad Patrimonial', 280, 31, {align: 'right'});
+
+    // Cabeceras y datos dinámicos
+    const headers = colKeys.map(function(k){ return PDF_COLS[k].label; });
+    const body = filtrados.map(function(r) {
+        return colKeys.map(function(k){ return PDF_COLS[k].fn(r); });
     });
+
+    // Anchos proporcionales según cantidad de columnas
+    const baseW = 268 / colKeys.length;
+    const colStyles = {};
+    colKeys.forEach(function(k, i) {
+        var w = baseW;
+        if (k === 'conductor' || k === 'empresa' || k === 'procedenciaDestino') w = baseW * 1.4;
+        if (k === 'descMateriales' || k === 'personasAcompanantes' || k === 'observaciones') w = baseW * 1.5;
+        if (k === 'hora' || k === 'tipo' || k === 'materiales' || k === 'precintos' || k === 'guia' || k === 'acompanantes') w = baseW * 0.7;
+        colStyles[i] = {cellWidth: w};
+    });
+
     doc.autoTable({
-        head: [['FECHA', 'HORA', 'TIPO', 'PLACA', 'PLACA 2', 'CONDUCTOR', 'EMPRESA', 'PROC/DEST', 'MAT.', 'DESC.MAT.', 'PREC.', 'GUIA', 'ACOMP.', 'PERSONAS', 'OBSERV.']],
-        body: data, startY: 38, styles: {fontSize: 7, cellPadding: 2},
+        head: [headers],
+        body: body,
+        startY: 36,
+        styles: {fontSize: colKeys.length > 10 ? 6 : 7, cellPadding: 2, overflow: 'linebreak'},
         headStyles: {fillColor: [26, 35, 126], textColor: 255, fontStyle: 'bold'},
         alternateRowStyles: {fillColor: [245, 245, 245]},
-        columnStyles: {0: {cellWidth: 18}, 1: {cellWidth: 13}, 2: {cellWidth: 16}, 3: {cellWidth: 20}, 4: {cellWidth: 20}, 5: {cellWidth: 28}, 6: {cellWidth: 22}, 7: {cellWidth: 22}, 8: {cellWidth: 11}, 9: {cellWidth: 24}, 10: {cellWidth: 11}, 11: {cellWidth: 11}, 12: {cellWidth: 12}, 13: {cellWidth: 26}, 14: {cellWidth: 30}}
+        columnStyles: colStyles
     });
-    doc.save('Registro_Vehicular_' + new Date().toISOString().split('T')[0] + '.pdf');
-    mostrarToast('📄 PDF descargado');
+
+    // Pie de página
+    const pageCount = doc.internal.getNumberOfPages();
+    for (var i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(7);
+        doc.setTextColor(150);
+        doc.text('Página ' + i + ' de ' + pageCount, 148, doc.internal.pageSize.height - 5, {align: 'center'});
+    }
+
+    const fecha = new Date().toISOString().split('T')[0];
+    doc.save('Registro_Vehicular_' + tipoLabel + '_' + fecha + '.pdf');
+    mostrarToast('📄 PDF generado con ' + filtrados.length + ' registros');
 }
 </script>
 </body>
