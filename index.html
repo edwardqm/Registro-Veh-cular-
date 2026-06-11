@@ -58,7 +58,10 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 .modal-overlay.active{display:flex}
 .modal{background:#fff;padding:30px;border-radius:16px;max-width:400px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
 .modal h3{margin-bottom:15px;color:var(--primary);font-size:1.2rem}
-.modal input{margin-bottom:15px;text-align:center;font-size:1.4rem;letter-spacing:6px;font-weight:700;padding:14px;border:2px solid var(--border);border-radius:10px;width:100%}
+.modal input{margin-bottom:15px;text-align:center;font-size:1.4rem;letter-spacing:6px;font-weight:700;padding:14px;border:2px solid var(--border);border-radius:10px;width:100%;transition:border-color 0.3s,box-shadow 0.3s}
+.modal input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(26,35,126,0.15)}
+.modal input.error{border-color:var(--danger);box-shadow:0 0 0 4px rgba(198,40,40,0.15);animation:shake 0.5s ease-in-out}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-10px)}80%{transform:translateX(10px)}}
 .footer{text-align:center;padding:25px 20px;color:#777;font-size:0.85rem;border-top:1px solid var(--border);margin-top:20px;background:#fff;border-radius:20px 20px 0 0}
 .footer strong{color:var(--primary)}
 .empty-state{text-align:center;padding:40px;color:#999;font-size:1rem}
@@ -218,7 +221,7 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 
 <div class="footer">
 <p>Desarrollado por <strong>Edward Quezada M.</strong></p>
-<p>Versión 2.2.1 | Registro Vehicular PWA</p>
+<p>Versión 2.2.2 | Registro Vehicular PWA</p>
 <p style="margin-top:5px;font-size:0.75rem">© 2026 - Todos los derechos reservados</p>
 </div>
 
@@ -440,8 +443,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         await procesarFormulario();
     });
 
-    document.getElementById('inputClave').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') verificarClave();
+    document.getElementById('inputClave').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            verificarClave();
+        }
     });
 
     await cargarRegistros();
@@ -606,10 +612,10 @@ function abrirModalEditar(id) {
     pendingId = id;
     document.getElementById('modalClave').classList.add('active');
     document.getElementById('inputClave').value = '';
+    document.getElementById('inputClave').classList.remove('error');
     setTimeout(function() {
         document.getElementById('inputClave').focus();
-        document.getElementById('inputClave').click();
-    }, 300);
+    }, 100);
 }
 
 function cerrarModal() {
@@ -618,14 +624,25 @@ function cerrarModal() {
 }
 
 async function verificarClave() {
-    const clave = document.getElementById('inputClave').value;
+    const inputClave = document.getElementById('inputClave');
+    const clave = inputClave.value;
+
     if (clave !== '0000') {
-        mostrarToast('❌ Clave incorrecta');
+        mostrarToast('❌ Clave errónea');
+        inputClave.value = '';
+        inputClave.classList.add('error');
+        setTimeout(function() {
+            inputClave.classList.remove('error');
+        }, 500);
+        setTimeout(function() {
+            inputClave.focus();
+        }, 100);
         return;
     }
+
     cerrarModal();
     if (pendingId) {
-        mostrarToast('⏳ Cargando...');
+        mostrarToast('⏳ Cargando registro...');
         await editarRegistro(pendingId);
     }
 }
