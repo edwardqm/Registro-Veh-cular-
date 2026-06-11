@@ -77,8 +77,6 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 .info-text{font-size:0.8rem;color:#666;margin-top:4px;font-style:italic}
 @media(max-width:768px){.grid-2{grid-template-columns:1fr}.btn-group{flex-direction:column}.btn{width:100%;padding:16px}header h1{font-size:1.2rem}.stats{grid-template-columns:1fr}.search-box{flex-direction:column}.search-box input{min-width:100%}}
 @media(max-width:400px){.container{padding:10px}.card{padding:14px}header{padding:18px 15px}}
-.modal input.error{border-color:var(--danger);box-shadow:0 0 0 4px rgba(198,40,40,0.15);animation:shake 0.5s ease-in-out}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-10px)}80%{transform:translateX(10px)}}
 </style>
 </head>
 <body>
@@ -220,7 +218,7 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 
 <div class="footer">
 <p>Desarrollado por <strong>Edward Quezada M.</strong></p>
-<p>Versión 2.2.2 | Registro Vehicular PWA</p>
+<p>Versión 2.2.1 | Registro Vehicular PWA</p>
 <p style="margin-top:5px;font-size:0.75rem">© 2026 - Todos los derechos reservados</p>
 </div>
 
@@ -442,11 +440,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         await procesarFormulario();
     });
 
-    document.getElementById('inputClave').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            verificarClave();
-        }
+    document.getElementById('inputClave').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') verificarClave();
     });
 
     await cargarRegistros();
@@ -572,9 +567,9 @@ function renderizarTabla(regs) {
         if (fotos.length > 0) {
             fotosHtml = fotos.map(function(f) {
                 if (f.label === 'PDF') {
-                    return '<span style="display:inline-block;padding:4px 8px;background:#c62828;color:#fff;border-radius:4px;font-size:0.7rem;font-weight:bold;cursor:pointer" onclick="verImagen('' + f.src + '')" title="PDF">PDF</span>';
+                    return '<span style="display:inline-block;padding:4px 8px;background:#c62828;color:#fff;border-radius:4px;font-size:0.7rem;font-weight:bold;cursor:pointer" onclick="verImagen(\'' + f.src + '\')" title="PDF">PDF</span>';
                 }
-                return '<img src="' + f.src + '" class="img-thumb" onclick="verImagen('' + f.src + '')" title="' + f.label + '">';
+                return '<img src="' + f.src + '" class="img-thumb" onclick="verImagen(\'' + f.src + '\')" title="' + f.label + '">';
             }).join(' ');
         }
         const badge = r.tipo === 'INGRESO' ? 'badge-ingreso' : 'badge-salida';
@@ -611,10 +606,10 @@ function abrirModalEditar(id) {
     pendingId = id;
     document.getElementById('modalClave').classList.add('active');
     document.getElementById('inputClave').value = '';
-    document.getElementById('inputClave').classList.remove('error');
     setTimeout(function() {
         document.getElementById('inputClave').focus();
-    }, 100);
+        document.getElementById('inputClave').click();
+    }, 300);
 }
 
 function cerrarModal() {
@@ -623,25 +618,14 @@ function cerrarModal() {
 }
 
 async function verificarClave() {
-    const inputClave = document.getElementById('inputClave');
-    const clave = inputClave.value;
-
+    const clave = document.getElementById('inputClave').value;
     if (clave !== '0000') {
-        mostrarToast('❌ Clave errónea');
-        inputClave.value = '';
-        inputClave.classList.add('error');
-        setTimeout(function() {
-            inputClave.classList.remove('error');
-        }, 500);
-        setTimeout(function() {
-            inputClave.focus();
-        }, 100);
+        mostrarToast('❌ Clave incorrecta');
         return;
     }
-
     cerrarModal();
     if (pendingId) {
-        mostrarToast('⏳ Cargando registro...');
+        mostrarToast('⏳ Cargando...');
         await editarRegistro(pendingId);
     }
 }
