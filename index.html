@@ -101,6 +101,9 @@
         .img-viewer .close-viewer { position: absolute; top: 15px; right: 20px; color: white; font-size: 2.5rem; cursor: pointer; text-shadow: 0 2px 10px rgba(0,0,0,0.5); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; }
         .section-divider { height: 1px; background: var(--border); margin: 20px 0; }
         .info-text { font-size: 0.8rem; color: #666; margin-top: 4px; font-style: italic; }
+        .datalist-container { position: relative; }
+        .datalist-container input { width: 100%; }
+        .datalist-container datalist { display: none; }
         @media (max-width: 768px) {
             .grid-2, .grid-3 { grid-template-columns: 1fr; }
             .btn-group { flex-direction: column; }
@@ -126,7 +129,6 @@
     </header>
 
     <div class="container">
-        <!-- Estadísticas -->
         <div class="stats" id="statsContainer">
             <div class="stat-card">
                 <h3 id="statTotal">0</h3>
@@ -142,7 +144,6 @@
             </div>
         </div>
 
-        <!-- Formulario -->
         <div class="card">
             <div class="card-title">📝 Nuevo Registro</div>
             <form id="registroForm">
@@ -180,25 +181,57 @@
                         <div class="info-text">Formato automático: 3 letras + guión + números</div>
                     </div>
                     <div class="form-group">
-                        <label>Nombre del Conductor</label>
-                        <input type="text" id="conductor" placeholder="NOMBRE COMPLETO" required>
+                        <label>¿Tiene Segunda Placa?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="segundaPlaca" id="segPlacaSi" value="SI">
+                                <label for="segPlacaSi">✅ SI</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="segundaPlaca" id="segPlacaNo" value="NO" checked>
+                                <label for="segPlacaNo">❌ NO</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="segundaPlacaBox" class="conditional-box hidden">
+                    <div class="form-group">
+                        <label>Segunda Placa</label>
+                        <input type="text" id="placa2" placeholder="ABC-1234" maxlength="8">
+                        <div class="info-text">Formato automático: 3 letras + guión + números</div>
                     </div>
                 </div>
 
                 <div class="grid-2">
-                    <div class="form-group">
-                        <label>Empresa</label>
-                        <input type="text" id="empresa" placeholder="EMPRESA" required>
+                    <div class="form-group datalist-container">
+                        <label>Nombre del Conductor</label>
+                        <input type="text" id="conductor" list="listaConductores" placeholder="NOMBRE COMPLETO" required>
+                        <datalist id="listaConductores"></datalist>
                     </div>
-                    <div class="form-group" id="procedenciaDestinoGroup">
+                    <div class="form-group datalist-container">
+                        <label>Empresa</label>
+                        <input type="text" id="empresa" list="listaEmpresas" placeholder="EMPRESA" required>
+                        <datalist id="listaEmpresas"></datalist>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group datalist-container" id="procedenciaDestinoGroup">
                         <label id="lblProcedenciaDestino">Procedencia / Destino</label>
-                        <input type="text" id="procedenciaDestino" placeholder="LUGAR" required>
+                        <input type="text" id="procedenciaDestino" list="listaLugares" placeholder="LUGAR" required>
+                        <datalist id="listaLugares"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <div style="padding: 14px 0; color: #666; font-size: 0.85rem;">
+                            Los campos con lista desplegable muestran valores registrados previamente
+                        </div>
                     </div>
                 </div>
 
                 <div class="section-divider"></div>
 
-                <!-- Materiales -->
                 <div class="form-group">
                     <label id="lblMateriales">¿Trae Materiales?</label>
                     <div class="radio-group">
@@ -239,10 +272,10 @@
                             <div class="form-group">
                                 <label>Foto Precinto 1</label>
                                 <div class="file-input-wrapper">
-                                    <input type="file" id="fotoPrecinto1" accept="image/*" capture="environment">
+                                    <input type="file" id="fotoPrecinto1" accept="image/*">
                                     <label for="fotoPrecinto1" class="file-input-label" id="lblPrecinto1">
                                         <span class="camera-icon">📷</span>
-                                        TOMAR FOTO PRECINTO 1
+                                        TOMAR FOTO O ELEGIR DE GALERÍA
                                     </label>
                                 </div>
                                 <img id="previewPrecinto1" class="preview-img hidden">
@@ -250,10 +283,10 @@
                             <div class="form-group">
                                 <label>Foto Precinto 2</label>
                                 <div class="file-input-wrapper">
-                                    <input type="file" id="fotoPrecinto2" accept="image/*" capture="environment">
+                                    <input type="file" id="fotoPrecinto2" accept="image/*">
                                     <label for="fotoPrecinto2" class="file-input-label" id="lblPrecinto2">
                                         <span class="camera-icon">📷</span>
-                                        TOMAR FOTO PRECINTO 2
+                                        TOMAR FOTO O ELEGIR DE GALERÍA
                                     </label>
                                 </div>
                                 <img id="previewPrecinto2" class="preview-img hidden">
@@ -280,13 +313,13 @@
                             <label>Guía Escaneada / Adjuntada</label>
                             <div class="info-text" style="margin-bottom:8px;">
                                 💡 Use apps como <strong>CamScanner, Adobe Scan, Fotoscan</strong> o su escáner nativo, 
-                                luego adjunte el archivo PDF o imagen aquí.
+                                luego adjunte el archivo PDF o imagen aquí. También puede elegir de la galería.
                             </div>
                             <div class="file-input-wrapper">
                                 <input type="file" id="fotoGuia" accept="application/pdf,image/*">
                                 <label for="fotoGuia" class="file-input-label" id="lblGuiaFoto">
                                     <span class="camera-icon">📄</span>
-                                    ESCANEAR / ADJUNTAR GUÍA
+                                    ESCANEAR / ADJUNTAR GUÍA O ELEGIR DE GALERÍA
                                 </label>
                             </div>
                             <img id="previewGuia" class="preview-img hidden">
@@ -296,7 +329,6 @@
 
                 <div class="section-divider"></div>
 
-                <!-- Acompañantes -->
                 <div class="form-group">
                     <label id="lblAcompanantes">¿Viene con Acompañantes?</label>
                     <div class="radio-group">
@@ -336,7 +368,6 @@
             </form>
         </div>
 
-        <!-- Búsqueda y Filtros -->
         <div class="card">
             <div class="card-title">🔍 Búsqueda y Filtros</div>
             <div class="search-box">
@@ -349,7 +380,6 @@
             </div>
         </div>
 
-        <!-- Lista de Registros -->
         <div class="card">
             <div class="card-title">📋 Registros Guardados</div>
             <div class="btn-group" style="margin-bottom: 20px;">
@@ -369,6 +399,7 @@
                             <th>Hora</th>
                             <th>Tipo</th>
                             <th>Placa</th>
+                            <th>Placa 2</th>
                             <th>Conductor</th>
                             <th>Empresa</th>
                             <th>Proc/Dest</th>
@@ -382,18 +413,17 @@
                         </tr>
                     </thead>
                     <tbody id="tbodyRegistros">
-                        <tr><td colspan="15" class="empty-state">No hay registros guardados</td></tr>
+                        <tr><td colspan="16" class="empty-state">No hay registros guardados</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Contraseña -->
     <div class="modal-overlay" id="modalClave">
         <div class="modal">
             <h3>🔒 Ingrese la Clave</h3>
-            <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">Para editar o eliminar registros</p>
+            <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">Para editar el registro</p>
             <input type="password" id="inputClave" placeholder="0000" maxlength="4" inputmode="numeric">
             <div class="btn-group" style="justify-content: center;">
                 <button class="btn btn-primary" onclick="verificarClave()">✅ ACEPTAR</button>
@@ -402,25 +432,22 @@
         </div>
     </div>
 
-    <!-- Visor de Imágenes -->
     <div class="img-viewer" id="imgViewer" onclick="this.classList.remove('active')">
         <span class="close-viewer">&times;</span>
         <img id="imgViewerSrc" src="" alt="Vista previa">
     </div>
 
-    <!-- Toast -->
     <div class="toast" id="toast"></div>
 
     <div class="footer">
         <p>Desarrollado por <strong>Edward Quezada M.</strong></p>
-        <p>Versión 2.0.0 | Registro Vehicular PWA</p>
+        <p>Versión 2.1.0 | Registro Vehicular PWA</p>
         <p style="margin-top: 5px; font-size: 0.75rem;">© 2026 - Todos los derechos reservados</p>
     </div>
 
     <script>
-        // ==================== BASE DE DATOS ====================
         const DB_NAME = 'RegistroVehicularDB';
-        const DB_VERSION = 2; // Incrementado para nueva estructura
+        const DB_VERSION = 3;
         const STORE_NAME = 'registros';
         let db;
         let pendingAction = null;
@@ -483,7 +510,6 @@
             });
         }
 
-        // ==================== UTILIDADES ====================
         function mostrarToast(msg) {
             const t = document.getElementById('toast');
             t.textContent = msg;
@@ -541,7 +567,6 @@
                 label.classList.add('has-file');
 
                 if (file.type === 'application/pdf') {
-                    // Para PDFs mostrar icono en lugar de preview
                     preview.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2MzMjgyOCI+PHBhdGggZD0iTTE0IDJINmMtMS4xIDAtMiAuOS0yIDJ2MTZjMCAxLjEuOSAyIDIgMmgxMmMxLjEgMCAyLS45IDItMlY4bC02LTZ6bTQuNSAxOC41aC0xM1YzaDExbDQuNSA0LjV2MTMuNXpNMTQgM1Y5aDZ6Ii8+PHBhdGggZD0iTTE2LjUgMTEuNWgtOWwuNSAzaDhsLS41LTN6IiBmaWxsPSIjZmZmIi8+PC9zdmc+';
                     preview.classList.remove('hidden');
                     preview.style.maxHeight = '80px';
@@ -559,11 +584,9 @@
             });
         }
 
-        // ==================== ACTUALIZAR TEXTOS SEGÚN TIPO ====================
         function actualizarTextosPorTipo(tipo) {
             const esIngreso = tipo === 'INGRESO';
             const esSalida = tipo === 'SALIDA';
-
             if (!esIngreso && !esSalida) return;
 
             const verbos = {
@@ -577,47 +600,52 @@
             document.getElementById('lblPrecintos').textContent = `¿${verbos.precintos} Precintos?`;
             document.getElementById('lblGuia').textContent = `¿${verbos.guia} Guía?`;
             document.getElementById('lblAcompanantes').textContent = `¿${verbos.acompanantes} Acompañantes?`;
-
-            // Actualizar labels de los radio buttons también
-            const matLabels = document.querySelectorAll('input[name="materiales"] + label');
-            const precLabels = document.querySelectorAll('input[name="precintos"] + label');
-            const guiaLabels = document.querySelectorAll('input[name="guia"] + label');
-            const acompLabels = document.querySelectorAll('input[name="acompanantes"] + label');
-
-            // Procedencia/Destino
             document.getElementById('lblProcedenciaDestino').textContent = esIngreso ? 'Procedencia' : 'Destino';
         }
 
-        // ==================== EVENTOS ====================
+        async function poblarListasDesplegables() {
+            const registros = await obtenerRegistros();
+
+            const conductores = [...new Set(registros.map(r => r.conductor).filter(Boolean))].sort();
+            const empresas = [...new Set(registros.map(r => r.empresa).filter(Boolean))].sort();
+            const lugares = [...new Set(registros.map(r => r.procedenciaDestino).filter(Boolean))].sort();
+
+            document.getElementById('listaConductores').innerHTML = conductores.map(c => `<option value="${c}">`).join('');
+            document.getElementById('listaEmpresas').innerHTML = empresas.map(e => `<option value="${e}">`).join('');
+            document.getElementById('listaLugares').innerHTML = lugares.map(l => `<option value="${l}">`).join('');
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             await initDB();
 
-            // Fecha y hora actual
             const now = new Date();
             document.getElementById('fecha').value = now.toISOString().split('T')[0];
             document.getElementById('hora').value = now.toTimeString().slice(0, 5);
 
-            // Mayúsculas automáticas
             document.querySelectorAll('input[type="text"], textarea').forEach(el => {
                 el.addEventListener('input', toUpperInput);
             });
 
-            // Formato placa
             document.getElementById('placa').addEventListener('input', formatearPlaca);
+            document.getElementById('placa2').addEventListener('input', formatearPlaca);
+            document.getElementById('searchPlaca').addEventListener('input', formatearPlaca);
 
-            // Previews de fotos
             previewFile('fotoPrecinto1', 'previewPrecinto1', 'lblPrecinto1');
             previewFile('fotoPrecinto2', 'previewPrecinto2', 'lblPrecinto2');
             previewFileGuia();
 
-            // Lógica condicional - Tipo
             document.querySelectorAll('input[name="tipo"]').forEach(r => {
                 r.addEventListener('change', (e) => {
                     actualizarTextosPorTipo(e.target.value);
                 });
             });
 
-            // Lógica condicional - Materiales
+            document.querySelectorAll('input[name="segundaPlaca"]').forEach(r => {
+                r.addEventListener('change', (e) => {
+                    document.getElementById('segundaPlacaBox').classList.toggle('hidden', e.target.value !== 'SI');
+                });
+            });
+
             document.querySelectorAll('input[name="materiales"]').forEach(r => {
                 r.addEventListener('change', (e) => {
                     const mostrar = e.target.value === 'SI';
@@ -632,53 +660,45 @@
                 });
             });
 
-            // Lógica condicional - Precintos
             document.querySelectorAll('input[name="precintos"]').forEach(r => {
                 r.addEventListener('change', (e) => {
                     document.getElementById('precintosBox').classList.toggle('hidden', e.target.value !== 'SI');
                 });
             });
 
-            // Lógica condicional - Guía
             document.querySelectorAll('input[name="guia"]').forEach(r => {
                 r.addEventListener('change', (e) => {
                     document.getElementById('guiaBox').classList.toggle('hidden', e.target.value !== 'SI');
                 });
             });
 
-            // Lógica condicional - Acompañantes
             document.querySelectorAll('input[name="acompanantes"]').forEach(r => {
                 r.addEventListener('change', (e) => {
                     document.getElementById('acompanantesBox').classList.toggle('hidden', e.target.value !== 'SI');
                 });
             });
 
-            // Form submit
             document.getElementById('registroForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 await procesarFormulario();
             });
 
-            // Cancelar edición
             document.getElementById('btnCancelar').addEventListener('click', limpiarFormulario);
 
-            // Cargar registros
             await cargarRegistros();
+            await poblarListasDesplegables();
             actualizarStats();
 
-            // Service Worker
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`self.addEventListener('install', e=>self.skipWaiting());self.addEventListener('activate', e=>e.waitUntil(clients.claim()));self.addEventListener('fetch', e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));`));
             }
         });
 
-        // ==================== FORMULARIO ====================
         async function procesarFormulario() {
             const editId = document.getElementById('editId').value;
             const tipo = document.querySelector('input[name="tipo"]:checked')?.value || '';
             const materiales = document.querySelector('input[name="materiales"]:checked')?.value || 'NO';
 
-            // Validación: si hay materiales pero no precintos ni guía, la descripción es obligatoria
             if (materiales === 'SI') {
                 const precintos = document.querySelector('input[name="precintos"]:checked')?.value || 'NO';
                 const guia = document.querySelector('input[name="guia"]:checked')?.value || 'NO';
@@ -696,6 +716,8 @@
                 hora: document.getElementById('hora').value,
                 tipo: tipo,
                 placa: document.getElementById('placa').value,
+                segundaPlaca: document.querySelector('input[name="segundaPlaca"]:checked')?.value || 'NO',
+                placa2: document.getElementById('placa2').value,
                 conductor: document.getElementById('conductor').value,
                 empresa: document.getElementById('empresa').value,
                 procedenciaDestino: document.getElementById('procedenciaDestino').value,
@@ -714,7 +736,6 @@
 
             if (editId) {
                 data.id = parseInt(editId);
-                // Mantener fotos existentes si no se seleccionaron nuevas
                 const existente = await obtenerRegistro(data.id);
                 if (!data.fotoPrecinto1 && existente.fotoPrecinto1) data.fotoPrecinto1 = existente.fotoPrecinto1;
                 if (!data.fotoPrecinto2 && existente.fotoPrecinto2) data.fotoPrecinto2 = existente.fotoPrecinto2;
@@ -725,6 +746,7 @@
             mostrarToast(editId ? '✅ Registro actualizado correctamente' : '✅ Registro guardado correctamente');
             limpiarFormulario();
             await cargarRegistros();
+            await poblarListasDesplegables();
             actualizarStats();
         }
 
@@ -738,6 +760,7 @@
             document.getElementById('fecha').value = now.toISOString().split('T')[0];
             document.getElementById('hora').value = now.toTimeString().slice(0, 5);
 
+            document.getElementById('segundaPlacaBox').classList.add('hidden');
             document.getElementById('materialesBox').classList.add('hidden');
             document.getElementById('precintosBox').classList.add('hidden');
             document.getElementById('guiaBox').classList.add('hidden');
@@ -749,7 +772,9 @@
             });
             ['lblPrecinto1', 'lblPrecinto2', 'lblGuiaFoto'].forEach(id => {
                 document.getElementById(id).classList.remove('has-file');
-                document.getElementById(id).innerHTML = '<span class="camera-icon">📷</span>TOMAR FOTO';
+                document.getElementById(id).innerHTML = id === 'lblGuiaFoto' 
+                    ? '<span class="camera-icon">📄</span>ESCANEAR / ADJUNTAR GUÍA O ELEGIR DE GALERÍA'
+                    : '<span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERÍA';
             });
 
             document.getElementById('lblProcedenciaDestino').textContent = 'Procedencia / Destino';
@@ -759,7 +784,6 @@
             document.getElementById('lblAcompanantes').textContent = '¿Viene con Acompañantes?';
         }
 
-        // ==================== TABLA ====================
         async function cargarRegistros() {
             const registros = await obtenerRegistros();
             renderizarTabla(registros);
@@ -768,7 +792,7 @@
         function renderizarTabla(registros) {
             const tbody = document.getElementById('tbodyRegistros');
             if (registros.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="15" class="empty-state">No hay registros guardados</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="16" class="empty-state">No hay registros guardados</td></tr>';
                 return;
             }
 
@@ -793,6 +817,7 @@
 
                 const badgeClass = r.tipo === 'INGRESO' ? 'badge-ingreso' : 'badge-salida';
                 const descMat = r.descMateriales ? r.descMateriales.substring(0, 25) + (r.descMateriales.length > 25 ? '...' : '') : '-';
+                const placa2 = r.segundaPlaca === 'SI' ? r.placa2 : '-';
 
                 return `
                     <tr>
@@ -801,6 +826,7 @@
                         <td>${r.hora}</td>
                         <td><span class="badge ${badgeClass}">${r.tipo}</span></td>
                         <td><strong>${r.placa}</strong></td>
+                        <td>${placa2}</td>
                         <td>${r.conductor}</td>
                         <td>${r.empresa}</td>
                         <td>${r.procedenciaDestino}</td>
@@ -811,8 +837,7 @@
                         <td>${r.acompanantes}</td>
                         <td>${fotosHtml}</td>
                         <td>
-                            <button class="btn" style="padding:6px 12px;font-size:0.8rem;background:var(--primary);color:white;" onclick="solicitarEditar(${r.id})">✏️</button>
-                            <button class="btn" style="padding:6px 12px;font-size:0.8rem;background:var(--danger);color:white;" onclick="solicitarEliminar(${r.id})">🗑️</button>
+                            <button class="btn" style="padding:6px 16px;font-size:0.85rem;background:var(--primary);color:white;" onclick="solicitarEditar(${r.id})">✏️ EDITAR</button>
                         </td>
                     </tr>
                 `;
@@ -824,7 +849,6 @@
             document.getElementById('imgViewer').classList.add('active');
         }
 
-        // ==================== FILTROS ====================
         async function filtrarRegistros() {
             const placa = document.getElementById('searchPlaca').value.toUpperCase();
             const conductor = document.getElementById('searchConductor').value.toUpperCase();
@@ -832,7 +856,7 @@
 
             let registros = await obtenerRegistros();
 
-            if (placa) registros = registros.filter(r => r.placa.includes(placa));
+            if (placa) registros = registros.filter(r => r.placa.includes(placa) || (r.placa2 && r.placa2.includes(placa)));
             if (conductor) registros = registros.filter(r => r.conductor.includes(conductor));
             if (fecha) registros = registros.filter(r => r.fecha === fecha);
 
@@ -846,17 +870,8 @@
             cargarRegistros();
         }
 
-        // ==================== EDICIÓN / ELIMINACIÓN ====================
         function solicitarEditar(id) {
             pendingAction = 'editar';
-            pendingId = id;
-            document.getElementById('modalClave').classList.add('active');
-            document.getElementById('inputClave').value = '';
-            document.getElementById('inputClave').focus();
-        }
-
-        function solicitarEliminar(id) {
-            pendingAction = 'eliminar';
             pendingId = id;
             document.getElementById('modalClave').classList.add('active');
             document.getElementById('inputClave').value = '';
@@ -880,8 +895,6 @@
 
             if (pendingAction === 'editar') {
                 await editarRegistro(pendingId);
-            } else if (pendingAction === 'eliminar') {
-                await confirmarEliminar(pendingId);
             }
         }
 
@@ -890,95 +903,121 @@
         });
 
         async function editarRegistro(id) {
-            const r = await obtenerRegistro(id);
-            if (!r) return;
+            try {
+                const r = await obtenerRegistro(id);
+                if (!r) {
+                    mostrarToast('❌ No se encontró el registro');
+                    return;
+                }
 
-            document.getElementById('editId').value = r.id;
-            document.getElementById('fecha').value = r.fecha;
-            document.getElementById('hora').value = r.hora;
-            document.getElementById('placa').value = r.placa;
-            document.getElementById('conductor').value = r.conductor;
-            document.getElementById('empresa').value = r.empresa;
-            document.getElementById('procedenciaDestino').value = r.procedenciaDestino;
-            document.getElementById('observaciones').value = r.observaciones || '';
-            document.getElementById('personasAcompanantes').value = r.personasAcompanantes || '';
-            document.getElementById('descMateriales').value = r.descMateriales || '';
+                // 1. Textos básicos
+                document.getElementById('editId').value = r.id;
+                document.getElementById('fecha').value = r.fecha;
+                document.getElementById('hora').value = r.hora;
+                document.getElementById('placa').value = r.placa;
+                document.getElementById('conductor').value = r.conductor;
+                document.getElementById('empresa').value = r.empresa;
+                document.getElementById('procedenciaDestino').value = r.procedenciaDestino;
+                document.getElementById('observaciones').value = r.observaciones || '';
+                document.getElementById('personasAcompanantes').value = r.personasAcompanantes || '';
+                document.getElementById('descMateriales').value = r.descMateriales || '';
+                document.getElementById('placa2').value = r.placa2 || '';
 
-            // Actualizar textos según tipo
-            actualizarTextosPorTipo(r.tipo);
+                // 2. Tipo de movimiento (primero setear radio, luego actualizar textos)
+                if (r.tipo === 'INGRESO') document.getElementById('tipoIngreso').checked = true;
+                else document.getElementById('tipoSalida').checked = true;
+                actualizarTextosPorTipo(r.tipo);
+                document.getElementById('tipoIngreso').dispatchEvent(new Event('change'));
+                document.getElementById('tipoSalida').dispatchEvent(new Event('change'));
 
-            // Tipo
-            if (r.tipo === 'INGRESO') document.getElementById('tipoIngreso').checked = true;
-            else document.getElementById('tipoSalida').checked = true;
+                // 3. Segunda placa
+                if (r.segundaPlaca === 'SI') {
+                    document.getElementById('segPlacaSi').checked = true;
+                } else {
+                    document.getElementById('segPlacaNo').checked = true;
+                }
+                document.getElementById('segPlacaSi').dispatchEvent(new Event('change'));
 
-            // Materiales
-            if (r.materiales === 'SI') {
-                document.getElementById('matSi').checked = true;
-                document.getElementById('materialesBox').classList.remove('hidden');
-            } else {
-                document.getElementById('matNo').checked = true;
-                document.getElementById('materialesBox').classList.add('hidden');
+                // 4. Materiales
+                if (r.materiales === 'SI') {
+                    document.getElementById('matSi').checked = true;
+                } else {
+                    document.getElementById('matNo').checked = true;
+                }
+                document.getElementById('matSi').dispatchEvent(new Event('change'));
+
+                // 5. Precintos
+                if (r.precintos === 'SI') {
+                    document.getElementById('precSi').checked = true;
+                } else {
+                    document.getElementById('precNo').checked = true;
+                }
+                document.getElementById('precSi').dispatchEvent(new Event('change'));
+
+                // 6. Fotos precintos
+                if (r.fotoPrecinto1) {
+                    document.getElementById('previewPrecinto1').src = r.fotoPrecinto1;
+                    document.getElementById('previewPrecinto1').classList.remove('hidden');
+                    document.getElementById('lblPrecinto1').classList.add('has-file');
+                    document.getElementById('lblPrecinto1').innerHTML = '<span class="camera-icon">✅</span>FOTO CARGADA';
+                } else {
+                    document.getElementById('previewPrecinto1').classList.add('hidden');
+                    document.getElementById('previewPrecinto1').src = '';
+                    document.getElementById('lblPrecinto1').classList.remove('has-file');
+                    document.getElementById('lblPrecinto1').innerHTML = '<span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERÍA';
+                }
+                if (r.fotoPrecinto2) {
+                    document.getElementById('previewPrecinto2').src = r.fotoPrecinto2;
+                    document.getElementById('previewPrecinto2').classList.remove('hidden');
+                    document.getElementById('lblPrecinto2').classList.add('has-file');
+                    document.getElementById('lblPrecinto2').innerHTML = '<span class="camera-icon">✅</span>FOTO CARGADA';
+                } else {
+                    document.getElementById('previewPrecinto2').classList.add('hidden');
+                    document.getElementById('previewPrecinto2').src = '';
+                    document.getElementById('lblPrecinto2').classList.remove('has-file');
+                    document.getElementById('lblPrecinto2').innerHTML = '<span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERÍA';
+                }
+
+                // 7. Guía
+                if (r.guia === 'SI') {
+                    document.getElementById('guiaSi').checked = true;
+                } else {
+                    document.getElementById('guiaNo').checked = true;
+                }
+                document.getElementById('guiaSi').dispatchEvent(new Event('change'));
+
+                if (r.fotoGuia) {
+                    document.getElementById('previewGuia').src = r.fotoGuia;
+                    document.getElementById('previewGuia').classList.remove('hidden');
+                    document.getElementById('lblGuiaFoto').classList.add('has-file');
+                    document.getElementById('lblGuiaFoto').innerHTML = '<span class="camera-icon">✅</span>GUÍA ADJUNTADA';
+                } else {
+                    document.getElementById('previewGuia').classList.add('hidden');
+                    document.getElementById('previewGuia').src = '';
+                    document.getElementById('lblGuiaFoto').classList.remove('has-file');
+                    document.getElementById('lblGuiaFoto').innerHTML = '<span class="camera-icon">📄</span>ESCANEAR / ADJUNTAR GUÍA O ELEGIR DE GALERÍA';
+                }
+
+                // 8. Acompañantes
+                if (r.acompanantes === 'SI') {
+                    document.getElementById('acompSi').checked = true;
+                } else {
+                    document.getElementById('acompNo').checked = true;
+                }
+                document.getElementById('acompSi').dispatchEvent(new Event('change'));
+
+                // 9. Botones y scroll
+                document.getElementById('btnGuardar').innerHTML = '<span>💾</span> ACTUALIZAR REGISTRO';
+                document.getElementById('btnCancelar').style.display = 'inline-flex';
+
+                mostrarToast('✏️ Registro cargado para editar');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (err) {
+                console.error('Error al editar:', err);
+                mostrarToast('❌ Error al cargar el registro: ' + err.message);
             }
-
-            // Precintos
-            if (r.precintos === 'SI') {
-                document.getElementById('precSi').checked = true;
-                document.getElementById('precintosBox').classList.remove('hidden');
-            } else {
-                document.getElementById('precNo').checked = true;
-                document.getElementById('precintosBox').classList.add('hidden');
-            }
-
-            if (r.fotoPrecinto1) {
-                document.getElementById('previewPrecinto1').src = r.fotoPrecinto1;
-                document.getElementById('previewPrecinto1').classList.remove('hidden');
-                document.getElementById('lblPrecinto1').classList.add('has-file');
-                document.getElementById('lblPrecinto1').innerHTML = '<span class="camera-icon">✅</span>FOTO CARGADA';
-            }
-            if (r.fotoPrecinto2) {
-                document.getElementById('previewPrecinto2').src = r.fotoPrecinto2;
-                document.getElementById('previewPrecinto2').classList.remove('hidden');
-                document.getElementById('lblPrecinto2').classList.add('has-file');
-                document.getElementById('lblPrecinto2').innerHTML = '<span class="camera-icon">✅</span>FOTO CARGADA';
-            }
-
-            // Guía
-            if (r.guia === 'SI') {
-                document.getElementById('guiaSi').checked = true;
-                document.getElementById('guiaBox').classList.remove('hidden');
-            } else {
-                document.getElementById('guiaNo').checked = true;
-                document.getElementById('guiaBox').classList.add('hidden');
-            }
-            if (r.fotoGuia) {
-                document.getElementById('previewGuia').src = r.fotoGuia;
-                document.getElementById('previewGuia').classList.remove('hidden');
-                document.getElementById('lblGuiaFoto').classList.add('has-file');
-                document.getElementById('lblGuiaFoto').innerHTML = '<span class="camera-icon">✅</span>GUÍA ADJUNTADA';
-            }
-
-            // Acompañantes
-            if (r.acompanantes === 'SI') {
-                document.getElementById('acompSi').checked = true;
-                document.getElementById('acompanantesBox').classList.remove('hidden');
-            } else {
-                document.getElementById('acompNo').checked = true;
-                document.getElementById('acompanantesBox').classList.add('hidden');
-            }
-
-            document.getElementById('btnGuardar').innerHTML = '<span>💾</span> ACTUALIZAR REGISTRO';
-            document.getElementById('btnCancelar').style.display = 'inline-flex';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        async function confirmarEliminar(id) {
-            await eliminarRegistro(id);
-            mostrarToast('🗑️ Registro eliminado');
-            await cargarRegistros();
-            actualizarStats();
-        }
-
-        // ==================== ESTADÍSTICAS ====================
         async function actualizarStats() {
             const registros = await obtenerRegistros();
             const hoy = new Date().toISOString().split('T')[0];
@@ -988,7 +1027,6 @@
             document.getElementById('statSalidas').textContent = registros.filter(r => r.fecha === hoy && r.tipo === 'SALIDA').length;
         }
 
-        // ==================== EXPORTAR EXCEL ====================
         async function exportarExcel() {
             const registros = await obtenerRegistros();
             if (registros.length === 0) {
@@ -1001,6 +1039,7 @@
                 'HORA': r.hora,
                 'TIPO': r.tipo,
                 'PLACA': r.placa,
+                'SEGUNDA PLACA': r.segundaPlaca === 'SI' ? r.placa2 : 'NO',
                 'CONDUCTOR': r.conductor,
                 'EMPRESA': r.empresa,
                 'PROCEDENCIA/DESTINO': r.procedenciaDestino,
@@ -1022,7 +1061,6 @@
             mostrarToast('📊 Excel descargado correctamente');
         }
 
-        // ==================== EXPORTAR PDF ====================
         async function exportarPDF() {
             const registros = await obtenerRegistros();
             if (registros.length === 0) {
@@ -1033,7 +1071,6 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape' });
 
-            // Encabezado
             doc.setFillColor(26, 35, 126);
             doc.rect(0, 0, 297, 25, 'F');
             doc.setTextColor(255, 255, 255);
@@ -1046,35 +1083,26 @@
             doc.text('Desarrollado por Edward Quezada M.', 280, 32, { align: 'right' });
 
             const data = registros.map(r => [
-                r.fecha, r.hora, r.tipo, r.placa, r.conductor, r.empresa,
-                r.procedenciaDestino, r.materiales, (r.descMateriales || '-').substring(0, 20),
-                r.precintos, r.guia, r.acompanantes,
-                (r.personasAcompanantes || '-').substring(0, 20),
+                r.fecha, r.hora, r.tipo, r.placa, r.segundaPlaca === 'SI' ? r.placa2 : '-',
+                r.conductor, r.empresa, r.procedenciaDestino, r.materiales,
+                (r.descMateriales || '-').substring(0, 20), r.precintos, r.guia,
+                r.acompanantes, (r.personasAcompanantes || '-').substring(0, 20),
                 (r.observaciones || '-').substring(0, 30)
             ]);
 
             doc.autoTable({
-                head: [['FECHA', 'HORA', 'TIPO', 'PLACA', 'CONDUCTOR', 'EMPRESA', 'PROC/DEST', 'MAT.', 'DESC.MAT.', 'PREC.', 'GUÍA', 'ACOMP.', 'PERSONAS', 'OBSERV.']],
+                head: [['FECHA', 'HORA', 'TIPO', 'PLACA', 'PLACA 2', 'CONDUCTOR', 'EMPRESA', 'PROC/DEST', 'MAT.', 'DESC.MAT.', 'PREC.', 'GUÍA', 'ACOMP.', 'PERSONAS', 'OBSERV.']],
                 body: data,
                 startY: 38,
                 styles: { fontSize: 7, cellPadding: 2 },
                 headStyles: { fillColor: [26, 35, 126], textColor: 255, fontStyle: 'bold' },
                 alternateRowStyles: { fillColor: [245, 245, 245] },
                 columnStyles: {
-                    0: { cellWidth: 18 },
-                    1: { cellWidth: 13 },
-                    2: { cellWidth: 16 },
-                    3: { cellWidth: 20 },
-                    4: { cellWidth: 28 },
-                    5: { cellWidth: 22 },
-                    6: { cellWidth: 22 },
-                    7: { cellWidth: 11 },
-                    8: { cellWidth: 24 },
-                    9: { cellWidth: 11 },
-                    10: { cellWidth: 11 },
-                    11: { cellWidth: 12 },
-                    12: { cellWidth: 26 },
-                    13: { cellWidth: 30 }
+                    0: { cellWidth: 18 }, 1: { cellWidth: 13 }, 2: { cellWidth: 16 },
+                    3: { cellWidth: 20 }, 4: { cellWidth: 20 }, 5: { cellWidth: 28 },
+                    6: { cellWidth: 22 }, 7: { cellWidth: 22 }, 8: { cellWidth: 11 },
+                    9: { cellWidth: 24 }, 10: { cellWidth: 11 }, 11: { cellWidth: 11 },
+                    12: { cellWidth: 12 }, 13: { cellWidth: 26 }, 14: { cellWidth: 30 }
                 }
             });
 
