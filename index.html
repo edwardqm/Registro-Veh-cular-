@@ -10,7 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root { --primary:#1a237e; --primary-light:#3949ab; --accent:#ff6f00; --danger:#c62828; --success:#2e7d32; --warning:#f9a825; --bg:#f5f5f5; --card:#fff; --text:#212121; --border:#e0e0e0; }
+:root{--primary:#1a237e;--primary-light:#3949ab;--accent:#ff6f00;--danger:#c62828;--success:#2e7d32;--warning:#f9a825;--bg:#f5f5f5;--card:#fff;--text:#212121;--border:#e0e0e0}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,-apple-system,sans-serif}
 body{background:var(--bg);color:var(--text);line-height:1.6}
 .container{max-width:900px;margin:0 auto;padding:15px;padding-bottom:100px}
@@ -80,7 +80,7 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 </style>
 </head>
 <body>
-<header><h1>🚗 REGISTRO VEHICULAR</h1><p>Control de Ingreso y Salida de Vehículos</p></header>
+<header><h1>🚗 REGISTRO VEHICULAR</h1><p>Control de Ingreso y Salida de Vehiculos</p></header>
 <div class="container">
 <div class="stats">
 <div class="stat-card"><h3 id="statTotal">0</h3><p>Total Registros</p></div>
@@ -104,7 +104,7 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 </div>
 </div>
 <div class="grid-2">
-<div class="form-group"><label>Placa del Vehículo</label><input type="text" id="placa" placeholder="ABC-1234" maxlength="8" required><div class="info-text">Formato automático: 3 letras + guión + números</div></div>
+<div class="form-group"><label>Placa del Vehiculo</label><input type="text" id="placa" placeholder="ABC-1234" maxlength="8" required><div class="info-text">Formato automatico: 3 letras + guion + numeros</div></div>
 <div class="form-group"><label>¿Tiene Segunda Placa?</label>
 <div class="radio-group">
 <div class="radio-option"><input type="radio" name="segundaPlaca" id="segPlacaSi" value="SI"><label for="segPlacaSi">✅ SI</label></div>
@@ -113,7 +113,7 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 </div>
 </div>
 <div id="segundaPlacaBox" class="conditional-box hidden">
-<div class="form-group"><label>Segunda Placa</label><input type="text" id="placa2" placeholder="ABC-1234" maxlength="8"><div class="info-text">Formato automático: 3 letras + guión + números</div></div>
+<div class="form-group"><label>Segunda Placa</label><input type="text" id="placa2" placeholder="ABC-1234" maxlength="8"><div class="info-text">Formato automatico: 3 letras + guion + numeros</div></div>
 </div>
 <div class="grid-2">
 <div class="form-group"><label>Nombre del Conductor</label><input type="text" id="conductor" list="listaConductores" placeholder="NOMBRE COMPLETO" required><datalist id="listaConductores"></datalist></div>
@@ -130,7 +130,7 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 </div>
 </div>
 <div id="materialesBox" class="conditional-box hidden">
-<div class="form-group"><label>Descripción de Materiales</label><textarea id="descMateriales" placeholder="DESCRIBA LOS MATERIALES QUE TRAE/LEVA..."></textarea><div class="info-text">Obligatorio cuando no hay precintos o guía</div></div>
+<div class="form-group"><label>Descripcion de Materiales</label><textarea id="descMateriales" placeholder="DESCRIBA LOS MATERIALES QUE TRAE/LEVA..."></textarea><div class="info-text">Obligatorio cuando no hay precintos o guia</div></div>
 <div class="form-group"><label id="lblPrecintos">¿Viene con Precintos?</label>
 <div class="radio-group">
 <div class="radio-option"><input type="radio" name="precintos" id="precSi" value="SI"><label for="precSi">✅ SI</label></div>
@@ -139,31 +139,31 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 </div>
 <div id="precintosBox" class="hidden">
 <div class="grid-2">
-<div class="form-group"><label>Foto Precinto 1</label><div class="file-input-wrapper"><input type="file" id="fotoPrecinto1" accept="image/*"><label for="fotoPrecinto1" class="file-input-label" id="lblPrecinto1"><span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERÍA</label></div><img id="previewPrecinto1" class="preview-img hidden"></div>
-<div class="form-group"><label>Foto Precinto 2</label><div class="file-input-wrapper"><input type="file" id="fotoPrecinto2" accept="image/*"><label for="fotoPrecinto2" class="file-input-label" id="lblPrecinto2"><span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERÍA</label></div><img id="previewPrecinto2" class="preview-img hidden"></div>
+<div class="form-group"><label>Foto Precinto 1</label><div class="file-input-wrapper"><input type="file" id="fotoPrecinto1" accept="image/*"><label for="fotoPrecinto1" class="file-input-label" id="lblPrecinto1"><span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERIA</label></div><img id="previewPrecinto1" class="preview-img hidden"></div>
+<div class="form-group"><label>Foto Precinto 2</label><div class="file-input-wrapper"><input type="file" id="fotoPrecinto2" accept="image/*"><label for="fotoPrecinto2" class="file-input-label" id="lblPrecinto2"><span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERIA</label></div><img id="previewPrecinto2" class="preview-img hidden"></div>
 </div>
 </div>
-<div class="form-group"><label id="lblGuia">¿Viene con Guía?</label>
+<div class="form-group"><label id="lblGuia">¿Viene con Guia?</label>
 <div class="radio-group">
 <div class="radio-option"><input type="radio" name="guia" id="guiaSi" value="SI"><label for="guiaSi">✅ SI</label></div>
 <div class="radio-option"><input type="radio" name="guia" id="guiaNo" value="NO" checked><label for="guiaNo">❌ NO</label></div>
 </div>
 </div>
 <div id="guiaBox" class="hidden">
-<div class="form-group"><label>Guía Escaneada / Adjuntada</label><div class="info-text" style="margin-bottom:8px">💡 Use apps como <strong>CamScanner, Adobe Scan, Fotoscan</strong> o su escáner nativo, luego adjunte el archivo PDF o imagen aquí. También puede elegir de la galería.</div><div class="file-input-wrapper"><input type="file" id="fotoGuia" accept="application/pdf,image/*"><label for="fotoGuia" class="file-input-label" id="lblGuiaFoto"><span class="camera-icon">📄</span>ESCANEAR / ADJUNTAR GUÍA O ELEGIR DE GALERÍA</label></div><img id="previewGuia" class="preview-img hidden"></div>
+<div class="form-group"><label>Guia Escaneada / Adjuntada</label><div class="info-text" style="margin-bottom:8px">💡 Use apps como <strong>CamScanner, Adobe Scan, Fotoscan</strong> o su escaner nativo, luego adjunte el archivo PDF o imagen aqui. Tambien puede elegir de la galeria.</div><div class="file-input-wrapper"><input type="file" id="fotoGuia" accept="application/pdf,image/*"><label for="fotoGuia" class="file-input-label" id="lblGuiaFoto"><span class="camera-icon">📄</span>ESCANEAR / ADJUNTAR GUIA O ELEGIR DE GALERIA</label></div><img id="previewGuia" class="preview-img hidden"></div>
 </div>
 </div>
 
 <div class="section-divider"></div>
 
-<div class="form-group"><label id="lblAcompanantes">¿Viene con Acompañantes?</label>
+<div class="form-group"><label id="lblAcompanantes">¿Viene con Acompanantes?</label>
 <div class="radio-group">
 <div class="radio-option"><input type="radio" name="acompanantes" id="acompSi" value="SI"><label for="acompSi">✅ SI</label></div>
 <div class="radio-option"><input type="radio" name="acompanantes" id="acompNo" value="NO" checked><label for="acompNo">❌ NO</label></div>
 </div>
 </div>
 <div id="acompanantesBox" class="conditional-box hidden">
-<div class="form-group"><label>Registro de Personas Acompañantes</label><textarea id="personasAcompanantes" placeholder="NOMBRE 1, NOMBRE 2, ... (UNO POR LÍNEA O SEPARADOS POR COMAS)"></textarea></div>
+<div class="form-group"><label>Registro de Personas Acompanantes</label><textarea id="personasAcompanantes" placeholder="NOMBRE 1, NOMBRE 2, ... (UNO POR LINEA O SEPARADOS POR COMAS)"></textarea></div>
 </div>
 
 <div class="section-divider"></div>
@@ -171,13 +171,13 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 <div class="form-group"><label>Observaciones</label><textarea id="observaciones" placeholder="OBSERVACIONES ADICIONALES..."></textarea></div>
 <div class="btn-group">
 <button type="submit" class="btn btn-primary" id="btnGuardar"><span>💾</span> GUARDAR REGISTRO</button>
-<button type="button" class="btn btn-accent" id="btnCancelar" style="display:none" onclick="limpiarFormulario()"><span>❌</span> CANCELAR EDICIÓN</button>
+<button type="button" class="btn btn-accent" id="btnCancelar" style="display:none" onclick="limpiarFormulario()"><span>❌</span> CANCELAR EDICION</button>
 </div>
 </form>
 </div>
 
 <div class="card">
-<div class="card-title">🔍 Búsqueda y Filtros</div>
+<div class="card-title">🔍 Busqueda y Filtros</div>
 <div class="search-box">
 <input type="text" id="searchPlaca" placeholder="🔍 Buscar por PLACA..." oninput="filtrarRegistros()">
 <input type="text" id="searchConductor" placeholder="🔍 Buscar por CONDUCTOR..." oninput="filtrarRegistros()">
@@ -194,7 +194,7 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 </div>
 <div class="table-container">
 <table id="tablaRegistros">
-<thead><tr><th>#</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Placa</th><th>Placa 2</th><th>Conductor</th><th>Empresa</th><th>Proc/Dest</th><th>Mat.</th><th>Desc.Mat.</th><th>Prec.</th><th>Guía</th><th>Acomp.</th><th>Fotos</th><th>Acción</th></tr></thead>
+<thead><tr><th>#</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Placa</th><th>Placa 2</th><th>Conductor</th><th>Empresa</th><th>Proc/Dest</th><th>Mat.</th><th>Desc.Mat.</th><th>Prec.</th><th>Guia</th><th>Acomp.</th><th>Fotos</th><th>Accion</th></tr></thead>
 <tbody id="tbodyRegistros"><tr><td colspan="16" class="empty-state">No hay registros guardados</td></tr></tbody>
 </table>
 </div>
@@ -218,196 +218,581 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 
 <div class="footer">
 <p>Desarrollado por <strong>Edward Quezada M.</strong></p>
-<p>Versión 2.2.0 | Registro Vehicular PWA</p>
+<p>Versión 2.2.1 | Registro Vehicular PWA</p>
 <p style="margin-top:5px;font-size:0.75rem">© 2026 - Todos los derechos reservados</p>
 </div>
 
 <script>
-const DB_NAME='RegistroVehicularDB',DB_VERSION=3,STORE_NAME='registros';
-let db,pendingId=null;
+const DB_NAME = 'RegistroVehicularDB';
+const DB_VERSION = 3;
+const STORE_NAME = 'registros';
+let db = null;
+let pendingId = null;
 
-function initDB(){return new Promise((res,rej)=>{const req=indexedDB.open(DB_NAME,DB_VERSION);req.onerror=()=>rej(req.error);req.onsuccess=()=>{db=req.result;res(db)};req.onupgradeneeded=(e)=>{const d=e.target.result;if(!d.objectStoreNames.contains(STORE_NAME)){const s=d.createObjectStore(STORE_NAME,{keyPath:'id',autoIncrement:true});s.createIndex('placa','placa',{unique:false});s.createIndex('conductor','conductor',{unique:false});s.createIndex('fecha','fecha',{unique:false})}}})}
-async function guardarRegistro(data){return new Promise((res,rej)=>{const tx=db.transaction([STORE_NAME],'readwrite'),store=tx.objectStore(STORE_NAME),req=store.put(data);req.onsuccess=()=>res(req.result);req.onerror=()=>rej(req.error)})}
-async function obtenerRegistros(){return new Promise((res,rej)=>{const tx=db.transaction([STORE_NAME],'readonly'),store=tx.objectStore(STORE_NAME),req=store.getAll();req.onsuccess=()=>res(req.result.reverse());req.onerror=()=>rej(req.error)})}
-async function obtenerRegistro(id){return new Promise((res,rej)=>{const tx=db.transaction([STORE_NAME],'readonly'),store=tx.objectStore(STORE_NAME),req=store.get(id);req.onsuccess=()=>res(req.result);req.onerror=()=>rej(req.error)})}
+function initDB() {
+    return new Promise(function(resolve, reject) {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onerror = function() { reject(request.error); };
+        request.onsuccess = function() { db = request.result; resolve(db); };
+        request.onupgradeneeded = function(e) {
+            const database = e.target.result;
+            if (!database.objectStoreNames.contains(STORE_NAME)) {
+                const store = database.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                store.createIndex('placa', 'placa', { unique: false });
+                store.createIndex('conductor', 'conductor', { unique: false });
+                store.createIndex('fecha', 'fecha', { unique: false });
+            }
+        };
+    });
+}
 
-function mostrarToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
-function toUpper(e){e.target.value=e.target.value.toUpperCase()}
-function fmtPlaca(e){let v=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(v.length>3)v=v.substring(0,3)+'-'+v.substring(3,7);e.target.value=v}
-function leerImg(file){return new Promise(res=>{if(!file)return res(null);const r=new FileReader();r.onload=(e)=>res(e.target.result);r.readAsDataURL(file)})}
-function preview(inputId,previewId,labelId,txtCargado,txtDefault){const inp=document.getElementById(inputId),pre=document.getElementById(previewId),lbl=document.getElementById(labelId);inp.addEventListener('change',async(e)=>{const f=e.target.files[0];if(!f)return;const b64=await leerImg(f);pre.src=b64;pre.classList.remove('hidden');lbl.classList.add('has-file');lbl.innerHTML='<span class="camera-icon">✅</span>'+txtCargado})}
-function previewGuia(){const inp=document.getElementById('fotoGuia'),pre=document.getElementById('previewGuia'),lbl=document.getElementById('lblGuiaFoto');inp.addEventListener('change',async(e)=>{const f=e.target.files[0];if(!f)return;lbl.classList.add('has-file');if(f.type==='application/pdf'){pre.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2MzMjgyOCI+PHBhdGggZD0iTTE0IDJINmMtMS4xIDAtMiAuOS0yIDJ2MTZjMCAxLjEuOSAyIDIgMmgxMmMxLjEgMCAyLS45IDItMlY4bC02LTZ6bTQuNSAxOC41aC0xM1YzaDExbDQuNSA0LjV2MTMuNXpNMTQgM1Y5aDZ6Ii8+PHBhdGggZD0iTTE2LjUgMTEuNWgtOWwuNSAzaDhsLS41LTN6IiBmaWxsPSIjZmZmIi8+PC9zdmc+';pre.classList.remove('hidden');pre.style.maxHeight='80px';pre.style.width='80px';pre.style.objectFit='contain';lbl.innerHTML='<span class="camera-icon">✅</span>PDF ADJUNTADO'}else{const b64=await leerImg(f);pre.src=b64;pre.classList.remove('hidden');pre.style.maxHeight='160px';pre.style.width='auto';lbl.innerHTML='<span class="camera-icon">✅</span>GUÍA ADJUNTADA'}})}
+function guardarRegistro(data) {
+    return new Promise(function(resolve, reject) {
+        const tx = db.transaction([STORE_NAME], 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.put(data);
+        request.onsuccess = function() { resolve(request.result); };
+        request.onerror = function() { reject(request.error); };
+    });
+}
 
-function actualizarTextos(tipo){const ing=tipo==='INGRESO',sal=tipo==='SALIDA';if(!ing&&!sal)return;const v={m:ing?'Trae':'Lleva',p:ing?'Viene con':'Va con',g:ing?'Viene con':'Va con',a:ing?'Viene con':'Va con'};document.getElementById('lblMateriales').textContent='¿'+v.m+' Materiales?';document.getElementById('lblPrecintos').textContent='¿'+v.p+' Precintos?';document.getElementById('lblGuia').textContent='¿'+v.g+' Guía?';document.getElementById('lblAcompanantes').textContent='¿'+v.a+' Acompañantes?';document.getElementById('lblProcedenciaDestino').textContent=ing?'Procedencia':'Destino'}
+function obtenerRegistros() {
+    return new Promise(function(resolve, reject) {
+        const tx = db.transaction([STORE_NAME], 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.getAll();
+        request.onsuccess = function() { resolve(request.result.reverse()); };
+        request.onerror = function() { reject(request.error); };
+    });
+}
 
-function mostrarSegundaPlaca(mostrar){document.getElementById('segundaPlacaBox').classList.toggle('hidden',!mostrar)}
-function mostrarMateriales(mostrar){document.getElementById('materialesBox').classList.toggle('hidden',!mostrar);if(!mostrar){document.getElementById('precintosBox').classList.add('hidden');document.getElementById('guiaBox').classList.add('hidden');document.getElementById('descMateriales').value=''}}
-function mostrarPrecintos(mostrar){document.getElementById('precintosBox').classList.toggle('hidden',!mostrar)}
-function mostrarGuia(mostrar){document.getElementById('guiaBox').classList.toggle('hidden',!mostrar)}
-function mostrarAcompanantes(mostrar){document.getElementById('acompanantesBox').classList.toggle('hidden',!mostrar)}
+function obtenerRegistro(id) {
+    return new Promise(function(resolve, reject) {
+        const tx = db.transaction([STORE_NAME], 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.get(id);
+        request.onsuccess = function() { resolve(request.result); };
+        request.onerror = function() { reject(request.error); };
+    });
+}
 
-async function poblarListas(){const regs=await obtenerRegistros();const c=[...new Set(regs.map(r=>r.conductor).filter(Boolean))].sort();const e=[...new Set(regs.map(r=>r.empresa).filter(Boolean))].sort();const l=[...new Set(regs.map(r=>r.procedenciaDestino).filter(Boolean))].sort();document.getElementById('listaConductores').innerHTML=c.map(x=>`<option value="${x}">`).join('');document.getElementById('listaEmpresas').innerHTML=e.map(x=>`<option value="${x}">`).join('');document.getElementById('listaLugares').innerHTML=l.map(x=>`<option value="${x}">`).join('')}
+function mostrarToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 3000);
+}
 
-document.addEventListener('DOMContentLoaded',async()=>{
-await initDB();
-const n=new Date();document.getElementById('fecha').value=n.toISOString().split('T')[0];document.getElementById('hora').value=n.toTimeString().slice(0,5);
-document.querySelectorAll('input[type="text"],textarea').forEach(el=>el.addEventListener('input',toUpper));
-document.getElementById('placa').addEventListener('input',fmtPlaca);document.getElementById('placa2').addEventListener('input',fmtPlaca);document.getElementById('searchPlaca').addEventListener('input',fmtPlaca);
-preview('fotoPrecinto1','previewPrecinto1','lblPrecinto1','FOTO CARGADA','TOMAR FOTO O ELEGIR DE GALERÍA');
-preview('fotoPrecinto2','previewPrecinto2','lblPrecinto2','FOTO CARGADA','TOMAR FOTO O ELEGIR DE GALERÍA');
-previewGuia();
+function toUpper(e) { e.target.value = e.target.value.toUpperCase(); }
 
-document.querySelectorAll('input[name="tipo"]').forEach(r=>r.addEventListener('change',e=>actualizarTextos(e.target.value)));
-document.querySelectorAll('input[name="segundaPlaca"]').forEach(r=>r.addEventListener('change',e=>mostrarSegundaPlaca(e.target.value==='SI')));
-document.querySelectorAll('input[name="materiales"]').forEach(r=>r.addEventListener('change',e=>mostrarMateriales(e.target.value==='SI')));
-document.querySelectorAll('input[name="precintos"]').forEach(r=>r.addEventListener('change',e=>mostrarPrecintos(e.target.value==='SI')));
-document.querySelectorAll('input[name="guia"]').forEach(r=>r.addEventListener('change',e=>mostrarGuia(e.target.value==='SI')));
-document.querySelectorAll('input[name="acompanantes"]').forEach(r=>r.addEventListener('change',e=>mostrarAcompanantes(e.target.value==='SI')));
+function fmtPlaca(e) {
+    let val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (val.length > 3) val = val.substring(0, 3) + '-' + val.substring(3, 7);
+    e.target.value = val;
+}
 
-document.getElementById('registroForm').addEventListener('submit',async(e)=>{e.preventDefault();await procesarFormulario()});
-document.getElementById('inputClave').addEventListener('keypress',e=>{if(e.key==='Enter')verificarClave()});
+function leerImg(file) {
+    return new Promise(function(resolve) {
+        if (!file) return resolve(null);
+        const reader = new FileReader();
+        reader.onload = function(e) { resolve(e.target.result); };
+        reader.readAsDataURL(file);
+    });
+}
 
-await cargarRegistros();await poblarListas();actualizarStats();
-if('serviceWorker'in navigator){navigator.serviceWorker.register('data:text/javascript;base64,'+btoa("self.addEventListener('install',e=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(clients.claim()));self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));"))}
+function preview(inputId, previewId, labelId, txtOk, txtDefault) {
+    const inp = document.getElementById(inputId);
+    const pre = document.getElementById(previewId);
+    const lbl = document.getElementById(labelId);
+    inp.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            pre.src = ev.target.result;
+            pre.classList.remove('hidden');
+            lbl.classList.add('has-file');
+            lbl.innerHTML = '<span class="camera-icon">✅</span>' + txtOk;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function previewGuia() {
+    const inp = document.getElementById('fotoGuia');
+    const pre = document.getElementById('previewGuia');
+    const lbl = document.getElementById('lblGuiaFoto');
+    inp.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        lbl.classList.add('has-file');
+        if (file.type === 'application/pdf') {
+            pre.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2MzMjgyOCI+PHBhdGggZD0iTTE0IDJINmMtMS4xIDAtMiAuOS0yIDJ2MTZjMCAxLjEuOSAyIDIgMmgxMmMxLjEgMCAyLS45IDItMlY4bC02LTZ6bTQuNSAxOC41aC0xM1YzaDExbDQuNSA0LjV2MTMuNXpNMTQgM1Y5aDZ6Ii8+PHBhdGggZD0iTTE2LjUgMTEuNWgtOWwuNSAzaDhsLS41LTN6IiBmaWxsPSIjZmZmIi8+PC9zdmc+';
+            pre.classList.remove('hidden');
+            pre.style.maxHeight = '80px';
+            pre.style.width = '80px';
+            pre.style.objectFit = 'contain';
+            lbl.innerHTML = '<span class="camera-icon">✅</span>PDF ADJUNTADO';
+        } else {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                pre.src = ev.target.result;
+                pre.classList.remove('hidden');
+                pre.style.maxHeight = '160px';
+                pre.style.width = 'auto';
+                lbl.innerHTML = '<span class="camera-icon">✅</span>GUIA ADJUNTADA';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+function actualizarTextos(tipo) {
+    const ing = tipo === 'INGRESO';
+    const sal = tipo === 'SALIDA';
+    if (!ing && !sal) return;
+    const m = ing ? 'Trae' : 'Lleva';
+    const p = ing ? 'Viene con' : 'Va con';
+    const g = ing ? 'Viene con' : 'Va con';
+    const a = ing ? 'Viene con' : 'Va con';
+    document.getElementById('lblMateriales').textContent = '¿' + m + ' Materiales?';
+    document.getElementById('lblPrecintos').textContent = '¿' + p + ' Precintos?';
+    document.getElementById('lblGuia').textContent = '¿' + g + ' Guia?';
+    document.getElementById('lblAcompanantes').textContent = '¿' + a + ' Acompanantes?';
+    document.getElementById('lblProcedenciaDestino').textContent = ing ? 'Procedencia' : 'Destino';
+}
+
+function mostrarSegundaPlaca(mostrar) {
+    document.getElementById('segundaPlacaBox').classList.toggle('hidden', !mostrar);
+}
+
+function mostrarMateriales(mostrar) {
+    document.getElementById('materialesBox').classList.toggle('hidden', !mostrar);
+    if (!mostrar) {
+        document.getElementById('precintosBox').classList.add('hidden');
+        document.getElementById('guiaBox').classList.add('hidden');
+        document.getElementById('descMateriales').value = '';
+    }
+}
+
+function mostrarPrecintos(mostrar) {
+    document.getElementById('precintosBox').classList.toggle('hidden', !mostrar);
+}
+
+function mostrarGuia(mostrar) {
+    document.getElementById('guiaBox').classList.toggle('hidden', !mostrar);
+}
+
+function mostrarAcompanantes(mostrar) {
+    document.getElementById('acompanantesBox').classList.toggle('hidden', !mostrar);
+}
+
+async function poblarListas() {
+    const regs = await obtenerRegistros();
+    const c = [...new Set(regs.map(function(r) { return r.conductor; }).filter(Boolean))].sort();
+    const e = [...new Set(regs.map(function(r) { return r.empresa; }).filter(Boolean))].sort();
+    const l = [...new Set(regs.map(function(r) { return r.procedenciaDestino; }).filter(Boolean))].sort();
+    document.getElementById('listaConductores').innerHTML = c.map(function(x) { return '<option value="' + x + '">'; }).join('');
+    document.getElementById('listaEmpresas').innerHTML = e.map(function(x) { return '<option value="' + x + '">'; }).join('');
+    document.getElementById('listaLugares').innerHTML = l.map(function(x) { return '<option value="' + x + '">'; }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+    await initDB();
+
+    const n = new Date();
+    document.getElementById('fecha').value = n.toISOString().split('T')[0];
+    document.getElementById('hora').value = n.toTimeString().slice(0, 5);
+
+    document.querySelectorAll('input[type="text"], textarea').forEach(function(el) {
+        el.addEventListener('input', toUpper);
+    });
+
+    document.getElementById('placa').addEventListener('input', fmtPlaca);
+    document.getElementById('placa2').addEventListener('input', fmtPlaca);
+    document.getElementById('searchPlaca').addEventListener('input', fmtPlaca);
+
+    preview('fotoPrecinto1', 'previewPrecinto1', 'lblPrecinto1', 'FOTO CARGADA', 'TOMAR FOTO O ELEGIR DE GALERIA');
+    preview('fotoPrecinto2', 'previewPrecinto2', 'lblPrecinto2', 'FOTO CARGADA', 'TOMAR FOTO O ELEGIR DE GALERIA');
+    previewGuia();
+
+    document.querySelectorAll('input[name="tipo"]').forEach(function(r) {
+        r.addEventListener('change', function(e) { actualizarTextos(e.target.value); });
+    });
+    document.querySelectorAll('input[name="segundaPlaca"]').forEach(function(r) {
+        r.addEventListener('change', function(e) { mostrarSegundaPlaca(e.target.value === 'SI'); });
+    });
+    document.querySelectorAll('input[name="materiales"]').forEach(function(r) {
+        r.addEventListener('change', function(e) { mostrarMateriales(e.target.value === 'SI'); });
+    });
+    document.querySelectorAll('input[name="precintos"]').forEach(function(r) {
+        r.addEventListener('change', function(e) { mostrarPrecintos(e.target.value === 'SI'); });
+    });
+    document.querySelectorAll('input[name="guia"]').forEach(function(r) {
+        r.addEventListener('change', function(e) { mostrarGuia(e.target.value === 'SI'); });
+    });
+    document.querySelectorAll('input[name="acompanantes"]').forEach(function(r) {
+        r.addEventListener('change', function(e) { mostrarAcompanantes(e.target.value === 'SI'); });
+    });
+
+    document.getElementById('registroForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        await procesarFormulario();
+    });
+
+    document.getElementById('inputClave').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') verificarClave();
+    });
+
+    await cargarRegistros();
+    await poblarListas();
+    actualizarStats();
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('data:text/javascript;base64,' + btoa("self.addEventListener('install',function(e){self.skipWaiting()});self.addEventListener('activate',function(e){e.waitUntil(clients.claim())});self.addEventListener('fetch',function(e){e.respondWith(fetch(e.request).catch(function(){return new Response('Offline')}))});"));
+    }
 });
 
-async function procesarFormulario(){
-const editId=document.getElementById('editId').value;
-const tipo=document.querySelector('input[name="tipo"]:checked')?.value||'';
-const materiales=document.querySelector('input[name="materiales"]:checked')?.value||'NO';
-if(materiales==='SI'){const precintos=document.querySelector('input[name="precintos"]:checked')?.value||'NO';const guia=document.querySelector('input[name="guia"]:checked')?.value||'NO';const desc=document.getElementById('descMateriales').value.trim();if(precintos==='NO'&&guia==='NO'&&!desc){mostrarToast('❌ Debe describir los materiales cuando no hay precintos ni guía');document.getElementById('descMateriales').focus();return}}
-const data={fecha:document.getElementById('fecha').value,hora:document.getElementById('hora').value,tipo:tipo,placa:document.getElementById('placa').value,segundaPlaca:document.querySelector('input[name="segundaPlaca"]:checked')?.value||'NO',placa2:document.getElementById('placa2').value,conductor:document.getElementById('conductor').value,empresa:document.getElementById('empresa').value,procedenciaDestino:document.getElementById('procedenciaDestino').value,materiales:materiales,descMateriales:document.getElementById('descMateriales').value,precintos:document.querySelector('input[name="precintos"]:checked')?.value||'NO',fotoPrecinto1:await leerImg(document.getElementById('fotoPrecinto1').files[0]),fotoPrecinto2:await leerImg(document.getElementById('fotoPrecinto2').files[0]),guia:document.querySelector('input[name="guia"]:checked')?.value||'NO',fotoGuia:await leerImg(document.getElementById('fotoGuia').files[0]),acompanantes:document.querySelector('input[name="acompanantes"]:checked')?.value||'NO',personasAcompanantes:document.getElementById('personasAcompanantes').value,observaciones:document.getElementById('observaciones').value,timestamp:new Date().toISOString()};
-if(editId){data.id=parseInt(editId);const ex=await obtenerRegistro(data.id);if(!data.fotoPrecinto1&&ex.fotoPrecinto1)data.fotoPrecinto1=ex.fotoPrecinto1;if(!data.fotoPrecinto2&&ex.fotoPrecinto2)data.fotoPrecinto2=ex.fotoPrecinto2;if(!data.fotoGuia&&ex.fotoGuia)data.fotoGuia=ex.fotoGuia}
-await guardarRegistro(data);mostrarToast(editId?'✅ Registro actualizado':'✅ Registro guardado');limpiarFormulario();await cargarRegistros();await poblarListas();actualizarStats()
+async function procesarFormulario() {
+    const editId = document.getElementById('editId').value;
+    const tipo = document.querySelector('input[name="tipo"]:checked') ? document.querySelector('input[name="tipo"]:checked').value : '';
+    const materiales = document.querySelector('input[name="materiales"]:checked') ? document.querySelector('input[name="materiales"]:checked').value : 'NO';
+
+    if (materiales === 'SI') {
+        const precintos = document.querySelector('input[name="precintos"]:checked') ? document.querySelector('input[name="precintos"]:checked').value : 'NO';
+        const guia = document.querySelector('input[name="guia"]:checked') ? document.querySelector('input[name="guia"]:checked').value : 'NO';
+        const desc = document.getElementById('descMateriales').value.trim();
+        if (precintos === 'NO' && guia === 'NO' && !desc) {
+            mostrarToast('❌ Debe describir los materiales cuando no hay precintos ni guia');
+            document.getElementById('descMateriales').focus();
+            return;
+        }
+    }
+
+    const data = {
+        fecha: document.getElementById('fecha').value,
+        hora: document.getElementById('hora').value,
+        tipo: tipo,
+        placa: document.getElementById('placa').value,
+        segundaPlaca: document.querySelector('input[name="segundaPlaca"]:checked') ? document.querySelector('input[name="segundaPlaca"]:checked').value : 'NO',
+        placa2: document.getElementById('placa2').value,
+        conductor: document.getElementById('conductor').value,
+        empresa: document.getElementById('empresa').value,
+        procedenciaDestino: document.getElementById('procedenciaDestino').value,
+        materiales: materiales,
+        descMateriales: document.getElementById('descMateriales').value,
+        precintos: document.querySelector('input[name="precintos"]:checked') ? document.querySelector('input[name="precintos"]:checked').value : 'NO',
+        fotoPrecinto1: await leerImg(document.getElementById('fotoPrecinto1').files[0]),
+        fotoPrecinto2: await leerImg(document.getElementById('fotoPrecinto2').files[0]),
+        guia: document.querySelector('input[name="guia"]:checked') ? document.querySelector('input[name="guia"]:checked').value : 'NO',
+        fotoGuia: await leerImg(document.getElementById('fotoGuia').files[0]),
+        acompanantes: document.querySelector('input[name="acompanantes"]:checked') ? document.querySelector('input[name="acompanantes"]:checked').value : 'NO',
+        personasAcompanantes: document.getElementById('personasAcompanantes').value,
+        observaciones: document.getElementById('observaciones').value,
+        timestamp: new Date().toISOString()
+    };
+
+    if (editId) {
+        data.id = parseInt(editId);
+        const ex = await obtenerRegistro(data.id);
+        if (ex) {
+            if (!data.fotoPrecinto1 && ex.fotoPrecinto1) data.fotoPrecinto1 = ex.fotoPrecinto1;
+            if (!data.fotoPrecinto2 && ex.fotoPrecinto2) data.fotoPrecinto2 = ex.fotoPrecinto2;
+            if (!data.fotoGuia && ex.fotoGuia) data.fotoGuia = ex.fotoGuia;
+        }
+    }
+
+    await guardarRegistro(data);
+    mostrarToast(editId ? '✅ Registro actualizado' : '✅ Registro guardado');
+    limpiarFormulario();
+    await cargarRegistros();
+    await poblarListas();
+    actualizarStats();
 }
 
-function limpiarFormulario(){
-document.getElementById('registroForm').reset();document.getElementById('editId').value='';
-document.getElementById('btnGuardar').innerHTML='<span>💾</span> GUARDAR REGISTRO';document.getElementById('btnCancelar').style.display='none';
-const n=new Date();document.getElementById('fecha').value=n.toISOString().split('T')[0];document.getElementById('hora').value=n.toTimeString().slice(0,5);
-mostrarSegundaPlaca(false);mostrarMateriales(false);mostrarPrecintos(false);mostrarGuia(false);mostrarAcompanantes(false);
-['previewPrecinto1','previewPrecinto2','previewGuia'].forEach(id=>{document.getElementById(id).classList.add('hidden');document.getElementById(id).src=''});
-document.getElementById('lblPrecinto1').classList.remove('has-file');document.getElementById('lblPrecinto1').innerHTML='<span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERÍA';
-document.getElementById('lblPrecinto2').classList.remove('has-file');document.getElementById('lblPrecinto2').innerHTML='<span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERÍA';
-document.getElementById('lblGuiaFoto').classList.remove('has-file');document.getElementById('lblGuiaFoto').innerHTML='<span class="camera-icon">📄</span>ESCANEAR / ADJUNTAR GUÍA O ELEGIR DE GALERÍA';
-actualizarTextos('');document.getElementById('lblProcedenciaDestino').textContent='Procedencia / Destino';
+function limpiarFormulario() {
+    document.getElementById('registroForm').reset();
+    document.getElementById('editId').value = '';
+    document.getElementById('btnGuardar').innerHTML = '<span>💾</span> GUARDAR REGISTRO';
+    document.getElementById('btnCancelar').style.display = 'none';
+
+    const n = new Date();
+    document.getElementById('fecha').value = n.toISOString().split('T')[0];
+    document.getElementById('hora').value = n.toTimeString().slice(0, 5);
+
+    mostrarSegundaPlaca(false);
+    mostrarMateriales(false);
+    mostrarPrecintos(false);
+    mostrarGuia(false);
+    mostrarAcompanantes(false);
+
+    document.getElementById('previewPrecinto1').classList.add('hidden');
+    document.getElementById('previewPrecinto1').src = '';
+    document.getElementById('previewPrecinto2').classList.add('hidden');
+    document.getElementById('previewPrecinto2').src = '';
+    document.getElementById('previewGuia').classList.add('hidden');
+    document.getElementById('previewGuia').src = '';
+
+    document.getElementById('lblPrecinto1').classList.remove('has-file');
+    document.getElementById('lblPrecinto1').innerHTML = '<span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERIA';
+    document.getElementById('lblPrecinto2').classList.remove('has-file');
+    document.getElementById('lblPrecinto2').innerHTML = '<span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERIA';
+    document.getElementById('lblGuiaFoto').classList.remove('has-file');
+    document.getElementById('lblGuiaFoto').innerHTML = '<span class="camera-icon">📄</span>ESCANEAR / ADJUNTAR GUIA O ELEGIR DE GALERIA';
+
+    actualizarTextos('');
+    document.getElementById('lblProcedenciaDestino').textContent = 'Procedencia / Destino';
 }
 
-async function cargarRegistros(){const regs=await obtenerRegistros();renderizarTabla(regs)}
-function renderizarTabla(regs){
-const tbody=document.getElementById('tbodyRegistros');
-if(regs.length===0){tbody.innerHTML='<tr><td colspan="16" class="empty-state">No hay registros guardados</td></tr>';return}
-tbody.innerHTML=regs.map((r,i)=>{
-const fotos=[];if(r.fotoPrecinto1)fotos.push({src:r.fotoPrecinto1,label:'P1'});if(r.fotoPrecinto2)fotos.push({src:r.fotoPrecinto2,label:'P2'});if(r.fotoGuia){const isPdf=r.fotoGuia.includes('data:application/pdf')||r.fotoGuia.includes('pdf');fotos.push({src:r.fotoGuia,label:isPdf?'PDF':'G'})}
-const fotosHtml=fotos.length>0?fotos.map(f=>{if(f.label==='PDF')return`<span style="display:inline-block;padding:4px 8px;background:#c62828;color:#fff;border-radius:4px;font-size:0.7rem;font-weight:bold;cursor:pointer" onclick="verImagen('${f.src}')" title="PDF">PDF</span>`;return`<img src="${f.src}" class="img-thumb" onclick="verImagen('${f.src}')" title="${f.label}">`}).join(' '):'<span style="color:#999">-</span>';
-const badge=r.tipo==='INGRESO'?'badge-ingreso':'badge-salida';
-const descMat=r.descMateriales?r.descMateriales.substring(0,25)+(r.descMateriales.length>25?'...':'')':'-';
-const placa2=r.segundaPlaca==='SI'?r.placa2:'-';
-return`<tr><td>${regs.length-i}</td><td>${r.fecha}</td><td>${r.hora}</td><td><span class="badge ${badge}">${r.tipo}</span></td><td><strong>${r.placa}</strong></td><td>${placa2}</td><td>${r.conductor}</td><td>${r.empresa}</td><td>${r.procedenciaDestino}</td><td>${r.materiales}</td><td title="${r.descMateriales||''}">${descMat}</td><td>${r.precintos}</td><td>${r.guia}</td><td>${r.acompanantes}</td><td>${fotosHtml}</td><td><button class="btn" style="padding:6px 16px;font-size:0.85rem;background:var(--primary);color:#fff" onclick="abrirModalEditar(${r.id})">✏️ EDITAR</button></td></tr>`
-}).join('')
-}
-function verImagen(src){document.getElementById('imgViewerSrc').src=src;document.getElementById('imgViewer').classList.add('active')}
-
-async function filtrarRegistros(){
-const placa=document.getElementById('searchPlaca').value.toUpperCase();
-const conductor=document.getElementById('searchConductor').value.toUpperCase();
-const fecha=document.getElementById('searchFecha').value;
-let regs=await obtenerRegistros();
-if(placa)regs=regs.filter(r=>r.placa.includes(placa)||(r.placa2&&r.placa2.includes(placa)));
-if(conductor)regs=regs.filter(r=>r.conductor.includes(conductor));
-if(fecha)regs=regs.filter(r=>r.fecha===fecha);
-renderizarTabla(regs)
-}
-function limpiarFiltros(){document.getElementById('searchPlaca').value='';document.getElementById('searchConductor').value='';document.getElementById('searchFecha').value='';cargarRegistros()}
-
-function abrirModalEditar(id){
-pendingId=id;
-document.getElementById('modalClave').classList.add('active');
-document.getElementById('inputClave').value='';
-setTimeout(()=>{document.getElementById('inputClave').focus();document.getElementById('inputClave').click()},300)
-}
-function cerrarModal(){document.getElementById('modalClave').classList.remove('active');pendingId=null}
-async function verificarClave(){
-const clave=document.getElementById('inputClave').value;
-if(clave!=='0000'){mostrarToast('❌ Clave incorrecta');return}
-cerrarModal();
-if(pendingId){mostrarToast('⏳ Cargando...');await editarRegistro(pendingId)}
+async function cargarRegistros() {
+    const regs = await obtenerRegistros();
+    renderizarTabla(regs);
 }
 
-async function editarRegistro(id){
-try{
-const r=await obtenerRegistro(id);
-if(!r){mostrarToast('❌ Registro no encontrado');return}
-
-// Campos básicos
-document.getElementById('editId').value=r.id;
-document.getElementById('fecha').value=r.fecha;
-document.getElementById('hora').value=r.hora;
-document.getElementById('placa').value=r.placa||'';
-document.getElementById('conductor').value=r.conductor||'';
-document.getElementById('empresa').value=r.empresa||'';
-document.getElementById('procedenciaDestino').value=r.procedenciaDestino||'';
-document.getElementById('observaciones').value=r.observaciones||'';
-document.getElementById('personasAcompanantes').value=r.personasAcompanantes||'';
-document.getElementById('descMateriales').value=r.descMateriales||'';
-document.getElementById('placa2').value=r.placa2||'';
-
-// Tipo
-if(r.tipo==='INGRESO')document.getElementById('tipoIngreso').checked=true;else document.getElementById('tipoSalida').checked=true;
-actualizarTextos(r.tipo);
-
-// Segunda placa
-if(r.segundaPlaca==='SI'){document.getElementById('segPlacaSi').checked=true;mostrarSegundaPlaca(true)}else{document.getElementById('segPlacaNo').checked=true;mostrarSegundaPlaca(false)}
-
-// Materiales
-if(r.materiales==='SI'){document.getElementById('matSi').checked=true;mostrarMateriales(true)}else{document.getElementById('matNo').checked=true;mostrarMateriales(false)}
-
-// Precintos
-if(r.precintos==='SI'){document.getElementById('precSi').checked=true;mostrarPrecintos(true)}else{document.getElementById('precNo').checked=true;mostrarPrecintos(false)}
-
-// Fotos precintos
-if(r.fotoPrecinto1){document.getElementById('previewPrecinto1').src=r.fotoPrecinto1;document.getElementById('previewPrecinto1').classList.remove('hidden');document.getElementById('lblPrecinto1').classList.add('has-file');document.getElementById('lblPrecinto1').innerHTML='<span class="camera-icon">✅</span>FOTO CARGADA'}else{document.getElementById('previewPrecinto1').classList.add('hidden');document.getElementById('previewPrecinto1').src='';document.getElementById('lblPrecinto1').classList.remove('has-file');document.getElementById('lblPrecinto1').innerHTML='<span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERÍA'}
-if(r.fotoPrecinto2){document.getElementById('previewPrecinto2').src=r.fotoPrecinto2;document.getElementById('previewPrecinto2').classList.remove('hidden');document.getElementById('lblPrecinto2').classList.add('has-file');document.getElementById('lblPrecinto2').innerHTML='<span class="camera-icon">✅</span>FOTO CARGADA'}else{document.getElementById('previewPrecinto2').classList.add('hidden');document.getElementById('previewPrecinto2').src='';document.getElementById('lblPrecinto2').classList.remove('has-file');document.getElementById('lblPrecinto2').innerHTML='<span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERÍA'}
-
-// Guía
-if(r.guia==='SI'){document.getElementById('guiaSi').checked=true;mostrarGuia(true)}else{document.getElementById('guiaNo').checked=true;mostrarGuia(false)}
-if(r.fotoGuia){document.getElementById('previewGuia').src=r.fotoGuia;document.getElementById('previewGuia').classList.remove('hidden');document.getElementById('lblGuiaFoto').classList.add('has-file');document.getElementById('lblGuiaFoto').innerHTML='<span class="camera-icon">✅</span>GUÍA ADJUNTADA'}else{document.getElementById('previewGuia').classList.add('hidden');document.getElementById('previewGuia').src='';document.getElementById('lblGuiaFoto').classList.remove('has-file');document.getElementById('lblGuiaFoto').innerHTML='<span class="camera-icon">📄</span>ESCANEAR / ADJUNTAR GUÍA O ELEGIR DE GALERÍA'}
-
-// Acompañantes
-if(r.acompanantes==='SI'){document.getElementById('acompSi').checked=true;mostrarAcompanantes(true)}else{document.getElementById('acompNo').checked=true;mostrarAcompanantes(false)}
-
-// Botones
-document.getElementById('btnGuardar').innerHTML='<span>💾</span> ACTUALIZAR REGISTRO';
-document.getElementById('btnCancelar').style.display='inline-flex';
-
-mostrarToast('✏️ Registro cargado para editar');
-window.scrollTo({top:0,behavior:'smooth'});
-}catch(err){console.error('Error editar:',err);mostrarToast('❌ Error: '+err.message)}
+function renderizarTabla(regs) {
+    const tbody = document.getElementById('tbodyRegistros');
+    if (regs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="16" class="empty-state">No hay registros guardados</td></tr>';
+        return;
+    }
+    tbody.innerHTML = regs.map(function(r, i) {
+        const fotos = [];
+        if (r.fotoPrecinto1) fotos.push({src: r.fotoPrecinto1, label: 'P1'});
+        if (r.fotoPrecinto2) fotos.push({src: r.fotoPrecinto2, label: 'P2'});
+        if (r.fotoGuia) {
+            const isPdf = r.fotoGuia.indexOf('data:application/pdf') >= 0 || r.fotoGuia.indexOf('pdf') >= 0;
+            fotos.push({src: r.fotoGuia, label: isPdf ? 'PDF' : 'G'});
+        }
+        let fotosHtml = '<span style="color:#999">-</span>';
+        if (fotos.length > 0) {
+            fotosHtml = fotos.map(function(f) {
+                if (f.label === 'PDF') {
+                    return '<span style="display:inline-block;padding:4px 8px;background:#c62828;color:#fff;border-radius:4px;font-size:0.7rem;font-weight:bold;cursor:pointer" onclick="verImagen(\'' + f.src + '\')" title="PDF">PDF</span>';
+                }
+                return '<img src="' + f.src + '" class="img-thumb" onclick="verImagen(\'' + f.src + '\')" title="' + f.label + '">';
+            }).join(' ');
+        }
+        const badge = r.tipo === 'INGRESO' ? 'badge-ingreso' : 'badge-salida';
+        const descMat = r.descMateriales ? (r.descMateriales.substring(0, 25) + (r.descMateriales.length > 25 ? '...' : '')) : '-';
+        const placa2 = r.segundaPlaca === 'SI' ? r.placa2 : '-';
+        return '<tr><td>' + (regs.length - i) + '</td><td>' + r.fecha + '</td><td>' + r.hora + '</td><td><span class="badge ' + badge + '">' + r.tipo + '</span></td><td><strong>' + r.placa + '</strong></td><td>' + placa2 + '</td><td>' + r.conductor + '</td><td>' + r.empresa + '</td><td>' + r.procedenciaDestino + '</td><td>' + r.materiales + '</td><td title="' + (r.descMateriales || '') + '">' + descMat + '</td><td>' + r.precintos + '</td><td>' + r.guia + '</td><td>' + r.acompanantes + '</td><td>' + fotosHtml + '</td><td><button class="btn" style="padding:6px 16px;font-size:0.85rem;background:var(--primary);color:#fff" onclick="abrirModalEditar(' + r.id + ')">✏️ EDITAR</button></td></tr>';
+    }).join('');
 }
 
-async function actualizarStats(){
-const regs=await obtenerRegistros();
-const hoy=new Date().toISOString().split('T')[0];
-document.getElementById('statTotal').textContent=regs.length;
-document.getElementById('statIngresos').textContent=regs.filter(r=>r.fecha===hoy&&r.tipo==='INGRESO').length;
-document.getElementById('statSalidas').textContent=regs.filter(r=>r.fecha===hoy&&r.tipo==='SALIDA').length
+function verImagen(src) {
+    document.getElementById('imgViewerSrc').src = src;
+    document.getElementById('imgViewer').classList.add('active');
 }
 
-async function exportarExcel(){
-const regs=await obtenerRegistros();if(regs.length===0){mostrarToast('❌ No hay registros');return}
-const data=regs.map(r=>({'FECHA':r.fecha,'HORA':r.hora,'TIPO':r.tipo,'PLACA':r.placa,'SEGUNDA PLACA':r.segundaPlaca==='SI'?r.placa2:'NO','CONDUCTOR':r.conductor,'EMPRESA':r.empresa,'PROCEDENCIA/DESTINO':r.procedenciaDestino,'MATERIALES':r.materiales,'DESCRIPCION MATERIALES':r.descMateriales||'','PRECINTOS':r.precintos,'GUÍA':r.guia,'ACOMPAÑANTES':r.acompanantes,'PERSONAS ACOMPAÑANTES':r.personasAcompanantes||'','OBSERVACIONES':r.observaciones||''}));
-const ws=XLSX.utils.json_to_sheet(data);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Registros');
-XLSX.writeFile(wb,'Registro_Vehicular_'+new Date().toISOString().split('T')[0]+'.xlsx');mostrarToast('📊 Excel descargado')
+async function filtrarRegistros() {
+    const placa = document.getElementById('searchPlaca').value.toUpperCase();
+    const conductor = document.getElementById('searchConductor').value.toUpperCase();
+    const fecha = document.getElementById('searchFecha').value;
+    let regs = await obtenerRegistros();
+    if (placa) regs = regs.filter(function(r) { return r.placa.indexOf(placa) >= 0 || (r.placa2 && r.placa2.indexOf(placa) >= 0); });
+    if (conductor) regs = regs.filter(function(r) { return r.conductor.indexOf(conductor) >= 0; });
+    if (fecha) regs = regs.filter(function(r) { return r.fecha === fecha; });
+    renderizarTabla(regs);
 }
 
-async function exportarPDF(){
-const regs=await obtenerRegistros();if(regs.length===0){mostrarToast('❌ No hay registros');return}
-const{jsPDF}=window.jspdf;const doc=new jsPDF({orientation:'landscape'});
-doc.setFillColor(26,35,126);doc.rect(0,0,297,25,'F');doc.setTextColor(255,255,255);doc.setFontSize(18);doc.text('REGISTRO VEHICULAR - CONTROL DE ACCESO',148,15,{align:'center'});
-doc.setTextColor(0,0,0);doc.setFontSize(10);doc.text('Generado: '+new Date().toLocaleString('es-ES'),14,32);doc.text('Desarrollado por Edward Quezada M.',280,32,{align:'right'});
-const data=regs.map(r=>[r.fecha,r.hora,r.tipo,r.placa,r.segundaPlaca==='SI'?r.placa2:'-',r.conductor,r.empresa,r.procedenciaDestino,r.materiales,(r.descMateriales||'-').substring(0,20),r.precintos,r.guia,r.acompanantes,(r.personasAcompanantes||'-').substring(0,20),(r.observaciones||'-').substring(0,30)]);
-doc.autoTable({head:[['FECHA','HORA','TIPO','PLACA','PLACA 2','CONDUCTOR','EMPRESA','PROC/DEST','MAT.','DESC.MAT.','PREC.','GUÍA','ACOMP.','PERSONAS','OBSERV.']],body:data,startY:38,styles:{fontSize:7,cellPadding:2},headStyles:{fillColor:[26,35,126],textColor:255,fontStyle:'bold'},alternateRowStyles:{fillColor:[245,245,245]},columnStyles:{0:{cellWidth:18},1:{cellWidth:13},2:{cellWidth:16},3:{cellWidth:20},4:{cellWidth:20},5:{cellWidth:28},6:{cellWidth:22},7:{cellWidth:22},8:{cellWidth:11},9:{cellWidth:24},10:{cellWidth:11},11:{cellWidth:11},12:{cellWidth:12},13:{cellWidth:26},14:{cellWidth:30}}});
-doc.save('Registro_Vehicular_'+new Date().toISOString().split('T')[0]+'.pdf');mostrarToast('📄 PDF descargado')
+function limpiarFiltros() {
+    document.getElementById('searchPlaca').value = '';
+    document.getElementById('searchConductor').value = '';
+    document.getElementById('searchFecha').value = '';
+    cargarRegistros();
+}
+
+function abrirModalEditar(id) {
+    pendingId = id;
+    document.getElementById('modalClave').classList.add('active');
+    document.getElementById('inputClave').value = '';
+    setTimeout(function() {
+        document.getElementById('inputClave').focus();
+        document.getElementById('inputClave').click();
+    }, 300);
+}
+
+function cerrarModal() {
+    document.getElementById('modalClave').classList.remove('active');
+    pendingId = null;
+}
+
+async function verificarClave() {
+    const clave = document.getElementById('inputClave').value;
+    if (clave !== '0000') {
+        mostrarToast('❌ Clave incorrecta');
+        return;
+    }
+    cerrarModal();
+    if (pendingId) {
+        mostrarToast('⏳ Cargando...');
+        await editarRegistro(pendingId);
+    }
+}
+
+async function editarRegistro(id) {
+    try {
+        const r = await obtenerRegistro(id);
+        if (!r) {
+            mostrarToast('❌ Registro no encontrado');
+            return;
+        }
+
+        document.getElementById('editId').value = r.id;
+        document.getElementById('fecha').value = r.fecha;
+        document.getElementById('hora').value = r.hora;
+        document.getElementById('placa').value = r.placa || '';
+        document.getElementById('conductor').value = r.conductor || '';
+        document.getElementById('empresa').value = r.empresa || '';
+        document.getElementById('procedenciaDestino').value = r.procedenciaDestino || '';
+        document.getElementById('observaciones').value = r.observaciones || '';
+        document.getElementById('personasAcompanantes').value = r.personasAcompanantes || '';
+        document.getElementById('descMateriales').value = r.descMateriales || '';
+        document.getElementById('placa2').value = r.placa2 || '';
+
+        if (r.tipo === 'INGRESO') document.getElementById('tipoIngreso').checked = true;
+        else document.getElementById('tipoSalida').checked = true;
+        actualizarTextos(r.tipo);
+
+        if (r.segundaPlaca === 'SI') {
+            document.getElementById('segPlacaSi').checked = true;
+            mostrarSegundaPlaca(true);
+        } else {
+            document.getElementById('segPlacaNo').checked = true;
+            mostrarSegundaPlaca(false);
+        }
+
+        if (r.materiales === 'SI') {
+            document.getElementById('matSi').checked = true;
+            mostrarMateriales(true);
+        } else {
+            document.getElementById('matNo').checked = true;
+            mostrarMateriales(false);
+        }
+
+        if (r.precintos === 'SI') {
+            document.getElementById('precSi').checked = true;
+            mostrarPrecintos(true);
+        } else {
+            document.getElementById('precNo').checked = true;
+            mostrarPrecintos(false);
+        }
+
+        if (r.fotoPrecinto1) {
+            document.getElementById('previewPrecinto1').src = r.fotoPrecinto1;
+            document.getElementById('previewPrecinto1').classList.remove('hidden');
+            document.getElementById('lblPrecinto1').classList.add('has-file');
+            document.getElementById('lblPrecinto1').innerHTML = '<span class="camera-icon">✅</span>FOTO CARGADA';
+        } else {
+            document.getElementById('previewPrecinto1').classList.add('hidden');
+            document.getElementById('previewPrecinto1').src = '';
+            document.getElementById('lblPrecinto1').classList.remove('has-file');
+            document.getElementById('lblPrecinto1').innerHTML = '<span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERIA';
+        }
+        if (r.fotoPrecinto2) {
+            document.getElementById('previewPrecinto2').src = r.fotoPrecinto2;
+            document.getElementById('previewPrecinto2').classList.remove('hidden');
+            document.getElementById('lblPrecinto2').classList.add('has-file');
+            document.getElementById('lblPrecinto2').innerHTML = '<span class="camera-icon">✅</span>FOTO CARGADA';
+        } else {
+            document.getElementById('previewPrecinto2').classList.add('hidden');
+            document.getElementById('previewPrecinto2').src = '';
+            document.getElementById('lblPrecinto2').classList.remove('has-file');
+            document.getElementById('lblPrecinto2').innerHTML = '<span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERIA';
+        }
+
+        if (r.guia === 'SI') {
+            document.getElementById('guiaSi').checked = true;
+            mostrarGuia(true);
+        } else {
+            document.getElementById('guiaNo').checked = true;
+            mostrarGuia(false);
+        }
+        if (r.fotoGuia) {
+            document.getElementById('previewGuia').src = r.fotoGuia;
+            document.getElementById('previewGuia').classList.remove('hidden');
+            document.getElementById('lblGuiaFoto').classList.add('has-file');
+            document.getElementById('lblGuiaFoto').innerHTML = '<span class="camera-icon">✅</span>GUIA ADJUNTADA';
+        } else {
+            document.getElementById('previewGuia').classList.add('hidden');
+            document.getElementById('previewGuia').src = '';
+            document.getElementById('lblGuiaFoto').classList.remove('has-file');
+            document.getElementById('lblGuiaFoto').innerHTML = '<span class="camera-icon">📄</span>ESCANEAR / ADJUNTAR GUIA O ELEGIR DE GALERIA';
+        }
+
+        if (r.acompanantes === 'SI') {
+            document.getElementById('acompSi').checked = true;
+            mostrarAcompanantes(true);
+        } else {
+            document.getElementById('acompNo').checked = true;
+            mostrarAcompanantes(false);
+        }
+
+        document.getElementById('btnGuardar').innerHTML = '<span>💾</span> ACTUALIZAR REGISTRO';
+        document.getElementById('btnCancelar').style.display = 'inline-flex';
+
+        mostrarToast('✏️ Registro cargado para editar');
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    } catch (err) {
+        console.error('Error editar:', err);
+        mostrarToast('❌ Error: ' + err.message);
+    }
+}
+
+async function actualizarStats() {
+    const regs = await obtenerRegistros();
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('statTotal').textContent = regs.length;
+    document.getElementById('statIngresos').textContent = regs.filter(function(r) { return r.fecha === hoy && r.tipo === 'INGRESO'; }).length;
+    document.getElementById('statSalidas').textContent = regs.filter(function(r) { return r.fecha === hoy && r.tipo === 'SALIDA'; }).length;
+}
+
+async function exportarExcel() {
+    const regs = await obtenerRegistros();
+    if (regs.length === 0) { mostrarToast('❌ No hay registros'); return; }
+    const data = regs.map(function(r) {
+        return {
+            'FECHA': r.fecha, 'HORA': r.hora, 'TIPO': r.tipo, 'PLACA': r.placa,
+            'SEGUNDA PLACA': r.segundaPlaca === 'SI' ? r.placa2 : 'NO',
+            'CONDUCTOR': r.conductor, 'EMPRESA': r.empresa, 'PROCEDENCIA/DESTINO': r.procedenciaDestino,
+            'MATERIALES': r.materiales, 'DESCRIPCION MATERIALES': r.descMateriales || '',
+            'PRECINTOS': r.precintos, 'GUIA': r.guia, 'ACOMPANANTES': r.acompanantes,
+            'PERSONAS ACOMPANANTES': r.personasAcompanantes || '', 'OBSERVACIONES': r.observaciones || ''
+        };
+    });
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Registros');
+    XLSX.writeFile(wb, 'Registro_Vehicular_' + new Date().toISOString().split('T')[0] + '.xlsx');
+    mostrarToast('📊 Excel descargado');
+}
+
+async function exportarPDF() {
+    const regs = await obtenerRegistros();
+    if (regs.length === 0) { mostrarToast('❌ No hay registros'); return; }
+    const jsPDF = window.jspdf.jsPDF;
+    const doc = new jsPDF({orientation: 'landscape'});
+    doc.setFillColor(26, 35, 126);
+    doc.rect(0, 0, 297, 25, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.text('REGISTRO VEHICULAR - CONTROL DE ACCESO', 148, 15, {align: 'center'});
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(10);
+    doc.text('Generado: ' + new Date().toLocaleString('es-ES'), 14, 32);
+    doc.text('Desarrollado por Edward Quezada M.', 280, 32, {align: 'right'});
+    const data = regs.map(function(r) {
+        return [r.fecha, r.hora, r.tipo, r.placa, r.segundaPlaca === 'SI' ? r.placa2 : '-', r.conductor, r.empresa, r.procedenciaDestino, r.materiales, (r.descMateriales || '-').substring(0, 20), r.precintos, r.guia, r.acompanantes, (r.personasAcompanantes || '-').substring(0, 20), (r.observaciones || '-').substring(0, 30)];
+    });
+    doc.autoTable({
+        head: [['FECHA', 'HORA', 'TIPO', 'PLACA', 'PLACA 2', 'CONDUCTOR', 'EMPRESA', 'PROC/DEST', 'MAT.', 'DESC.MAT.', 'PREC.', 'GUIA', 'ACOMP.', 'PERSONAS', 'OBSERV.']],
+        body: data, startY: 38, styles: {fontSize: 7, cellPadding: 2},
+        headStyles: {fillColor: [26, 35, 126], textColor: 255, fontStyle: 'bold'},
+        alternateRowStyles: {fillColor: [245, 245, 245]},
+        columnStyles: {0: {cellWidth: 18}, 1: {cellWidth: 13}, 2: {cellWidth: 16}, 3: {cellWidth: 20}, 4: {cellWidth: 20}, 5: {cellWidth: 28}, 6: {cellWidth: 22}, 7: {cellWidth: 22}, 8: {cellWidth: 11}, 9: {cellWidth: 24}, 10: {cellWidth: 11}, 11: {cellWidth: 11}, 12: {cellWidth: 12}, 13: {cellWidth: 26}, 14: {cellWidth: 30}}
+    });
+    doc.save('Registro_Vehicular_' + new Date().toISOString().split('T')[0] + '.pdf');
+    mostrarToast('📄 PDF descargado');
 }
 </script>
 </body>
