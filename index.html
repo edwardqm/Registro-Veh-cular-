@@ -567,9 +567,9 @@ function renderizarTabla(regs) {
         if (fotos.length > 0) {
             fotosHtml = fotos.map(function(f) {
                 if (f.label === 'PDF') {
-                    return '<span style="display:inline-block;padding:4px 8px;background:#c62828;color:#fff;border-radius:4px;font-size:0.7rem;font-weight:bold;cursor:pointer" onclick="verImagen(\'' + f.src + '\')" title="PDF">PDF</span>';
+                    return '<span style="display:inline-block;padding:4px 8px;background:#c62828;color:#fff;border-radius:4px;font-size:0.7rem;font-weight:bold;cursor:pointer" onclick="verImagen('' + f.src + '')" title="PDF">PDF</span>';
                 }
-                return '<img src="' + f.src + '" class="img-thumb" onclick="verImagen(\'' + f.src + '\')" title="' + f.label + '">';
+                return '<img src="' + f.src + '" class="img-thumb" onclick="verImagen('' + f.src + '')" title="' + f.label + '">';
             }).join(' ');
         }
         const badge = r.tipo === 'INGRESO' ? 'badge-ingreso' : 'badge-salida';
