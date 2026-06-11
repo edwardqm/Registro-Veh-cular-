@@ -58,7 +58,10 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 .modal-overlay.active{display:flex}
 .modal{background:#fff;padding:30px;border-radius:16px;max-width:400px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
 .modal h3{margin-bottom:15px;color:var(--primary);font-size:1.2rem}
-.modal input{margin-bottom:15px;text-align:center;font-size:1.4rem;letter-spacing:6px;font-weight:700;padding:14px;border:2px solid var(--border);border-radius:10px;width:100%}
+.modal input{margin-bottom:15px;text-align:center;font-size:1.4rem;letter-spacing:6px;font-weight:700;padding:14px;border:2px solid var(--border);border-radius:10px;width:100%;transition:border-color 0.2s,background 0.2s}
+@keyframes shakeClave{0%,100%{transform:translateX(0)}15%{transform:translateX(-8px)}30%{transform:translateX(8px)}45%{transform:translateX(-6px)}60%{transform:translateX(6px)}75%{transform:translateX(-4px)}90%{transform:translateX(4px)}}
+@keyframes highlightFila{0%{background:#fff3cd}50%{background:#ffe082}100%{background:#fff3cd}}
+#formCard.edit-mode{border:2px solid #ff6f00!important;box-shadow:0 4px 20px rgba(255,111,0,0.25)!important}
 .footer{text-align:center;padding:25px 20px;color:#777;font-size:0.85rem;border-top:1px solid var(--border);margin-top:20px;background:#fff;border-radius:20px 20px 0 0}
 .footer strong{color:var(--primary)}
 .empty-state{text-align:center;padding:40px;color:#999;font-size:1rem}
@@ -88,8 +91,15 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 <div class="stat-card" style="background:linear-gradient(135deg,var(--accent) 0%,#ff8f00 100%)"><h3 id="statSalidas">0</h3><p>Salidas Hoy</p></div>
 </div>
 
-<div class="card">
-<div class="card-title">📝 Nuevo Registro</div>
+<div class="card" id="formCard">
+<div class="card-title" id="cardTitle">📝 Nuevo Registro</div>
+<div id="editBanner" style="display:none;background:linear-gradient(135deg,#ff6f00,#ff8f00);color:#fff;border-radius:10px;padding:14px 18px;margin-bottom:18px;font-weight:700;font-size:0.95rem;align-items:center;gap:10px">
+  <span style="font-size:1.4rem">✏️</span>
+  <div>
+    <div style="font-size:1rem">MODO EDICION ACTIVO</div>
+    <div id="editBannerSub" style="font-size:0.8rem;opacity:0.9;font-weight:500;margin-top:2px">Modifique los campos y presione ACTUALIZAR REGISTRO</div>
+  </div>
+</div>
 <form id="registroForm">
 <input type="hidden" id="editId" value="">
 <div class="grid-2">
@@ -205,7 +215,8 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 <div class="modal">
 <h3>🔒 Ingrese la Clave</h3>
 <p style="margin-bottom:15px;color:#666;font-size:0.9rem">Para editar el registro</p>
-<input type="tel" id="inputClave" placeholder="0000" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
+<input type="tel" id="inputClave" placeholder="0000" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off" onkeydown="if(event.key==='Enter')verificarClave()">
+<div id="errorClave" style="display:none;background:#ffebee;border:2px solid #c62828;border-radius:10px;padding:12px 15px;margin-bottom:15px;color:#c62828;font-weight:700;font-size:0.95rem;text-align:center">⛔ CLAVE INCORRECTA — Intente nuevamente</div>
 <div class="btn-group" style="justify-content:center">
 <button class="btn btn-primary" onclick="verificarClave()">✅ ACEPTAR</button>
 <button class="btn btn-danger" onclick="cerrarModal()">❌ CANCELAR</button>
@@ -503,11 +514,22 @@ async function procesarFormulario() {
     }
 
     await guardarRegistro(data);
-    mostrarToast(editId ? '✅ Registro actualizado' : '✅ Registro guardado');
+    const esEdicion = !!editId;
+    const idEditado = esEdicion ? parseInt(editId) : null;
+    mostrarToast(esEdicion ? '✅ Registro actualizado correctamente' : '✅ Registro guardado');
     limpiarFormulario();
     await cargarRegistros();
     await poblarListas();
     actualizarStats();
+    if (esEdicion && idEditado) {
+        setTimeout(function() {
+            // Scroll a la tabla
+            const tabla = document.getElementById('tablaRegistros');
+            if (tabla) tabla.closest('.card').scrollIntoView({behavior: 'smooth', block: 'start'});
+            // Resaltar fila editada
+            resaltarFila(idEditado);
+        }, 500);
+    }
 }
 
 function limpiarFormulario() {
@@ -539,6 +561,12 @@ function limpiarFormulario() {
     document.getElementById('lblPrecinto2').innerHTML = '<span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERIA';
     document.getElementById('lblGuiaFoto').classList.remove('has-file');
     document.getElementById('lblGuiaFoto').innerHTML = '<span class="camera-icon">📄</span>ESCANEAR / ADJUNTAR GUIA O ELEGIR DE GALERIA';
+
+    // Resetear modo edición
+    document.getElementById('editBanner').style.display = 'none';
+    document.getElementById('cardTitle').innerHTML = '📝 Nuevo Registro';
+    document.getElementById('formCard').style.border = '';
+    document.getElementById('formCard').style.boxShadow = '';
 
     actualizarTextos('');
     document.getElementById('lblProcedenciaDestino').textContent = 'Procedencia / Destino';
@@ -614,19 +642,39 @@ function abrirModalEditar(id) {
 
 function cerrarModal() {
     document.getElementById('modalClave').classList.remove('active');
+    document.getElementById('errorClave').style.display = 'none';
+    const inp = document.getElementById('inputClave');
+    inp.style.borderColor = '';
+    inp.style.background = '';
+    inp.style.animation = '';
     pendingId = null;
 }
 
 async function verificarClave() {
     const clave = document.getElementById('inputClave').value;
     if (clave !== '0000') {
-        mostrarToast('❌ Clave incorrecta');
+        const inp = document.getElementById('inputClave');
+        const err = document.getElementById('errorClave');
+        // Mostrar mensaje de error en el modal
+        err.style.display = 'block';
+        // Remarcar el campo en rojo
+        inp.style.borderColor = '#c62828';
+        inp.style.background = '#ffebee';
+        // Animación de sacudida
+        inp.style.animation = 'none';
+        inp.offsetHeight; // reflow
+        inp.style.animation = 'shakeClave 0.4s ease';
+        inp.value = '';
+        setTimeout(function() { inp.focus(); }, 100);
         return;
     }
+    // Ocultar error si estaba visible
+    document.getElementById('errorClave').style.display = 'none';
+    const idParaEditar = pendingId;
     cerrarModal();
-    if (pendingId) {
+    if (idParaEditar) {
         mostrarToast('⏳ Cargando...');
-        await editarRegistro(pendingId);
+        await editarRegistro(idParaEditar);
     }
 }
 
@@ -731,12 +779,36 @@ async function editarRegistro(id) {
         document.getElementById('btnGuardar').innerHTML = '<span>💾</span> ACTUALIZAR REGISTRO';
         document.getElementById('btnCancelar').style.display = 'inline-flex';
 
-        mostrarToast('✏️ Registro cargado para editar');
+        // Activar banner y estilo de modo edición
+        const banner = document.getElementById('editBanner');
+        banner.style.display = 'flex';
+        document.getElementById('cardTitle').innerHTML = '✏️ Editando Registro #' + r.id;
+        document.getElementById('editBannerSub').textContent = 'Placa: ' + r.placa + ' | ' + r.conductor + ' — Modifique y presione ACTUALIZAR REGISTRO';
+        document.getElementById('formCard').style.border = '2px solid #ff6f00';
+        document.getElementById('formCard').style.boxShadow = '0 4px 20px rgba(255,111,0,0.25)';
+
+        mostrarToast('✏️ Registro #' + r.id + ' cargado para editar');
         window.scrollTo({top: 0, behavior: 'smooth'});
     } catch (err) {
         console.error('Error editar:', err);
         mostrarToast('❌ Error: ' + err.message);
     }
+}
+
+function resaltarFila(id) {
+    const filas = document.querySelectorAll('#tbodyRegistros tr');
+    filas.forEach(function(fila) {
+        const btnEditar = fila.querySelector('button[onclick*="abrirModalEditar(' + id + ')"]');
+        if (btnEditar) {
+            fila.style.transition = 'background 0.3s';
+            fila.style.background = '#fff8e1';
+            fila.style.outline = '2px solid #ff6f00';
+            setTimeout(function() {
+                fila.style.background = '';
+                fila.style.outline = '';
+            }, 3000);
+        }
+    });
 }
 
 async function actualizarStats() {
