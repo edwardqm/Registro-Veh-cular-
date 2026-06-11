@@ -225,6 +225,27 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 </div>
 
 
+
+<div class="modal-overlay" id="modalCompartir">
+<div class="modal" style="max-width:420px;text-align:center">
+  <div id="shareIcon" style="font-size:3rem;margin-bottom:8px">📊</div>
+  <h3 id="shareTitulo" style="margin-bottom:6px">Archivo listo</h3>
+  <p id="shareSubtitulo" style="color:#666;font-size:0.85rem;margin-bottom:20px">Elige cómo deseas compartirlo</p>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+    <button id="btnShareGuardar" class="btn btn-primary" style="font-size:1rem;padding:14px" onclick="shareAccion('guardar')">
+      💾 GUARDAR EN DISPOSITIVO
+    </button>
+    <button id="btnShareWhatsApp" class="btn btn-success" style="font-size:1rem;padding:14px;background:#25D366;border-color:#25D366" onclick="shareAccion('whatsapp')">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:20px;height:20px;vertical-align:middle;margin-right:6px">COMPARTIR POR WHATSAPP
+    </button>
+    <button id="btnShareEmail" class="btn" style="font-size:1rem;padding:14px;background:#ea4335;border-color:#ea4335;color:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;border:none" onclick="shareAccion('email')">
+      ✉️ ENVIAR POR EMAIL
+    </button>
+  </div>
+  <button class="btn btn-danger" style="width:100%" onclick="cerrarModalCompartir()">❌ CANCELAR</button>
+</div>
+</div>
+
 <div class="modal-overlay" id="modalPDF">
 <div class="modal" style="max-width:500px;text-align:left;max-height:90vh;overflow-y:auto">
 <h3 style="text-align:center;margin-bottom:18px">📄 Exportar PDF — Filtros</h3>
@@ -907,23 +928,20 @@ async function exportarExcel() {
     });
     try {
         const ws = XLSX.utils.json_to_sheet(data);
-        // Ajustar ancho de columnas
         const colWidths = [10,8,10,12,12,28,22,22,12,28,10,8,12,30,35];
         ws['!cols'] = colWidths.map(function(w){ return {wch: w}; });
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Registros');
-        // Generar como array buffer y descargar con Blob para evitar error de formato
         const wbout = XLSX.write(wb, {bookType: 'xlsx', type: 'array'});
         const blob = new Blob([wbout], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'Registro_Vehicular_' + new Date().toISOString().split('T')[0] + '.xlsx';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        mostrarToast('📊 Excel descargado (' + regs.length + ' registros)');
+        const nombreArchivo = 'Registro_Vehicular_' + new Date().toISOString().split('T')[0] + '.xlsx';
+        // Guardar blob globalmente para el modal compartir
+        window._shareBlob = blob;
+        window._shareNombre = nombreArchivo;
+        window._shareTipo = 'excel';
+        window._shareMime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        window._shareTexto = 'Registro Vehicular - ' + regs.length + ' registros\n' + new Date().toLocaleDateString('es-ES');
+        abrirModalCompartir('📊', 'Excel generado', regs.length + ' registros — ' + nombreArchivo, true);
     } catch(e) {
         mostrarToast('❌ Error al generar Excel: ' + e.message);
     }
@@ -1058,9 +1076,117 @@ async function generarPDFFiltrado() {
     }
 
     const fecha = new Date().toISOString().split('T')[0];
-    doc.save('Registro_Vehicular_' + tipoLabel + '_' + fecha + '.pdf');
-    mostrarToast('📄 PDF generado con ' + filtrados.length + ' registros');
+    const nombreArchivo = 'Registro_Vehicular_' + tipoLabel + '_' + fecha + '.pdf';
+    // Obtener blob del PDF
+    const pdfBlob = doc.output('blob');
+    window._shareBlob = pdfBlob;
+    window._shareNombre = nombreArchivo;
+    window._shareTipo = 'pdf';
+    window._shareMime = 'application/pdf';
+    window._shareTexto = 'Registro Vehicular — ' + tipoLabel + '\nPeriodo: ' + (desde2 || 'inicio') + ' al ' + (hasta2 || 'hoy') + '\n' + filtrados.length + ' registros\nGenerado: ' + new Date().toLocaleDateString('es-ES');
+    abrirModalCompartir('📄', 'PDF generado', filtrados.length + ' registros — ' + nombreArchivo, false);
 }
+
+// ── SISTEMA DE COMPARTIR ────────────────────────────────────────────────────
+function abrirModalCompartir(icon, titulo, subtitulo, ocultarEmail) {
+    document.getElementById('shareIcon').textContent = icon;
+    document.getElementById('shareTitulo').textContent = titulo;
+    document.getElementById('shareSubtitulo').textContent = subtitulo;
+    // Email solo para PDF
+    document.getElementById('btnShareEmail').style.display = ocultarEmail ? 'none' : 'flex';
+    document.getElementById('modalCompartir').classList.add('active');
+}
+
+function cerrarModalCompartir() {
+    document.getElementById('modalCompartir').classList.remove('active');
+}
+
+async function shareAccion(accion) {
+    const blob = window._shareBlob;
+    const nombre = window._shareNombre;
+    const mime = window._shareMime;
+    const texto = window._shareTexto || 'Registro Vehicular';
+
+    if (accion === 'guardar') {
+        // Descarga directa
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nombre;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+        cerrarModalCompartir();
+        mostrarToast('💾 Archivo guardado: ' + nombre);
+
+    } else if (accion === 'whatsapp') {
+        // Intentar Web Share API (funciona en Android/iOS)
+        if (navigator.share && navigator.canShare) {
+            const file = new File([blob], nombre, {type: mime});
+            if (navigator.canShare({files: [file]})) {
+                try {
+                    await navigator.share({
+                        title: 'Registro Vehicular',
+                        text: texto,
+                        files: [file]
+                    });
+                    cerrarModalCompartir();
+                    mostrarToast('✅ Archivo compartido');
+                    return;
+                } catch(e) {
+                    if (e.name !== 'AbortError') {
+                        // Fallback si falla
+                        compartirWhatsAppFallback(nombre, texto);
+                    }
+                }
+                return;
+            }
+        }
+        // Fallback: primero descargar, luego abrir WhatsApp con texto
+        compartirWhatsAppFallback(nombre, texto);
+
+    } else if (accion === 'email') {
+        // Descargar primero y abrir cliente de email
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nombre;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+        // Abrir cliente de email con datos precargados
+        const asunto = encodeURIComponent('Registro Vehicular — ' + nombre);
+        const cuerpo = encodeURIComponent(texto + '\n\nArchivo adjunto: ' + nombre + '\n(Adjunte el archivo descargado a este email)');
+        setTimeout(function() {
+            window.location.href = 'mailto:?subject=' + asunto + '&body=' + cuerpo;
+        }, 800);
+        cerrarModalCompartir();
+        mostrarToast('✉️ Adjunte el archivo descargado al email');
+    }
+}
+
+function compartirWhatsAppFallback(nombre, texto) {
+    // Descargar archivo primero
+    const url = URL.createObjectURL(window._shareBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nombre;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+    // Abrir WhatsApp con texto (el usuario adjunta manualmente el archivo descargado)
+    const msg = encodeURIComponent(texto + '\n\nArchivo: ' + nombre + '\n(Adjunte el archivo descargado)');
+    setTimeout(function() {
+        window.open('https://wa.me/?text=' + msg, '_blank');
+    }, 800);
+    cerrarModalCompartir();
+    mostrarToast('📲 Archivo descargado — adjúntelo en WhatsApp');
+}
+// ── FIN SISTEMA DE COMPARTIR ─────────────────────────────────────────────────
+
 </script>
 </body>
 </html>
