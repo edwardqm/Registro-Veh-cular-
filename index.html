@@ -285,6 +285,8 @@ tr:hover{background:#f5f5f5}
 <div class="btn-group" style="margin-bottom:20px">
 <button type="button" class="btn btn-success" onclick="exportarExcel()"><span>📊</span> EXPORTAR EXCEL</button>
 <button type="button" class="btn btn-danger" onclick="exportarPDF()"><span>📄</span> EXPORTAR PDF</button>
+<button type="button" class="btn btn-warning" onclick="cargarDesdeExcel()"><span>📥</span> CARGAR EXCEL</button>
+<button type="button" class="btn btn-primary" onclick="configurarRespaldo()"><span>💾</span> CONFIGURAR RESPALDO</button>
 </div>
 <div class="table-container">
 <table id="tablaRegistros">
@@ -414,7 +416,7 @@ tr:hover{background:#f5f5f5}
 
 <script>
 const DB_NAME = 'RegistroVehicularDB';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 const STORE_NAME = 'registros';
 let db = null;
 let pendingId = null;
@@ -431,6 +433,9 @@ function initDB() {
                 store.createIndex('placa', 'placa', { unique: false });
                 store.createIndex('conductor', 'conductor', { unique: false });
                 store.createIndex('fecha', 'fecha', { unique: false });
+            }
+            if (!database.objectStoreNames.contains('config')) {
+                database.createObjectStore('config', { keyPath: 'key' });
             }
         };
     });
@@ -741,6 +746,7 @@ async function procesarFormulario() {
     }
 
     await guardarRegistro(data);
+    await respaldoAutomaticoExcel();
     const esEdicion = !!editId;
     const idEditado = esEdicion ? parseInt(editId) : null;
     mostrarToast(esEdicion ? '✅ Registro actualizado correctamente' : '✅ Registro guardado');
@@ -1451,6 +1457,249 @@ function iniciarRelojEnVivo() {
         }
     }, 30000); // Cada 30 segundos
 }
+
+/* ===== FUNCIONES DE RESPALDO Y RESTAURACION EXCEL ===== */
+
+function guardarConfig(key, value) {
+    return new Promise(function(resolve, reject) {
+        const tx = db.transaction(['config'], 'readwrite');
+        const store = tx.objectStore('config');
+        const request = store.put({key: key, value: value});
+        request.onsuccess = function() { resolve(); };
+        request.onerror = function() { reject(request.error); };
+    });
+}
+
+function obtenerConfig(key) {
+    return new Promise(function(resolve, reject) {
+        const tx = db.transaction(['config'], 'readonly');
+        const store = tx.objectStore('config');
+        const request = store.get(key);
+        request.onsuccess = function() { resolve(request.result ? request.result.value : null); };
+        request.onerror = function() { reject(request.error); };
+    });
+}
+
+function eliminarConfig(key) {
+    return new Promise(function(resolve, reject) {
+        const tx = db.transaction(['config'], 'readwrite');
+        const store = tx.objectStore('config');
+        const request = store.delete(key);
+        request.onsuccess = function() { resolve(); };
+        request.onerror = function() { reject(request.error); };
+    });
+}
+
+function limpiarTodosLosRegistros() {
+    return new Promise(function(resolve, reject) {
+        const tx = db.transaction([STORE_NAME], 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.clear();
+        request.onsuccess = function() { resolve(); };
+        request.onerror = function() { reject(request.error); };
+    });
+}
+
+async function respaldoAutomaticoExcel() {
+    try {
+        if (!('showSaveFilePicker' in window)) {
+            return;
+        }
+        let fileHandle = await obtenerConfig('excelFileHandle');
+        if (!fileHandle) {
+            try {
+                fileHandle = await window.showSaveFilePicker({
+                    suggestedName: 'Registro_Vehicular_Respaldo.xlsx',
+                    types: [{
+                        description: 'Archivos Excel',
+                        accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
+                    }]
+                });
+                await guardarConfig('excelFileHandle', fileHandle);
+                mostrarToast('💾 Respaldo automatico configurado: ' + fileHandle.name);
+            } catch (pickErr) {
+                if (pickErr.name === 'AbortError') {
+                    mostrarToast('ℹ️ Respaldo automatico: seleccione ubicacion con el boton CONFIGURAR RESPALDO');
+                    return;
+                }
+                throw pickErr;
+            }
+        }
+        const regs = await obtenerRegistros();
+        if (regs.length === 0) return;
+        const data = regs.map(function(r) {
+            return {
+                'FECHA': r.fecha,
+                'HORA': r.hora,
+                'TIPO': r.tipo,
+                'PLACA': r.sinPlaca === 'SI' ? 'SIN PLACA' : r.placa,
+                'SEGUNDA PLACA': r.segundaPlaca === 'SI' ? (r.placa2 || '') : 'NO',
+                'TIPO VEHICULO': r.tipoVehiculo || '',
+                'CONDUCTOR': r.conductor || '',
+                'EMPRESA': r.empresa || '',
+                'PROCEDENCIA/DESTINO': r.procedenciaDestino || '',
+                'MATERIALES': r.materiales || '',
+                'DESCRIPCION MATERIALES': r.descMateriales || '',
+                'PRECINTOS': r.precintos || '',
+                'GUIA': r.guia || '',
+                'ACOMPANANTES': r.acompanantes || '',
+                'PERSONAS ACOMPANANTES': r.personasAcompanantes || '',
+                'OBSERVACIONES': r.observaciones || ''
+            };
+        });
+        const ws = XLSX.utils.json_to_sheet(data);
+        const colWidths = [10,8,10,12,12,14,28,22,22,12,28,10,8,12,30,35];
+        ws['!cols'] = colWidths.map(function(w){ return {wch: w}; });
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Registros');
+        const wbout = XLSX.write(wb, {bookType: 'xlsx', type: 'array'});
+        const blob = new Blob([wbout], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+        let writable;
+        try {
+            writable = await fileHandle.createWritable();
+        } catch (permErr) {
+            if (permErr.name === 'NotAllowedError') {
+                mostrarToast('⚠️ Permiso de escritura perdido. Reconfigure con CONFIGURAR RESPALDO.');
+                await eliminarConfig('excelFileHandle');
+                return;
+            }
+            throw permErr;
+        }
+        await writable.write(blob);
+        await writable.close();
+        mostrarToast('💾 Respaldo Excel actualizado automaticamente');
+    } catch (err) {
+        console.error('Error respaldo automatico:', err);
+        if (err.name === 'NotFoundError' || err.name === 'NoModificationAllowedError') {
+            mostrarToast('⚠️ Archivo de respaldo movido o eliminado. Reconfigure con CONFIGURAR RESPALDO.');
+            await eliminarConfig('excelFileHandle');
+        }
+    }
+}
+
+async function configurarRespaldo() {
+    try {
+        if (!('showSaveFilePicker' in window)) {
+            mostrarToast('⚠️ Su navegador no soporta guardado directo. Use Chrome/Edge en computadora.');
+            return;
+        }
+        const fileHandle = await window.showSaveFilePicker({
+            suggestedName: 'Registro_Vehicular_Respaldo.xlsx',
+            types: [{
+                description: 'Archivos Excel',
+                accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
+            }]
+        });
+        await guardarConfig('excelFileHandle', fileHandle);
+        mostrarToast('💾 Respaldo configurado. Se actualizara automaticamente despues de cada registro.');
+        await respaldoAutomaticoExcel();
+    } catch (err) {
+        if (err.name !== 'AbortError') {
+            mostrarToast('❌ Error: ' + err.message);
+        }
+    }
+}
+
+async function cargarDesdeExcel() {
+    try {
+        let file;
+        if ('showOpenFilePicker' in window) {
+            const [fileHandle] = await window.showOpenFilePicker({
+                types: [{
+                    description: 'Archivos Excel',
+                    accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
+                }],
+                multiple: false
+            });
+            file = await fileHandle.getFile();
+        } else {
+            return new Promise(function(resolve) {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                input.onchange = async function(e) {
+                    if (e.target.files[0]) {
+                        await procesarCargaExcel(e.target.files[0]);
+                    }
+                    resolve();
+                };
+                input.click();
+            });
+        }
+        await procesarCargaExcel(file);
+    } catch (err) {
+        if (err.name !== 'AbortError') {
+            mostrarToast('❌ Error al cargar: ' + err.message);
+        }
+    }
+}
+
+async function procesarCargaExcel(file) {
+    const reemplazar = confirm('¿Desea eliminar los registros actuales antes de importar?\n\nACEPTAR = Si, borrar todo e importar desde cero\nCANCELAR = No, agregar a los registros existentes');
+    if (reemplazar) {
+        await limpiarTodosLosRegistros();
+    }
+    await procesarImportacion(file);
+}
+
+async function procesarImportacion(file) {
+    mostrarToast('⏳ Leyendo archivo Excel...');
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data, { type: 'array' });
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+    if (!jsonData || jsonData.length === 0) {
+        mostrarToast('❌ El archivo Excel esta vacio o no tiene el formato esperado');
+        return;
+    }
+    const mapeo = {
+        'FECHA': 'fecha',
+        'HORA': 'hora',
+        'TIPO': 'tipo',
+        'PLACA': 'placa',
+        'SEGUNDA PLACA': 'placa2',
+        'TIPO VEHICULO': 'tipoVehiculo',
+        'CONDUCTOR': 'conductor',
+        'EMPRESA': 'empresa',
+        'PROCEDENCIA/DESTINO': 'procedenciaDestino',
+        'MATERIALES': 'materiales',
+        'DESCRIPCION MATERIALES': 'descMateriales',
+        'PRECINTOS': 'precintos',
+        'GUIA': 'guia',
+        'ACOMPANANTES': 'acompanantes',
+        'PERSONAS ACOMPANANTES': 'personasAcompanantes',
+        'OBSERVACIONES': 'observaciones'
+    };
+    let importados = 0;
+    for (var i = 0; i < jsonData.length; i++) {
+        const row = jsonData[i];
+        const registro = {};
+        for (const [col, campo] of Object.entries(mapeo)) {
+            registro[campo] = (row[col] !== undefined && row[col] !== null) ? String(row[col]).trim() : '';
+        }
+        if (registro.placa === 'SIN PLACA') {
+            registro.sinPlaca = 'SI';
+            registro.placa = '';
+        } else {
+            registro.sinPlaca = 'NO';
+        }
+        if (registro.placa2 && registro.placa2 !== '' && registro.placa2 !== 'NO') {
+            registro.segundaPlaca = 'SI';
+        } else {
+            registro.segundaPlaca = 'NO';
+            registro.placa2 = '';
+        }
+        registro.timestamp = new Date().toISOString();
+        delete registro.id;
+        await guardarRegistro(registro);
+        importados++;
+    }
+    await cargarRegistros();
+    await poblarListas();
+    actualizarStats();
+    mostrarToast('✅ ' + importados + ' registros importados correctamente desde Excel');
+}
+
 </script>
 </body>
 </html>
