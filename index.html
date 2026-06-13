@@ -282,27 +282,26 @@ tr:hover{background:#f5f5f5}
 
 <!-- ============ TARJETA COPIA DE SEGURIDAD ============ -->
 <div class="card" id="backupCard">
-  <div class="card-title">💾 Copia de Seguridad Automática</div>
+  <div class="card-title">💾 Copia de Seguridad</div>
 
-  <div id="backupStatusBar" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;font-weight:700;font-size:0.9rem;margin-bottom:10px;background:#fff3e0;border:2px solid #ff9800;color:#e65100">
-    <span style="font-size:1.3rem">⚠️</span>
+  <div id="backupStatusBar" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;font-weight:700;font-size:0.9rem;margin-bottom:10px;background:#e3f2fd;border:2px solid #1976d2;color:#1565c0">
+    <span style="font-size:1.3rem">📲</span>
     <div>
-      <div id="backupStatusTxt">Sin carpeta configurada</div>
+      <div id="backupStatusTxt">Listo para guardar</div>
       <div id="backupLastSaveTxt" style="font-size:0.75rem;font-weight:500;opacity:0.85;margin-top:2px"></div>
     </div>
   </div>
 
-  <div id="backupSoporteMsg" class="info-text" style="margin-bottom:10px"></div>
-
-  <div class="btn-group" style="margin-top:0">
-    <button type="button" class="btn btn-primary" onclick="elegirCarpetaDestino()"><span>📁</span> ELEGIR CARPETA</button>
-    <button type="button" class="btn btn-success" onclick="exportarExcelBackup(false)"><span>💾</span> GUARDAR AHORA</button>
-    <button type="button" class="btn btn-accent" onclick="abrirImportacion()"><span>🔄</span> RESTAURAR</button>
+  <div class="btn-group" style="margin-top:0;flex-direction:column">
+    <button type="button" class="btn btn-success" style="width:100%" onclick="exportarExcelBackup(false)"><span>💾</span> GUARDAR AHORA</button>
+    <button type="button" class="btn btn-accent" style="width:100%" onclick="abrirImportacion()"><span>🔄</span> RESTAURAR</button>
   </div>
-  <div class="info-text" style="margin-top:10px">
-    📌 El respaldo se guarda automáticamente en cada registro. Al restaurar, los registros nuevos se agregan sin crear duplicados.
+  <div class="info-text" style="margin-top:12px">
+    📌 <strong>GUARDAR</strong> descarga un archivo .xlsx a tu carpeta <em>Descargas</em>.<br>
+    📌 <strong>RESTAURAR</strong> importa ese archivo para recuperar tus registros.<br>
+    📌 El respaldo también se guarda automáticamente en cada registro.
   </div>
-  <!-- Input oculto para importar por archivo (fallback sin File System API) -->
+  <!-- Input oculto para importar archivo -->
   <input type="file" id="inputImportExcel" accept=".xlsx" style="display:none" onchange="importarDesdeInputFile(this)">
 </div>
 
@@ -496,7 +495,7 @@ function obtenerRegistro(id) {
 }
 
 // ============================================================
-// CONFIG STORE (para guardar handles de carpeta y metadata)
+// CONFIG STORE (metadata de backups en IndexedDB)
 // ============================================================
 function setConfigValue(key, value) {
     return new Promise(function(resolve, reject) {
@@ -518,80 +517,25 @@ function getConfigValue(key) {
 }
 
 // ============================================================
-// SISTEMA DE COPIA DE SEGURIDAD AUTOMÁTICA
+// SISTEMA DE COPIA DE SEGURIDAD — COMPATIBLE CON WEBVIEW APK
 // ============================================================
-var dirHandle = null; // FileSystemDirectoryHandle elegido por usuario
-var BACKUP_FILENAME = 'Registro_Vehicular_Backup.xlsx';
-var fsApiDisponible = typeof window !== 'undefined' && typeof window.showDirectoryPicker === 'function';
+var BACKUP_FILENAME = 'Registro_Vehicular_Backup';
 
-// Inicializar: restaurar handle guardado si existe
+// Inicializar — solo actualiza el estado visual
 async function initDirectoryHandle() {
-    actualizarMensajeSoporte();
-    if (!fsApiDisponible) {
-        actualizarEstadoBackup();
-        return;
-    }
-    try {
-        var stored = await getConfigValue('dirHandle');
-        if (!stored) { actualizarEstadoBackup(); return; }
-        var perm = await stored.queryPermission({ mode: 'readwrite' });
-        if (perm === 'granted') {
-            dirHandle = stored;
-        } else {
-            // Permisos revocados — guardamos referencia para que el usuario pueda re-pedir
-            dirHandle = stored;
-        }
-        actualizarEstadoBackup();
-    } catch(e) {
-        actualizarEstadoBackup();
-    }
+    await actualizarEstadoBackup();
 }
 
-// Mostrar mensaje de compatibilidad
-function actualizarMensajeSoporte() {
-    var msg = document.getElementById('backupSoporteMsg');
-    if (!msg) return;
-    if (!fsApiDisponible) {
-        msg.innerHTML = '⚠️ Tu navegador no soporta selección de carpeta automática. Usa <strong>Chrome</strong> para la función completa. En otros navegadores, el respaldo se descargará manualmente.';
-    } else {
-        msg.innerHTML = '✅ Navegador compatible con selección de carpeta automática.';
-    }
+// Clave única para deduplicación
+function claveUnicaReg(r) {
+    var placa = r.sinPlaca === 'SI' ? 'SIN_PLACA' : (r.placa || '');
+    return [(r.fecha||''), (r.hora||''), placa, (r.conductor||'').toUpperCase(), (r.tipo||'')].join('|');
 }
 
-// Elegir carpeta destino (puede elegirse varias veces)
-async function elegirCarpetaDestino() {
-    if (!fsApiDisponible) {
-        mostrarToast('⚠️ Usa Chrome para seleccionar carpeta. El respaldo se descargará.');
-        return;
-    }
-    try {
-        var handle = await window.showDirectoryPicker({ mode: 'readwrite', id: 'registros-backup' });
-        dirHandle = handle;
-        await setConfigValue('dirHandle', handle);
-        actualizarEstadoBackup();
-        mostrarToast('✅ Carpeta seleccionada: ' + handle.name);
-        // Guardar respaldo inmediatamente en la nueva carpeta
-        await exportarExcelBackup(false);
-    } catch(e) {
-        if (e.name !== 'AbortError') mostrarToast('❌ ' + e.message);
-    }
-}
-
-// Solicitar permiso si fue revocado
-async function pedirPermisoDirectorio() {
-    if (!dirHandle) return false;
-    try {
-        var perm = await dirHandle.requestPermission({ mode: 'readwrite' });
-        return perm === 'granted';
-    } catch(e) {
-        return false;
-    }
-}
-
-// Generar blob Excel con todos los registros (incluye _BACKUP_KEY para deduplicación)
+// Generar blob Excel con todos los registros
 function generarBlobExcel(regs) {
     var data = regs.map(function(r) {
-        var obj = {
+        return {
             'FECHA': r.fecha || '',
             'HORA': r.hora || '',
             'TIPO': r.tipo || '',
@@ -612,7 +556,6 @@ function generarBlobExcel(regs) {
             '_TIMESTAMP': r.timestamp || '',
             '_BACKUP_KEY': claveUnicaReg(r)
         };
-        return obj;
     });
     var ws = XLSX.utils.json_to_sheet(data);
     var colWidths = [10,8,10,12,12,14,28,22,22,12,28,10,8,12,30,35,8,22,40];
@@ -623,13 +566,7 @@ function generarBlobExcel(regs) {
     return new Blob([wbout], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
 }
 
-// Clave única para deduplicación
-function claveUnicaReg(r) {
-    var placa = r.sinPlaca === 'SI' ? 'SIN_PLACA' : (r.placa || '');
-    return [(r.fecha||''), (r.hora||''), placa, (r.conductor||'').toUpperCase(), (r.tipo||'')].join('|');
-}
-
-// Exportar Excel a la carpeta o descargar como fallback
+// GUARDAR: descarga directa al dispositivo (compatible con WebView)
 async function exportarExcelBackup(silencioso) {
     silencioso = silencioso === true;
     var regs = await obtenerRegistros();
@@ -638,35 +575,8 @@ async function exportarExcelBackup(silencioso) {
         return;
     }
     var blob = generarBlobExcel(regs);
-
-    // Intentar guardar en carpeta elegida
-    if (dirHandle && fsApiDisponible) {
-        try {
-            var perm = await pedirPermisoDirectorio();
-            if (!perm) throw new Error('Permiso de escritura denegado. Elige la carpeta nuevamente.');
-            var fileHandle = await dirHandle.getFileHandle(BACKUP_FILENAME, { create: true });
-            var writable = await fileHandle.createWritable();
-            await writable.write(blob);
-            await writable.close();
-            await setConfigValue('backupLastSave', new Date().toISOString());
-            await setConfigValue('backupCount', regs.length);
-            actualizarEstadoBackup();
-            if (!silencioso) mostrarToast('✅ Respaldo guardado en "' + dirHandle.name + '"');
-            return;
-        } catch(e) {
-            if (!silencioso) mostrarToast('⚠️ No se pudo guardar en carpeta: ' + e.message);
-            // Si el permiso fue revocado, limpiar handle
-            if (e.message && e.message.indexOf('Permiso') >= 0) {
-                dirHandle = null;
-                actualizarEstadoBackup();
-            }
-            return;
-        }
-    }
-
-    // Fallback: descarga directa
     var fecha = new Date().toISOString().split('T')[0];
-    var nombre = 'Registro_Vehicular_Backup_' + fecha + '.xlsx';
+    var nombre = BACKUP_FILENAME + '_' + fecha + '.xlsx';
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
@@ -674,27 +584,26 @@ async function exportarExcelBackup(silencioso) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
-    await setConfigValue('backupLastSave', new Date().toISOString());
-    await setConfigValue('backupCount', regs.length);
-    actualizarEstadoBackup();
-    if (!silencioso) mostrarToast('💾 Respaldo descargado: ' + nombre);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
+    try {
+        await setConfigValue('backupLastSave', new Date().toISOString());
+        await setConfigValue('backupCount', regs.length);
+    } catch(e) {}
+    await actualizarEstadoBackup();
+    if (!silencioso) mostrarToast('💾 Respaldo guardado: ' + nombre);
 }
 
-// Actualizar la barra de estado de backup
+// Actualizar barra de estado
 async function actualizarEstadoBackup() {
     var bar = document.getElementById('backupStatusBar');
     var txt = document.getElementById('backupStatusTxt');
     var sub = document.getElementById('backupLastSaveTxt');
     if (!bar || !txt) return;
-
-    var lastSave = null;
-    var lastCount = null;
+    var lastSave = null, lastCount = null;
     try {
         lastSave = await getConfigValue('backupLastSave');
         lastCount = await getConfigValue('backupCount');
     } catch(e) {}
-
     var subTxt = '';
     if (lastSave) {
         var d = new Date(lastSave);
@@ -702,67 +611,15 @@ async function actualizarEstadoBackup() {
         if (lastCount) subTxt += ' — ' + lastCount + ' registros';
     }
     if (sub) sub.textContent = subTxt;
-
-    if (dirHandle && fsApiDisponible) {
-        bar.style.background = '#e8f5e9';
-        bar.style.borderColor = '#43a047';
-        bar.style.color = '#2e7d32';
-        txt.textContent = '✅ Carpeta: ' + dirHandle.name;
-    } else if (!fsApiDisponible) {
-        bar.style.background = '#e3f2fd';
-        bar.style.borderColor = '#1976d2';
-        bar.style.color = '#1565c0';
-        txt.textContent = '📥 Modo descarga (usa Chrome para carpeta automática)';
-    } else {
-        bar.style.background = '#fff3e0';
-        bar.style.borderColor = '#ff9800';
-        bar.style.color = '#e65100';
-        txt.textContent = '⚠️ Sin carpeta configurada — elige una carpeta';
-    }
+    bar.style.background = '#e3f2fd';
+    bar.style.borderColor = '#1976d2';
+    bar.style.color = '#1565c0';
+    txt.textContent = lastSave ? '✅ Respaldo realizado' : '📲 Listo para guardar';
 }
 
-// Abrir importación (desde carpeta o seleccionar archivo)
+// RESTAURAR: abre el selector de archivos nativo de Android
 async function abrirImportacion() {
-    if (!window.confirm('¿Desea restaurar/sincronizar registros desde el archivo de respaldo?\n\nSolo se agregarán registros nuevos. No se crearán duplicados.')) return;
-
-    // Intentar leer desde la carpeta guardada
-    if (dirHandle && fsApiDisponible) {
-        try {
-            var perm = await pedirPermisoDirectorio();
-            if (perm) {
-                try {
-                    var fileHandle = await dirHandle.getFileHandle(BACKUP_FILENAME);
-                    var file = await fileHandle.getFile();
-                    await importarDesdeExcel(file);
-                    return;
-                } catch(e2) {
-                    if (e2.name === 'NotFoundError') {
-                        mostrarToast('⚠️ No hay archivo de respaldo en la carpeta. Seleccione un archivo.');
-                    } else {
-                        mostrarToast('⚠️ Error leyendo carpeta: ' + e2.message);
-                    }
-                }
-            }
-        } catch(e) {}
-    }
-
-    // Fallback: showOpenFilePicker o input
-    if (window.showOpenFilePicker) {
-        try {
-            var picks = await window.showOpenFilePicker({
-                types: [{ description: 'Archivo Excel', accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] } }],
-                multiple: false
-            });
-            var file2 = await picks[0].getFile();
-            await importarDesdeExcel(file2);
-            return;
-        } catch(e3) {
-            if (e3.name === 'AbortError') return;
-        }
-    }
-
-    // Último fallback: input file oculto
-    document.getElementById('inputImportExcel').value = '';
+    if (!window.confirm('¿Desea restaurar registros desde un archivo de respaldo?\n\nSolo se agregarán registros nuevos. No se crearán duplicados.')) return;
     document.getElementById('inputImportExcel').click();
 }
 
