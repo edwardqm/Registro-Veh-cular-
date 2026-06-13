@@ -14,9 +14,18 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,-apple-system,sans-serif}
 body{background:var(--bg);color:var(--text);line-height:1.6}
 .container{max-width:900px;margin:0 auto;padding:15px;padding-bottom:100px}
-header{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);color:#fff;padding:25px 20px;text-align:center;border-radius:0 0 20px 20px;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,0.2);position:sticky;top:0;z-index:100}
-header h1{font-size:1.4rem;margin-bottom:5px}
+
+/* HEADER LIMPIO */
+header{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);color:#fff;padding:25px 20px;text-align:center;border-radius:0 0 20px 20px;margin-bottom:0;box-shadow:0 4px 15px rgba(0,0,0,0.2);position:sticky;top:0;z-index:100}
+header h1{font-size:1.4rem;margin-bottom:5px;font-weight:800}
 header p{opacity:0.9;font-size:0.85rem}
+
+/* BOTÓN CERRAR APLICACIÓN - DEBAJO DEL HEADER */
+.app-close-bar{text-align:center;padding:14px 0 6px}
+.btn-cerrar-app{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--primary-light);color:var(--primary);padding:8px 18px;border-radius:50px;font-size:0.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(26,35,126,0.12);transition:all 0.2s ease}
+.btn-cerrar-app:active{background:var(--primary-light);color:#fff;transform:scale(0.96)}
+.btn-cerrar-app .icon-cerrar{font-size:1rem}
+
 .card{background:var(--card);border-radius:12px;padding:18px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
 .card-title{font-size:1rem;color:var(--primary);font-weight:700;margin-bottom:15px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--border);padding-bottom:10px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -49,6 +58,8 @@ textarea{resize:vertical;min-height:90px}
 table{width:100%;border-collapse:collapse;font-size:0.82rem}
 th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
 th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;font-size:0.78rem;text-transform:uppercase}
+tr{cursor:pointer;transition:background 0.15s}
+tr:hover{background:#f5f5f5}
 .badge{padding:4px 10px;border-radius:20px;font-size:0.7rem;font-weight:800;text-transform:uppercase}
 .badge-ingreso{background:#e8f5e9;color:var(--success);border:1px solid #a5d6a7}
 .badge-salida{background:#fff3e0;color:#e65100;border:1px solid #ffcc80}
@@ -78,12 +89,57 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 .img-viewer .close-viewer{position:absolute;top:15px;right:20px;color:#fff;font-size:2.5rem;cursor:pointer;width:50px;height:50px;display:flex;align-items:center;justify-content:center}
 .section-divider{height:1px;background:var(--border);margin:20px 0}
 .info-text{font-size:0.8rem;color:#666;margin-top:4px;font-style:italic}
-@media(max-width:768px){.grid-2{grid-template-columns:1fr}.btn-group{flex-direction:column}.btn{width:100%;padding:16px}header h1{font-size:1.2rem}.stats{grid-template-columns:1fr}.search-box{flex-direction:column}.search-box input{min-width:100%}}
-@media(max-width:400px){.container{padding:10px}.card{padding:14px}header{padding:18px 15px}}
+
+/* DETALLE FULLSCREEN */
+.detail-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:3000;display:none;flex-direction:column;overflow-y:auto}
+.detail-overlay.active{display:flex}
+.detail-header{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);color:#fff;padding:18px 20px;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,0.2)}
+.detail-header h2{font-size:1.25rem;margin:0}
+.detail-header .btn-close-detail{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.detail-header .btn-close-detail:active{background:rgba(255,255,255,0.35)}
+.detail-body{padding:20px;max-width:900px;margin:0 auto;width:100%}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.detail-item{margin-bottom:6px}
+.detail-label{font-size:0.75rem;color:#666;font-weight:700;text-transform:uppercase;margin-bottom:4px;letter-spacing:0.5px}
+.detail-value{font-size:1.05rem;color:var(--text);font-weight:600;word-break:break-word}
+.detail-section-title{font-size:1rem;color:var(--primary);font-weight:700;margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+.detail-badge-ingreso{display:inline-block;background:#e8f5e9;color:var(--success);border:1px solid #a5d6a7;padding:6px 14px;border-radius:20px;font-size:0.85rem;font-weight:800}
+.detail-badge-salida{display:inline-block;background:#fff3e0;color:#e65100;border:1px solid #ffcc80;padding:6px 14px;border-radius:20px;font-size:0.85rem;font-weight:800}
+.detail-photos{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+.detail-photo{max-width:100%;max-height:220px;border-radius:10px;border:2px solid var(--border);cursor:pointer;object-fit:cover}
+.detail-photo.pdf-thumb{width:100px;height:100px;object-fit:contain;background:#ffebee;padding:10px}
+
+@media(max-width:768px){
+  .grid-2{grid-template-columns:1fr}
+  .btn-group{flex-direction:column}
+  .btn{width:100%;padding:16px}
+  header h1{font-size:1.15rem}
+  .stats{grid-template-columns:1fr}
+  .search-box{flex-direction:column}
+  .search-box input{min-width:100%}
+  .detail-grid{grid-template-columns:1fr}
+}
+@media(max-width:400px){
+  .container{padding:10px}
+  .card{padding:14px}
+  header{padding:20px 15px}
+  header h1{font-size:1.05rem}
+  .btn-cerrar-app{font-size:0.75rem;padding:6px 14px}
+}
 </style>
 </head>
 <body>
-<header><h1>🚗 REGISTRO VEHICULAR</h1><p>Control de Ingreso y Salida de Vehiculos</p></header>
+<header>
+  <h1>🚗 REGISTRO VEHICULAR</h1>
+  <p>Control de Ingreso y Salida de Vehiculos</p>
+</header>
+
+<div class="app-close-bar">
+  <button class="btn-cerrar-app" onclick="cerrarApp()" title="Cerrar aplicación">
+    <span class="icon-cerrar">🔒</span> Cerrar aplicación
+  </button>
+</div>
+
 <div class="container">
 <div class="stats">
 <div class="stat-card"><h3 id="statTotal">0</h3><p>Total Registros</p></div>
@@ -114,7 +170,7 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 </div>
 </div>
 <div class="grid-2">
-<div class="form-group"><label>Placa del Vehiculo</label><input type="text" id="placa" placeholder="ABC-1234" maxlength="8" required><div class="info-text">Formato automatico: 3 letras + guion + numeros</div></div>
+<div class="form-group"><label>Placa del Vehiculo</label><input type="text" id="placa" list="listaPlacas" placeholder="ABC-1234" maxlength="8" required><div class="info-text">Formato automatico: 3 letras + guion + numeros</div><datalist id="listaPlacas"></datalist></div>
 <div class="form-group"><label>¿Tiene Segunda Placa?</label>
 <div class="radio-group">
 <div class="radio-option"><input type="radio" name="segundaPlaca" id="segPlacaSi" value="SI"><label for="segPlacaSi">✅ SI</label></div>
@@ -224,8 +280,6 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 </div>
 </div>
 
-
-
 <div class="modal-overlay" id="modalCompartir">
 <div class="modal" style="max-width:420px;text-align:center">
   <div id="shareIcon" style="font-size:3rem;margin-bottom:8px">📊</div>
@@ -309,12 +363,23 @@ th{background:var(--primary);color:#fff;font-weight:600;position:sticky;top:0;fo
 </div>
 </div>
 
+<!-- DETALLE FULLSCREEN -->
+<div class="detail-overlay" id="modalDetalle">
+  <div class="detail-header">
+    <h2>📋 Detalle del Registro</h2>
+    <button class="btn-close-detail" onclick="cerrarDetalle()">✕</button>
+  </div>
+  <div class="detail-body" id="detalleContenido">
+    <!-- contenido dinámico -->
+  </div>
+</div>
+
 <div class="img-viewer" id="imgViewer" onclick="this.classList.remove('active')"><span class="close-viewer">&times;</span><img id="imgViewerSrc" src="" alt="Vista previa"></div>
 <div class="toast" id="toast"></div>
 
 <div class="footer">
 <p>Desarrollado por <strong>Edward Quezada M.</strong></p>
-<p>Versión 2.2.1 | Registro Vehicular PWA</p>
+<p>Versión 2.3.0 | Registro Vehicular PWA</p>
 <p style="margin-top:5px;font-size:0.75rem">© 2026 - Todos los derechos reservados</p>
 </div>
 
@@ -488,9 +553,11 @@ async function poblarListas() {
     const c = [...new Set(regs.map(function(r) { return r.conductor; }).filter(Boolean))].sort();
     const e = [...new Set(regs.map(function(r) { return r.empresa; }).filter(Boolean))].sort();
     const l = [...new Set(regs.map(function(r) { return r.procedenciaDestino; }).filter(Boolean))].sort();
+    const p = [...new Set(regs.map(function(r) { return r.placa; }).filter(Boolean))].sort();
     document.getElementById('listaConductores').innerHTML = c.map(function(x) { return '<option value="' + x + '">'; }).join('');
     document.getElementById('listaEmpresas').innerHTML = e.map(function(x) { return '<option value="' + x + '">'; }).join('');
     document.getElementById('listaLugares').innerHTML = l.map(function(x) { return '<option value="' + x + '">'; }).join('');
+    document.getElementById('listaPlacas').innerHTML = p.map(function(x) { return '<option value="' + x + '">'; }).join('');
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -538,6 +605,15 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     document.getElementById('inputClave').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') verificarClave();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            cerrarDetalle();
+            cerrarModal();
+            cerrarModalCompartir();
+            cerrarModalPDF();
+        }
     });
 
     await cargarRegistros();
@@ -608,10 +684,8 @@ async function procesarFormulario() {
     actualizarStats();
     if (esEdicion && idEditado) {
         setTimeout(function() {
-            // Scroll a la tabla
             const tabla = document.getElementById('tablaRegistros');
             if (tabla) tabla.closest('.card').scrollIntoView({behavior: 'smooth', block: 'start'});
-            // Resaltar fila editada
             resaltarFila(idEditado);
         }, 500);
     }
@@ -647,7 +721,6 @@ function limpiarFormulario() {
     document.getElementById('lblGuiaFoto').classList.remove('has-file');
     document.getElementById('lblGuiaFoto').innerHTML = '<span class="camera-icon">📄</span>ESCANEAR / ADJUNTAR GUIA O ELEGIR DE GALERIA';
 
-    // Resetear modo edición
     document.getElementById('editBanner').style.display = 'none';
     document.getElementById('cardTitle').innerHTML = '📝 Nuevo Registro';
     document.getElementById('formCard').style.border = '';
@@ -680,21 +753,92 @@ function renderizarTabla(regs) {
         if (fotos.length > 0) {
             fotosHtml = fotos.map(function(f) {
                 if (f.label === 'PDF') {
-                    return '<span style="display:inline-block;padding:4px 8px;background:#c62828;color:#fff;border-radius:4px;font-size:0.7rem;font-weight:bold;cursor:pointer" onclick="verImagen(\'' + f.src + '\')" title="PDF">PDF</span>';
+                    return '<span style="display:inline-block;padding:4px 8px;background:#c62828;color:#fff;border-radius:4px;font-size:0.7rem;font-weight:bold;cursor:pointer" onclick="event.stopPropagation();verImagen(\'' + f.src + '\')" title="PDF">PDF</span>';
                 }
-                return '<img src="' + f.src + '" class="img-thumb" onclick="verImagen(\'' + f.src + '\')" title="' + f.label + '">';
+                return '<img src="' + f.src + '" class="img-thumb" onclick="event.stopPropagation();verImagen(\'' + f.src + '\')" title="' + f.label + '">';
             }).join(' ');
         }
         const badge = r.tipo === 'INGRESO' ? 'badge-ingreso' : 'badge-salida';
         const descMat = r.descMateriales ? (r.descMateriales.substring(0, 25) + (r.descMateriales.length > 25 ? '...' : '')) : '-';
         const placa2 = r.segundaPlaca === 'SI' ? r.placa2 : '-';
-        return '<tr><td>' + (regs.length - i) + '</td><td>' + r.fecha + '</td><td>' + r.hora + '</td><td><span class="badge ' + badge + '">' + r.tipo + '</span></td><td><strong>' + r.placa + '</strong></td><td>' + placa2 + '</td><td>' + r.conductor + '</td><td>' + r.empresa + '</td><td>' + r.procedenciaDestino + '</td><td>' + r.materiales + '</td><td title="' + (r.descMateriales || '') + '">' + descMat + '</td><td>' + r.precintos + '</td><td>' + r.guia + '</td><td>' + r.acompanantes + '</td><td>' + fotosHtml + '</td><td><button class="btn" style="padding:6px 16px;font-size:0.85rem;background:var(--primary);color:#fff" onclick="abrirModalEditar(' + r.id + ')">✏️ EDITAR</button></td></tr>';
+        return '<tr onclick="verDetalle(' + r.id + ')"><td>' + (regs.length - i) + '</td><td>' + r.fecha + '</td><td>' + r.hora + '</td><td><span class="badge ' + badge + '">' + r.tipo + '</span></td><td><strong>' + r.placa + '</strong></td><td>' + placa2 + '</td><td>' + r.conductor + '</td><td>' + r.empresa + '</td><td>' + r.procedenciaDestino + '</td><td>' + r.materiales + '</td><td title="' + (r.descMateriales || '') + '">' + descMat + '</td><td>' + r.precintos + '</td><td>' + r.guia + '</td><td>' + r.acompanantes + '</td><td>' + fotosHtml + '</td><td><button class="btn" style="padding:6px 16px;font-size:0.85rem;background:var(--primary);color:#fff" onclick="event.stopPropagation();abrirModalEditar(' + r.id + ')">✏️ EDITAR</button></td></tr>';
     }).join('');
 }
 
 function verImagen(src) {
     document.getElementById('imgViewerSrc').src = src;
     document.getElementById('imgViewer').classList.add('active');
+}
+
+async function verDetalle(id) {
+    try {
+        const r = await obtenerRegistro(id);
+        if (!r) return;
+        const cont = document.getElementById('detalleContenido');
+        const tipoClass = r.tipo === 'INGRESO' ? 'detail-badge-ingreso' : 'detail-badge-salida';
+        const placa2 = r.segundaPlaca === 'SI' ? (r.placa2 || '-') : 'NO APLICA';
+        
+        let fotosHtml = '';
+        if (r.fotoPrecinto1) {
+            fotosHtml += '<img src="' + r.fotoPrecinto1 + '" class="detail-photo" onclick="verImagen(\'' + r.fotoPrecinto1 + '\')">';
+        }
+        if (r.fotoPrecinto2) {
+            fotosHtml += '<img src="' + r.fotoPrecinto2 + '" class="detail-photo" onclick="verImagen(\'' + r.fotoPrecinto2 + '\')">';
+        }
+        if (r.fotoGuia) {
+            const isPdf = r.fotoGuia.indexOf('data:application/pdf') >= 0 || r.fotoGuia.indexOf('pdf') >= 0;
+            if (isPdf) {
+                fotosHtml += '<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2MzMjgyOCI+PHBhdGggZD0iTTE0IDJINmMtMS4xIDAtMiAuOS0yIDJ2MTZjMCAxLjEuOSAyIDIgMmgxMmMxLjEgMCAyLS45IDItMlY4bC02LTZ6bTQuNSAxOC41aC0xM1YzaDExbDQuNSA0LjV2MTMuNXpNMTQgM1Y5aDZ6Ii8+PHBhdGggZD0iTTE2LjUgMTEuNWgtOWwuNSAzaDhsLS41LTN6IiBmaWxsPSIjZmZmIi8+PC9zdmc+" class="detail-photo pdf-thumb" onclick="verImagen(\'' + r.fotoGuia + '\')" title="PDF">';
+            } else {
+                fotosHtml += '<img src="' + r.fotoGuia + '" class="detail-photo" onclick="verImagen(\'' + r.fotoGuia + '\')">';
+            }
+        }
+
+        cont.innerHTML = 
+            '<div class="detail-grid">' +
+            '<div class="detail-item"><div class="detail-label">Fecha</div><div class="detail-value">' + (r.fecha || '-') + '</div></div>' +
+            '<div class="detail-item"><div class="detail-label">Hora</div><div class="detail-value">' + (r.hora || '-') + '</div></div>' +
+            '</div>' +
+            '<div style="margin:12px 0"><span class="' + tipoClass + '">' + (r.tipo || '-') + '</span></div>' +
+            '<div class="detail-grid">' +
+            '<div class="detail-item"><div class="detail-label">Placa</div><div class="detail-value">' + (r.placa || '-') + '</div></div>' +
+            '<div class="detail-item"><div class="detail-label">Segunda Placa</div><div class="detail-value">' + placa2 + '</div></div>' +
+            '<div class="detail-item"><div class="detail-label">Conductor</div><div class="detail-value">' + (r.conductor || '-') + '</div></div>' +
+            '<div class="detail-item"><div class="detail-label">Empresa</div><div class="detail-value">' + (r.empresa || '-') + '</div></div>' +
+            '<div class="detail-item" style="grid-column:1/-1"><div class="detail-label">' + (r.tipo === 'INGRESO' ? 'Procedencia' : 'Destino') + '</div><div class="detail-value">' + (r.procedenciaDestino || '-') + '</div></div>' +
+            '</div>' +
+            '<div class="detail-section-title">📦 Materiales y Documentación</div>' +
+            '<div class="detail-grid">' +
+            '<div class="detail-item"><div class="detail-label">¿Materiales?</div><div class="detail-value">' + (r.materiales || '-') + '</div></div>' +
+            '<div class="detail-item"><div class="detail-label">¿Precintos?</div><div class="detail-value">' + (r.precintos || '-') + '</div></div>' +
+            '<div class="detail-item"><div class="detail-label">¿Guía?</div><div class="detail-value">' + (r.guia || '-') + '</div></div>' +
+            '<div class="detail-item"><div class="detail-label">¿Acompañantes?</div><div class="detail-value">' + (r.acompanantes || '-') + '</div></div>' +
+            '</div>' +
+            (r.descMateriales ? '<div style="margin-top:12px"><div class="detail-label">Descripción de Materiales</div><div class="detail-value" style="font-weight:500;white-space:pre-wrap">' + r.descMateriales + '</div></div>' : '') +
+            (r.personasAcompanantes ? '<div style="margin-top:12px"><div class="detail-label">Personas Acompañantes</div><div class="detail-value" style="font-weight:500;white-space:pre-wrap">' + r.personasAcompanantes + '</div></div>' : '') +
+            (r.observaciones ? '<div style="margin-top:12px"><div class="detail-label">Observaciones</div><div class="detail-value" style="font-weight:500;white-space:pre-wrap">' + r.observaciones + '</div></div>' : '') +
+            (fotosHtml ? '<div class="detail-section-title">📷 Fotos Adjuntas</div><div class="detail-photos">' + fotosHtml + '</div>' : '') +
+            '<div style="height:40px"></div>';
+        
+        document.getElementById('modalDetalle').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    } catch (err) {
+        console.error('Error detalle:', err);
+    }
+}
+
+function cerrarDetalle() {
+    document.getElementById('modalDetalle').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function cerrarApp() {
+    if (window.confirm('¿Está seguro de que desea cerrar la aplicación?')) {
+        window.close();
+        setTimeout(function() {
+            mostrarToast('⚠️ Cierre la pestaña o la aplicación manualmente');
+        }, 300);
+    }
 }
 
 async function filtrarRegistros() {
@@ -740,20 +884,16 @@ async function verificarClave() {
     if (clave !== '0000') {
         const inp = document.getElementById('inputClave');
         const err = document.getElementById('errorClave');
-        // Mostrar mensaje de error en el modal
         err.style.display = 'block';
-        // Remarcar el campo en rojo
         inp.style.borderColor = '#c62828';
         inp.style.background = '#ffebee';
-        // Animación de sacudida
         inp.style.animation = 'none';
-        inp.offsetHeight; // reflow
+        inp.offsetHeight;
         inp.style.animation = 'shakeClave 0.4s ease';
         inp.value = '';
         setTimeout(function() { inp.focus(); }, 100);
         return;
     }
-    // Ocultar error si estaba visible
     document.getElementById('errorClave').style.display = 'none';
     const idParaEditar = pendingId;
     cerrarModal();
@@ -864,9 +1004,7 @@ async function editarRegistro(id) {
         document.getElementById('btnGuardar').innerHTML = '<span>💾</span> ACTUALIZAR REGISTRO';
         document.getElementById('btnCancelar').style.display = 'inline-flex';
 
-        // Activar banner y estilo de modo edición
-        const banner = document.getElementById('editBanner');
-        banner.style.display = 'flex';
+        document.getElementById('editBanner').style.display = 'flex';
         document.getElementById('cardTitle').innerHTML = '✏️ Editando Registro #' + r.id;
         document.getElementById('editBannerSub').textContent = 'Placa: ' + r.placa + ' | ' + r.conductor + ' — Modifique y presione ACTUALIZAR REGISTRO';
         document.getElementById('formCard').style.border = '2px solid #ff6f00';
@@ -935,7 +1073,6 @@ async function exportarExcel() {
         const wbout = XLSX.write(wb, {bookType: 'xlsx', type: 'array'});
         const blob = new Blob([wbout], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
         const nombreArchivo = 'Registro_Vehicular_' + new Date().toISOString().split('T')[0] + '.xlsx';
-        // Guardar blob globalmente para el modal compartir
         window._shareBlob = blob;
         window._shareNombre = nombreArchivo;
         window._shareTipo = 'excel';
@@ -947,7 +1084,6 @@ async function exportarExcel() {
     }
 }
 
-// Mapeo columna → etiqueta y extractor
 var PDF_COLS = {
     fecha:               {label: 'FECHA',        fn: function(r){ return r.fecha || '-'; }},
     hora:                {label: 'HORA',         fn: function(r){ return r.hora || '-'; }},
@@ -969,7 +1105,6 @@ var PDF_COLS = {
 async function exportarPDF() {
     const regs = await obtenerRegistros();
     if (regs.length === 0) { mostrarToast('❌ No hay registros'); return; }
-    // Precargar fechas con rango existente
     const fechas = regs.map(function(r){ return r.fecha; }).filter(Boolean).sort();
     document.getElementById('pdfFechaDesde').value = fechas[0] || '';
     document.getElementById('pdfFechaHasta').value = fechas[fechas.length-1] || '';
@@ -1011,7 +1146,6 @@ async function generarPDFFiltrado() {
     const filtrados = filtrarParaPDF(regs);
     if (filtrados.length === 0) { mostrarToast('❌ No hay registros con esos filtros'); return; }
 
-    // Columnas seleccionadas
     const checks = document.querySelectorAll('#pdfColumnas input[type=checkbox]:checked');
     if (checks.length === 0) { mostrarToast('❌ Seleccione al menos una columna'); return; }
     const colKeys = Array.from(checks).map(function(c){ return c.value; });
@@ -1021,7 +1155,6 @@ async function generarPDFFiltrado() {
     const jsPDF = window.jspdf.jsPDF;
     const doc = new jsPDF({orientation: 'landscape'});
 
-    // Cabecera
     doc.setFillColor(26, 35, 126);
     doc.rect(0, 0, 297, 25, 'F');
     doc.setTextColor(255, 255, 255);
@@ -1039,13 +1172,11 @@ async function generarPDFFiltrado() {
     doc.text('Generado: ' + new Date().toLocaleString('es-ES'), 14, 31);
     doc.text('Edward Quezada M. — Seguridad Patrimonial', 280, 31, {align: 'right'});
 
-    // Cabeceras y datos dinámicos
     const headers = colKeys.map(function(k){ return PDF_COLS[k].label; });
     const body = filtrados.map(function(r) {
         return colKeys.map(function(k){ return PDF_COLS[k].fn(r); });
     });
 
-    // Anchos proporcionales según cantidad de columnas
     const baseW = 268 / colKeys.length;
     const colStyles = {};
     colKeys.forEach(function(k, i) {
@@ -1066,7 +1197,6 @@ async function generarPDFFiltrado() {
         columnStyles: colStyles
     });
 
-    // Pie de página
     const pageCount = doc.internal.getNumberOfPages();
     for (var i = 1; i <= pageCount; i++) {
         doc.setPage(i);
@@ -1077,7 +1207,6 @@ async function generarPDFFiltrado() {
 
     const fecha = new Date().toISOString().split('T')[0];
     const nombreArchivo = 'Registro_Vehicular_' + tipoLabel + '_' + fecha + '.pdf';
-    // Obtener blob del PDF
     const pdfBlob = doc.output('blob');
     window._shareBlob = pdfBlob;
     window._shareNombre = nombreArchivo;
@@ -1087,12 +1216,10 @@ async function generarPDFFiltrado() {
     abrirModalCompartir('📄', 'PDF generado', filtrados.length + ' registros — ' + nombreArchivo, false);
 }
 
-// ── SISTEMA DE COMPARTIR ────────────────────────────────────────────────────
 function abrirModalCompartir(icon, titulo, subtitulo, ocultarEmail) {
     document.getElementById('shareIcon').textContent = icon;
     document.getElementById('shareTitulo').textContent = titulo;
     document.getElementById('shareSubtitulo').textContent = subtitulo;
-    // Email solo para PDF
     document.getElementById('btnShareEmail').style.display = ocultarEmail ? 'none' : 'flex';
     document.getElementById('modalCompartir').classList.add('active');
 }
@@ -1108,7 +1235,6 @@ async function shareAccion(accion) {
     const texto = window._shareTexto || 'Registro Vehicular';
 
     if (accion === 'guardar') {
-        // Descarga directa
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -1121,7 +1247,6 @@ async function shareAccion(accion) {
         mostrarToast('💾 Archivo guardado: ' + nombre);
 
     } else if (accion === 'whatsapp') {
-        // Intentar Web Share API (funciona en Android/iOS)
         if (navigator.share && navigator.canShare) {
             const file = new File([blob], nombre, {type: mime});
             if (navigator.canShare({files: [file]})) {
@@ -1136,18 +1261,15 @@ async function shareAccion(accion) {
                     return;
                 } catch(e) {
                     if (e.name !== 'AbortError') {
-                        // Fallback si falla
                         compartirWhatsAppFallback(nombre, texto);
                     }
                 }
                 return;
             }
         }
-        // Fallback: primero descargar, luego abrir WhatsApp con texto
         compartirWhatsAppFallback(nombre, texto);
 
     } else if (accion === 'email') {
-        // Descargar primero y abrir cliente de email
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -1156,7 +1278,6 @@ async function shareAccion(accion) {
         a.click();
         document.body.removeChild(a);
         setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
-        // Abrir cliente de email con datos precargados
         const asunto = encodeURIComponent('Registro Vehicular — ' + nombre);
         const cuerpo = encodeURIComponent(texto + '\n\nArchivo adjunto: ' + nombre + '\n(Adjunte el archivo descargado a este email)');
         setTimeout(function() {
@@ -1168,7 +1289,6 @@ async function shareAccion(accion) {
 }
 
 function compartirWhatsAppFallback(nombre, texto) {
-    // Descargar archivo primero
     const url = URL.createObjectURL(window._shareBlob);
     const a = document.createElement('a');
     a.href = url;
@@ -1177,7 +1297,6 @@ function compartirWhatsAppFallback(nombre, texto) {
     a.click();
     document.body.removeChild(a);
     setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
-    // Abrir WhatsApp con texto (el usuario adjunta manualmente el archivo descargado)
     const msg = encodeURIComponent(texto + '\n\nArchivo: ' + nombre + '\n(Adjunte el archivo descargado)');
     setTimeout(function() {
         window.open('https://wa.me/?text=' + msg, '_blank');
@@ -1185,8 +1304,6 @@ function compartirWhatsAppFallback(nombre, texto) {
     cerrarModalCompartir();
     mostrarToast('📲 Archivo descargado — adjúntelo en WhatsApp');
 }
-// ── FIN SISTEMA DE COMPARTIR ─────────────────────────────────────────────────
-
 </script>
 </body>
 </html>
