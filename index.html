@@ -90,6 +90,11 @@ tr:hover{background:#f5f5f5}
 .section-divider{height:1px;background:var(--border);margin:20px 0}
 .info-text{font-size:0.8rem;color:#666;margin-top:4px;font-style:italic}
 
+/* CHECKBOX SIN PLACA */
+.sin-placa-check{display:flex;align-items:center;gap:10px;padding:12px 14px;background:linear-gradient(135deg,#fff3e0 0%,#ffe0b2 100%);border:2px solid #ff9800;border-radius:10px;margin-bottom:14px;cursor:pointer}
+.sin-placa-check input[type="checkbox"]{width:22px;height:22px;accent-color:#ff6f00;cursor:pointer}
+.sin-placa-check label{font-weight:700;color:#e65100;font-size:0.95rem;cursor:pointer;margin:0}
+
 /* DETALLE FULLSCREEN */
 .detail-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:3000;display:none;flex-direction:column;overflow-y:auto}
 .detail-overlay.active{display:flex}
@@ -163,6 +168,14 @@ tr:hover{background:#f5f5f5}
 <div class="radio-option"><input type="radio" name="tipo" id="tipoSalida" value="SALIDA" required><label for="tipoSalida">📤 SALIDA</label></div>
 </div>
 </div>
+
+<!-- 🔧 NUEVO: Checkbox sin placa -->
+<div class="sin-placa-check" id="sinPlacaCheck">
+  <input type="checkbox" id="sinPlaca" value="SI">
+  <label for="sinPlaca">🚫 VEHICULO SIN PLACA</label>
+</div>
+
+<div id="placasContainer">
 <div class="grid-2">
 <div class="form-group"><label>Placa del Vehiculo</label><input type="text" id="placa" list="listaPlacas" placeholder="ABC-1234" maxlength="8" required><div class="info-text">Formato automatico: 3 letras + guion + numeros</div><datalist id="listaPlacas"></datalist></div>
 <div class="form-group"><label>¿Tiene Segunda Placa?</label>
@@ -172,24 +185,11 @@ tr:hover{background:#f5f5f5}
 </div>
 </div>
 </div>
-<div class="form-group"><label>Tipo de Vehiculo</label><select id="tipoVehiculo" required>
-  <option value="" disabled selected>SELECCIONE...</option>
-  <option value="MOTO">MOTO</option>
-  <option value="TRIMOTO">TRIMOTO</option>
-  <option value="CUATRIMOTO">CUATRIMOTO</option>
-  <option value="AUTO">AUTO</option>
-  <option value="CAMIONETA">CAMIONETA</option>
-  <option value="COMBI/VAN">COMBI O VAN</option>
-  <option value="FURGON">FURGON</option>
-  <option value="CAMION">CAMION</option>
-  <option value="GRANELERO">GRANELERO</option>
-  <option value="CAMION CISTERNA">CAMION CISTERNA</option>
-  <option value="TRAILER">TRAILER</option>
-  <option value="BUS">BUS</option>
-</select></div>
 <div id="segundaPlacaBox" class="conditional-box hidden">
 <div class="form-group"><label>Segunda Placa</label><input type="text" id="placa2" placeholder="ABC-1234" maxlength="8"><div class="info-text">Formato automatico: 3 letras + guion + numeros</div></div>
 </div>
+</div>
+
 <div class="grid-2">
 <div class="form-group"><label>Nombre del Conductor</label><input type="text" id="conductor" list="listaConductores" placeholder="NOMBRE COMPLETO" required><datalist id="listaConductores"></datalist></div>
 <div class="form-group"><label>Empresa</label><input type="text" id="empresa" list="listaEmpresas" placeholder="EMPRESA" required><datalist id="listaEmpresas"></datalist></div>
@@ -269,8 +269,8 @@ tr:hover{background:#f5f5f5}
 </div>
 <div class="table-container">
 <table id="tablaRegistros">
-<<thead><tr><th>#</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Placa</th><th>Placa 2</th><th>Tipo Veh.</th><th>Conductor</th><th>Empresa</th><th>Proc/Dest</th><th>Mat.</th><th>Desc.Mat.</th><th>Prec.</th><th>Guia</th><th>Acomp.</th><th>Fotos</th><th>Accion</th></tr></thead>
-<tbody id="tbodyRegistros"><tr><td colspan="17" class="empty-state">No hay registros guardados</td></tr></tbody>
+<<thead><tr><th>#</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Placa</th><th>Placa 2</th><th>Conductor</th><th>Empresa</th><th>Proc/Dest</th><th>Mat.</th><th>Desc.Mat.</th><th>Prec.</th><th>Guia</th><th>Acomp.</th><th>Fotos</th><th>Accion</th></tr></thead>
+<tbody id="tbodyRegistros"><tr><td colspan="16" class="empty-state">No hay registros guardados</td></tr></tbody>
 </table>
 </div>
 </div>
@@ -350,7 +350,6 @@ tr:hover{background:#f5f5f5}
     <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="tipo" checked> Tipo</label>
     <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="placa" checked> Placa</label>
     <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="placa2" checked> Segunda Placa</label>
-    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="tipoVehiculo" checked> Tipo Vehiculo</label>
     <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="conductor" checked> Conductor</label>
     <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="empresa" checked> Empresa</label>
     <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="procedenciaDestino" checked> Proc/Destino</label>
@@ -389,7 +388,7 @@ tr:hover{background:#f5f5f5}
 
 <div class="footer">
 <p>Desarrollado por <strong>Edward Quezada M.</strong></p>
-<p>Versión 2.3.0 | Registro Vehicular PWA</p>
+<p>Versión 2.3.1 | Registro Vehicular PWA</p>
 <p style="margin-top:5px;font-size:0.75rem">© 2026 - Todos los derechos reservados</p>
 </div>
 
@@ -558,6 +557,22 @@ function mostrarAcompanantes(mostrar) {
     document.getElementById('acompanantesBox').classList.toggle('hidden', !mostrar);
 }
 
+// 🔧 NUEVO: Mostrar/ocultar placas según checkbox "sin placa"
+function mostrarPlacas(mostrar) {
+    const container = document.getElementById('placasContainer');
+    const placaInput = document.getElementById('placa');
+    container.classList.toggle('hidden', !mostrar);
+    if (!mostrar) {
+        placaInput.value = '';
+        placaInput.removeAttribute('required');
+        document.getElementById('placa2').value = '';
+        document.getElementById('segPlacaNo').checked = true;
+        mostrarSegundaPlaca(false);
+    } else {
+        placaInput.setAttribute('required', 'required');
+    }
+}
+
 async function poblarListas() {
     const regs = await obtenerRegistros();
     const c = [...new Set(regs.map(function(r) { return r.conductor; }).filter(Boolean))].sort();
@@ -621,6 +636,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         r.addEventListener('change', function(e) { mostrarAcompanantes(e.target.value === 'SI'); });
     });
 
+    // 🔧 NUEVO: Listener para checkbox sin placa
+    document.getElementById('sinPlaca').addEventListener('change', function(e) {
+        mostrarPlacas(!e.target.checked);
+    });
+
     document.getElementById('registroForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         await procesarFormulario();
@@ -652,6 +672,7 @@ async function procesarFormulario() {
     const editId = document.getElementById('editId').value;
     const tipo = document.querySelector('input[name="tipo"]:checked') ? document.querySelector('input[name="tipo"]:checked').value : '';
     const materiales = document.querySelector('input[name="materiales"]:checked') ? document.querySelector('input[name="materiales"]:checked').value : 'NO';
+    const sinPlaca = document.getElementById('sinPlaca').checked ? 'SI' : 'NO';
 
     if (materiales === 'SI') {
         const precintos = document.querySelector('input[name="precintos"]:checked') ? document.querySelector('input[name="precintos"]:checked').value : 'NO';
@@ -668,10 +689,10 @@ async function procesarFormulario() {
         fecha: document.getElementById('fecha').value,
         hora: document.getElementById('hora').value,
         tipo: tipo,
-        placa: document.getElementById('placa').value,
-        segundaPlaca: document.querySelector('input[name="segundaPlaca"]:checked') ? document.querySelector('input[name="segundaPlaca"]:checked').value : 'NO',
-        placa2: document.getElementById('placa2').value,
-        tipoVehiculo: document.getElementById('tipoVehiculo').value,
+        sinPlaca: sinPlaca,
+        placa: sinPlaca === 'SI' ? '' : document.getElementById('placa').value,
+        segundaPlaca: sinPlaca === 'SI' ? 'NO' : (document.querySelector('input[name="segundaPlaca"]:checked') ? document.querySelector('input[name="segundaPlaca"]:checked').value : 'NO'),
+        placa2: sinPlaca === 'SI' ? '' : document.getElementById('placa2').value,
         conductor: document.getElementById('conductor').value,
         empresa: document.getElementById('empresa').value,
         procedenciaDestino: document.getElementById('procedenciaDestino').value,
@@ -725,6 +746,10 @@ function limpiarFormulario() {
     document.getElementById('fecha').value = n.toISOString().split('T')[0];
     document.getElementById('hora').value = n.toTimeString().slice(0, 5);
 
+    // 🔧 NUEVO: Resetear checkbox sin placa y mostrar placas
+    document.getElementById('sinPlaca').checked = false;
+    mostrarPlacas(true);
+
     mostrarSegundaPlaca(false);
     mostrarMateriales(false);
     mostrarPrecintos(false);
@@ -762,7 +787,7 @@ async function cargarRegistros() {
 function renderizarTabla(regs) {
     const tbody = document.getElementById('tbodyRegistros');
     if (regs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="17" class="empty-state">No hay registros guardados</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="16" class="empty-state">No hay registros guardados</td></tr>';
         return;
     }
     tbody.innerHTML = regs.map(function(r, i) {
@@ -785,7 +810,9 @@ function renderizarTabla(regs) {
         const badge = r.tipo === 'INGRESO' ? 'badge-ingreso' : 'badge-salida';
         const descMat = r.descMateriales ? (r.descMateriales.substring(0, 25) + (r.descMateriales.length > 25 ? '...' : '')) : '-';
         const placa2 = r.segundaPlaca === 'SI' ? r.placa2 : '-';
-        return '<tr onclick="verDetalle(' + r.id + ')"><td>' + (regs.length - i) + '</td><td>' + r.fecha + '</td><td>' + r.hora + '</td><td><span class="badge ' + badge + '">' + r.tipo + '</span></td><td><strong>' + r.placa + '</strong></td><td>' + placa2 + '</td><td>' + r.conductor + '</td><td>' + r.empresa + '</td><td>' + r.procedenciaDestino + '</td><td>' + r.materiales + '</td><td title="' + (r.descMateriales || '') + '">' + descMat + '</td><td>' + r.precintos + '</td><td>' + r.guia + '</td><td>' + r.acompanantes + '</td><td>' + fotosHtml + '</td><td><button class="btn" style="padding:6px 16px;font-size:0.85rem;background:var(--primary);color:#fff" onclick="event.stopPropagation();abrirModalEditar(' + r.id + ')">✏️ EDITAR</button></td></tr>';
+        // 🔧 NUEVO: Mostrar "SIN PLACA" si aplica
+        const placaDisplay = r.sinPlaca === 'SI' ? '<span style="color:#999;font-style:italic">SIN PLACA</span>' : '<strong>' + r.placa + '</strong>';
+        return '<tr onclick="verDetalle(' + r.id + ')"><td>' + (regs.length - i) + '</td><td>' + r.fecha + '</td><td>' + r.hora + '</td><td><span class="badge ' + badge + '">' + r.tipo + '</span></td><td>' + placaDisplay + '</td><td>' + placa2 + '</td><td>' + r.conductor + '</td><td>' + r.empresa + '</td><td>' + r.procedenciaDestino + '</td><td>' + r.materiales + '</td><td title="' + (r.descMateriales || '') + '">' + descMat + '</td><td>' + r.precintos + '</td><td>' + r.guia + '</td><td>' + r.acompanantes + '</td><td>' + fotosHtml + '</td><td><button class="btn" style="padding:6px 16px;font-size:0.85rem;background:var(--primary);color:#fff" onclick="event.stopPropagation();abrirModalEditar(' + r.id + ')">✏️ EDITAR</button></td></tr>';
     }).join('');
 }
 
@@ -801,6 +828,8 @@ async function verDetalle(id) {
         const cont = document.getElementById('detalleContenido');
         const tipoClass = r.tipo === 'INGRESO' ? 'detail-badge-ingreso' : 'detail-badge-salida';
         const placa2 = r.segundaPlaca === 'SI' ? (r.placa2 || '-') : 'NO APLICA';
+        // 🔧 NUEVO: Mostrar "SIN PLACA" en detalle
+        const placaDisplay = r.sinPlaca === 'SI' ? '<span style="color:#999;font-style:italic">SIN PLACA</span>' : (r.placa || '-');
         
         let fotosHtml = '';
         if (r.fotoPrecinto1) {
@@ -825,7 +854,7 @@ async function verDetalle(id) {
             '</div>' +
             '<div style="margin:12px 0"><span class="' + tipoClass + '">' + (r.tipo || '-') + '</span></div>' +
             '<div class="detail-grid">' +
-            '<div class="detail-item"><div class="detail-label">Placa</div><div class="detail-value">' + (r.placa || '-') + '</div></div>' +
+            '<div class="detail-item"><div class="detail-label">Placa</div><div class="detail-value">' + placaDisplay + '</div></div>' +
             '<div class="detail-item"><div class="detail-label">Segunda Placa</div><div class="detail-value">' + placa2 + '</div></div>' +
             '<div class="detail-item"><div class="detail-label">Conductor</div><div class="detail-value">' + (r.conductor || '-') + '</div></div>' +
             '<div class="detail-item"><div class="detail-label">Empresa</div><div class="detail-value">' + (r.empresa || '-') + '</div></div>' +
@@ -985,7 +1014,15 @@ async function editarRegistro(id) {
         document.getElementById('personasAcompanantes').value = r.personasAcompanantes || '';
         document.getElementById('descMateriales').value = r.descMateriales || '';
         document.getElementById('placa2').value = r.placa2 || '';
-        document.getElementById('tipoVehiculo').value = r.tipoVehiculo || '';
+
+        // 🔧 NUEVO: Restaurar estado de "sin placa"
+        if (r.sinPlaca === 'SI') {
+            document.getElementById('sinPlaca').checked = true;
+            mostrarPlacas(false);
+        } else {
+            document.getElementById('sinPlaca').checked = false;
+            mostrarPlacas(true);
+        }
 
         if (r.tipo === 'INGRESO') document.getElementById('tipoIngreso').checked = true;
         else document.getElementById('tipoSalida').checked = true;
@@ -1070,7 +1107,7 @@ async function editarRegistro(id) {
 
         document.getElementById('editBanner').style.display = 'flex';
         document.getElementById('cardTitle').innerHTML = '✏️ Editando Registro #' + r.id;
-        document.getElementById('editBannerSub').textContent = 'Placa: ' + r.placa + ' | ' + r.conductor + ' — Modifique y presione ACTUALIZAR REGISTRO';
+        document.getElementById('editBannerSub').textContent = 'Placa: ' + (r.placa || 'SIN PLACA') + ' | ' + r.conductor + ' — Modifique y presione ACTUALIZAR REGISTRO';
         document.getElementById('formCard').style.border = '2px solid #ff6f00';
         document.getElementById('formCard').style.boxShadow = '0 4px 20px rgba(255,111,0,0.25)';
 
@@ -1114,9 +1151,8 @@ async function exportarExcel() {
             'FECHA': r.fecha,
             'HORA': r.hora,
             'TIPO': r.tipo,
-            'PLACA': r.placa,
+            'PLACA': r.sinPlaca === 'SI' ? 'SIN PLACA' : r.placa,
             'SEGUNDA PLACA': r.segundaPlaca === 'SI' ? (r.placa2 || '') : 'NO',
-            'TIPO VEHICULO': r.tipoVehiculo || '',
             'CONDUCTOR': r.conductor || '',
             'EMPRESA': r.empresa || '',
             'PROCEDENCIA/DESTINO': r.procedenciaDestino || '',
@@ -1153,9 +1189,8 @@ var PDF_COLS = {
     fecha:               {label: 'FECHA',        fn: function(r){ return r.fecha || '-'; }},
     hora:                {label: 'HORA',         fn: function(r){ return r.hora || '-'; }},
     tipo:                {label: 'TIPO',         fn: function(r){ return r.tipo || '-'; }},
-    placa:               {label: 'PLACA',        fn: function(r){ return r.placa || '-'; }},
+    placa:               {label: 'PLACA',        fn: function(r){ return r.sinPlaca === 'SI' ? 'SIN PLACA' : (r.placa || '-'); }},
     placa2:              {label: 'PLACA 2',      fn: function(r){ return r.segundaPlaca === 'SI' ? (r.placa2 || '-') : '-'; }},
-    tipoVehiculo:        {label: 'TIPO VEH.',    fn: function(r){ return r.tipoVehiculo || '-'; }},
     conductor:           {label: 'CONDUCTOR',    fn: function(r){ return r.conductor || '-'; }},
     empresa:             {label: 'EMPRESA',      fn: function(r){ return r.empresa || '-'; }},
     procedenciaDestino:  {label: 'PROC/DEST',    fn: function(r){ return r.procedenciaDestino || '-'; }},
@@ -1388,7 +1423,7 @@ function iniciarRelojEnVivo() {
         if (fechaInput.value !== nuevaFecha) {
             fechaInput.value = nuevaFecha;
         }
-    }, 1000); // Cada 1 segundo
+    }, 30000); // Cada 30 segundos
 }
 </script>
 </body>
