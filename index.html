@@ -129,7 +129,7 @@ tr:hover{background:#f5f5f5}
 </style>
 </head>
 <body>
-<header>
+<<header>
   <h1>🚗 REGISTRO VEHICULAR</h1>
   <p>Control de Ingreso y Salida de Vehiculos</p>
 </header>
@@ -260,7 +260,7 @@ tr:hover{background:#f5f5f5}
 </div>
 <div class="table-container">
 <table id="tablaRegistros">
-<thead><tr><th>#</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Placa</th><th>Placa 2</th><th>Conductor</th><th>Empresa</th><th>Proc/Dest</th><th>Mat.</th><th>Desc.Mat.</th><th>Prec.</th><th>Guia</th><th>Acomp.</th><th>Fotos</th><th>Accion</th></tr></thead>
+<<thead><tr><th>#</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Placa</th><th>Placa 2</th><th>Conductor</th><th>Empresa</th><th>Proc/Dest</th><th>Mat.</th><th>Desc.Mat.</th><th>Prec.</th><th>Guia</th><th>Acomp.</th><th>Fotos</th><th>Accion</th></tr></thead>
 <tbody id="tbodyRegistros"><tr><td colspan="16" class="empty-state">No hay registros guardados</td></tr></tbody>
 </table>
 </div>
@@ -567,6 +567,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('fecha').value = n.toISOString().split('T')[0];
     document.getElementById('hora').value = n.toTimeString().slice(0, 5);
 
+    // 🔧 NUEVO: Actualizar hora automáticamente cada 30 segundos
+    iniciarRelojEnVivo();
+
+    // 🔧 NUEVO: Actualizar hora al volver de segundo plano
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            const ahora = new Date();
+            document.getElementById('hora').value = ahora.toTimeString().slice(0, 5);
+            // Si cambió de día, actualizar fecha también
+            document.getElementById('fecha').value = ahora.toISOString().split('T')[0];
+        }
+    });
+
     document.querySelectorAll('input[type="text"], textarea').forEach(function(el) {
         el.addEventListener('input', toUpper);
     });
@@ -833,12 +846,51 @@ function cerrarDetalle() {
 }
 
 function cerrarApp() {
-    if (window.confirm('¿Está seguro de que desea cerrar la aplicación?')) {
-        window.close();
-        setTimeout(function() {
-            mostrarToast('⚠️ Cierre la pestaña o la aplicación manualmente');
-        }, 300);
-    }
+    if (!window.confirm('¿Está seguro de que desea cerrar la aplicación?')) return;
+    
+    // Intento 1: cerrar ventana/pestaña (funciona solo si fue abierta por script)
+    window.close();
+    
+    // Intento 2: truco para navegadores que permiten cerrar la pestaña actual
+    try {
+        window.open('', '_self').close();
+    } catch(e) {}
+    
+    // Verificar si la ventana sigue abierta después de 600ms
+    setTimeout(function() {
+        if (!window.closed) {
+            // Detectar si es PWA instalada (standalone)
+            const esPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                          window.navigator.standalone === true;
+            
+            if (esPWA) {
+                mostrarPantallaCierrePWA();
+            } else {
+                mostrarToast('⚠️ El navegador bloqueó el cierre. Cierre la pestaña manualmente.');
+            }
+        }
+    }, 600);
+}
+
+function mostrarPantallaCierrePWA() {
+    // Crear overlay fullscreen que bloquea toda la interfaz
+    var overlay = document.createElement('div');
+    overlay.id = 'pantallaCierrePWA';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#1a237e 0%,#3949ab 100%);z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;padding:30px;font-family:Segoe UI,system-ui,sans-serif;';
+    overlay.innerHTML = 
+        '<div style="font-size:4rem;margin-bottom:20px">🔒</div>' +
+        '<h2 style="font-size:1.5rem;margin-bottom:12px">Aplicación pausada</h2>' +
+        '<p style="max-width:320px;opacity:0.9;line-height:1.5;font-size:1rem">' +
+        'Para salir completamente, deslice hacia arriba desde la parte inferior de la pantalla y cierre esta aplicación desde la multitarea de su dispositivo.' +
+        '</p>' +
+        '<button onclick="location.reload()" style="margin-top:35px;padding:14px 28px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:#fff;border-radius:30px;cursor:pointer;font-size:1rem;font-weight:600">↻ Reabrir aplicación</button>';
+    
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
+    
+    // Limpiar cualquier toast previo
+    const toast = document.getElementById('toast');
+    if (toast) toast.classList.remove('show');
 }
 
 async function filtrarRegistros() {
@@ -1303,6 +1355,26 @@ function compartirWhatsAppFallback(nombre, texto) {
     }, 800);
     cerrarModalCompartir();
     mostrarToast('📲 Archivo descargado — adjúntelo en WhatsApp');
+}
+
+// 🔧 NUEVO: Reloj en vivo para que la hora no se congele
+function iniciarRelojEnVivo() {
+    setInterval(function() {
+        // Solo actualizar si NO estamos en modo edición
+        const editId = document.getElementById('editId').value;
+        if (editId) return;
+
+        const ahora = new Date();
+        const horaInput = document.getElementById('hora');
+        const fechaInput = document.getElementById('fecha');
+
+        horaInput.value = ahora.toTimeString().slice(0, 5);
+
+        const nuevaFecha = ahora.toISOString().split('T')[0];
+        if (fechaInput.value !== nuevaFecha) {
+            fechaInput.value = nuevaFecha;
+        }
+    }, 30000); // Cada 30 segundos
 }
 </script>
 </body>
