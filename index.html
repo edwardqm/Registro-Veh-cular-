@@ -1032,12 +1032,19 @@ async function verificarClave() {
     document.getElementById('errorClave').style.display = 'none';
     const idParaEditar = pendingId;
     const accion = pendingAction;
-    cerrarModal();
     if (accion === 'editar' && idParaEditar) {
+        cerrarModal();
         mostrarToast('⏳ Cargando...');
         await editarRegistro(idParaEditar);
     } else if (accion === 'respaldo') {
-        await configurarRespaldo();
+        // NO cerrar el modal antes para mantener el contexto de interaccion del usuario
+        // y permitir que showSaveFilePicker funcione correctamente
+        try {
+            await configurarRespaldo();
+            cerrarModal();
+        } catch (err) {
+            console.error('Error respaldo:', err);
+        }
     }
 }
 
