@@ -172,6 +172,21 @@ tr:hover{background:#f5f5f5}
 </div>
 </div>
 </div>
+<div class="form-group"><label>Tipo de Vehiculo</label><select id="tipoVehiculo" required>
+  <option value="" disabled selected>SELECCIONE...</option>
+  <option value="MOTO">MOTO</option>
+  <option value="TRIMOTO">TRIMOTO</option>
+  <option value="CUATRIMOTO">CUATRIMOTO</option>
+  <option value="AUTO">AUTO</option>
+  <option value="CAMIONETA">CAMIONETA</option>
+  <option value="COMBI/VAN">COMBI O VAN</option>
+  <option value="FURGON">FURGON</option>
+  <option value="CAMION">CAMION</option>
+  <option value="GRANELERO">GRANELERO</option>
+  <option value="CAMION CISTERNA">CAMION CISTERNA</option>
+  <option value="TRAILER">TRAILER</option>
+  <option value="BUS">BUS</option>
+</select></div>
 <div id="segundaPlacaBox" class="conditional-box hidden">
 <div class="form-group"><label>Segunda Placa</label><input type="text" id="placa2" placeholder="ABC-1234" maxlength="8"><div class="info-text">Formato automatico: 3 letras + guion + numeros</div></div>
 </div>
@@ -254,8 +269,8 @@ tr:hover{background:#f5f5f5}
 </div>
 <div class="table-container">
 <table id="tablaRegistros">
-<<thead><tr><th>#</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Placa</th><th>Placa 2</th><th>Conductor</th><th>Empresa</th><th>Proc/Dest</th><th>Mat.</th><th>Desc.Mat.</th><th>Prec.</th><th>Guia</th><th>Acomp.</th><th>Fotos</th><th>Accion</th></tr></thead>
-<tbody id="tbodyRegistros"><tr><td colspan="16" class="empty-state">No hay registros guardados</td></tr></tbody>
+<<thead><tr><th>#</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Placa</th><th>Placa 2</th><th>Tipo Veh.</th><th>Conductor</th><th>Empresa</th><th>Proc/Dest</th><th>Mat.</th><th>Desc.Mat.</th><th>Prec.</th><th>Guia</th><th>Acomp.</th><th>Fotos</th><th>Accion</th></tr></thead>
+<tbody id="tbodyRegistros"><tr><td colspan="17" class="empty-state">No hay registros guardados</td></tr></tbody>
 </table>
 </div>
 </div>
@@ -335,6 +350,7 @@ tr:hover{background:#f5f5f5}
     <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="tipo" checked> Tipo</label>
     <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="placa" checked> Placa</label>
     <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="placa2" checked> Segunda Placa</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="tipoVehiculo" checked> Tipo Vehiculo</label>
     <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="conductor" checked> Conductor</label>
     <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="empresa" checked> Empresa</label>
     <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;padding:6px;background:#f5f5f5;border-radius:6px;cursor:pointer"><input type="checkbox" value="procedenciaDestino" checked> Proc/Destino</label>
@@ -655,6 +671,7 @@ async function procesarFormulario() {
         placa: document.getElementById('placa').value,
         segundaPlaca: document.querySelector('input[name="segundaPlaca"]:checked') ? document.querySelector('input[name="segundaPlaca"]:checked').value : 'NO',
         placa2: document.getElementById('placa2').value,
+        tipoVehiculo: document.getElementById('tipoVehiculo').value,
         conductor: document.getElementById('conductor').value,
         empresa: document.getElementById('empresa').value,
         procedenciaDestino: document.getElementById('procedenciaDestino').value,
@@ -745,7 +762,7 @@ async function cargarRegistros() {
 function renderizarTabla(regs) {
     const tbody = document.getElementById('tbodyRegistros');
     if (regs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="16" class="empty-state">No hay registros guardados</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="17" class="empty-state">No hay registros guardados</td></tr>';
         return;
     }
     tbody.innerHTML = regs.map(function(r, i) {
@@ -968,6 +985,7 @@ async function editarRegistro(id) {
         document.getElementById('personasAcompanantes').value = r.personasAcompanantes || '';
         document.getElementById('descMateriales').value = r.descMateriales || '';
         document.getElementById('placa2').value = r.placa2 || '';
+        document.getElementById('tipoVehiculo').value = r.tipoVehiculo || '';
 
         if (r.tipo === 'INGRESO') document.getElementById('tipoIngreso').checked = true;
         else document.getElementById('tipoSalida').checked = true;
@@ -1098,6 +1116,7 @@ async function exportarExcel() {
             'TIPO': r.tipo,
             'PLACA': r.placa,
             'SEGUNDA PLACA': r.segundaPlaca === 'SI' ? (r.placa2 || '') : 'NO',
+            'TIPO VEHICULO': r.tipoVehiculo || '',
             'CONDUCTOR': r.conductor || '',
             'EMPRESA': r.empresa || '',
             'PROCEDENCIA/DESTINO': r.procedenciaDestino || '',
@@ -1136,6 +1155,7 @@ var PDF_COLS = {
     tipo:                {label: 'TIPO',         fn: function(r){ return r.tipo || '-'; }},
     placa:               {label: 'PLACA',        fn: function(r){ return r.placa || '-'; }},
     placa2:              {label: 'PLACA 2',      fn: function(r){ return r.segundaPlaca === 'SI' ? (r.placa2 || '-') : '-'; }},
+    tipoVehiculo:        {label: 'TIPO VEH.',    fn: function(r){ return r.tipoVehiculo || '-'; }},
     conductor:           {label: 'CONDUCTOR',    fn: function(r){ return r.conductor || '-'; }},
     empresa:             {label: 'EMPRESA',      fn: function(r){ return r.empresa || '-'; }},
     procedenciaDestino:  {label: 'PROC/DEST',    fn: function(r){ return r.procedenciaDestino || '-'; }},
@@ -1368,7 +1388,7 @@ function iniciarRelojEnVivo() {
         if (fechaInput.value !== nuevaFecha) {
             fechaInput.value = nuevaFecha;
         }
-    }, 30000); // Cada 30 segundos
+    }, 1000); // Cada 1 segundo
 }
 </script>
 </body>
