@@ -286,7 +286,7 @@ tr:hover{background:#f5f5f5}
 <button type="button" class="btn btn-success" onclick="exportarExcel()"><span>📊</span> EXPORTAR EXCEL</button>
 <button type="button" class="btn btn-danger" onclick="exportarPDF()"><span>📄</span> EXPORTAR PDF</button>
 <button type="button" class="btn btn-warning" onclick="cargarDesdeExcel()"><span>📥</span> CARGAR EXCEL</button>
-<button type="button" class="btn btn-primary" onclick="configurarRespaldo()"><span>💾</span> CONFIGURAR RESPALDO</button>
+<button type="button" class="btn btn-primary" onclick="abrirModalRespaldo()"><span>💾</span> CONFIGURAR RESPALDO</button>
 </div>
 <div class="table-container">
 <table id="tablaRegistros">
@@ -420,6 +420,7 @@ const DB_VERSION = 4;
 const STORE_NAME = 'registros';
 let db = null;
 let pendingId = null;
+let pendingAction = null;
 
 function initDB() {
     return new Promise(function(resolve, reject) {
@@ -982,6 +983,7 @@ function limpiarFiltros() {
 
 function abrirModalEditar(id) {
     pendingId = id;
+    pendingAction = 'editar';
     document.getElementById('modalClave').classList.add('active');
     document.getElementById('inputClave').value = '';
     setTimeout(function() {
@@ -998,6 +1000,18 @@ function cerrarModal() {
     inp.style.background = '';
     inp.style.animation = '';
     pendingId = null;
+    pendingAction = null;
+}
+
+function abrirModalRespaldo() {
+    pendingAction = 'respaldo';
+    pendingId = null;
+    document.getElementById('modalClave').classList.add('active');
+    document.getElementById('inputClave').value = '';
+    setTimeout(function() {
+        document.getElementById('inputClave').focus();
+        document.getElementById('inputClave').click();
+    }, 300);
 }
 
 async function verificarClave() {
@@ -1017,10 +1031,13 @@ async function verificarClave() {
     }
     document.getElementById('errorClave').style.display = 'none';
     const idParaEditar = pendingId;
+    const accion = pendingAction;
     cerrarModal();
-    if (idParaEditar) {
+    if (accion === 'editar' && idParaEditar) {
         mostrarToast('⏳ Cargando...');
         await editarRegistro(idParaEditar);
+    } else if (accion === 'respaldo') {
+        await configurarRespaldo();
     }
 }
 
