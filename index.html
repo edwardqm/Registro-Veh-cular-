@@ -284,35 +284,95 @@ tr:hover{background:#f5f5f5}
 <div class="card" id="backupCard">
   <div class="card-title">💾 Copia de Seguridad</div>
 
-  <div id="backupStatusBar" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;font-weight:700;font-size:0.9rem;margin-bottom:10px;background:#e3f2fd;border:2px solid #1976d2;color:#1565c0">
+  <!-- Estado del último respaldo -->
+  <div id="backupStatusBar" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;font-weight:700;font-size:0.9rem;margin-bottom:8px;background:#e3f2fd;border:2px solid #1976d2;color:#1565c0">
     <span style="font-size:1.3rem">📲</span>
-    <div>
+    <div style="flex:1;min-width:0">
       <div id="backupStatusTxt">Listo para guardar</div>
       <div id="backupLastSaveTxt" style="font-size:0.75rem;font-weight:500;opacity:0.85;margin-top:2px"></div>
     </div>
   </div>
 
+  <!-- Nombre del último archivo -->
   <div id="backupFilenameBar" style="display:none;align-items:center;gap:8px;padding:9px 13px;border-radius:8px;font-size:0.8rem;font-weight:600;margin-bottom:8px;background:#e8f5e9;border:1.5px solid #43a047;color:#2e7d32">
-    <span style="font-size:1rem">📂</span>
-    <div>
+    <span style="font-size:1rem">📄</span>
+    <div style="min-width:0">
       <div id="backupFilenameTxt" style="word-break:break-all"></div>
-      <div style="font-size:0.72rem;font-weight:500;opacity:0.85;margin-top:2px">En Xiaomi: Mi File Manager → Almacenamiento interno → Download</div>
+      <div style="font-size:0.7rem;font-weight:500;opacity:0.8;margin-top:2px">Archivo disponible en Descargas / WhatsApp / Email</div>
     </div>
   </div>
 
-  <div class="btn-group" style="margin-top:0;flex-direction:column">
-    <button type="button" class="btn btn-success" style="width:100%" onclick="exportarExcelBackup(false)"><span>💾</span> GUARDAR AHORA</button>
-    <button type="button" class="btn btn-accent" style="width:100%" onclick="abrirImportacion()"><span>🔄</span> RESTAURAR DESDE ARCHIVO</button>
-    <button type="button" class="btn btn-warning" style="width:100%;display:none" id="btnRestaurarCache" onclick="restaurarDesdeCache()"><span>⚡</span> RESTAURAR DESDE CACHÉ</button>
+  <!-- Sección: ESTE DISPOSITIVO -->
+  <div style="font-size:0.78rem;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Este dispositivo</div>
+  <div class="btn-group" style="margin-top:0;flex-direction:column;gap:8px">
+    <button type="button" class="btn btn-success" style="width:100%" onclick="exportarExcelBackup(false)">
+      <span>💾</span> GUARDAR / COMPARTIR RESPALDO
+    </button>
+    <button type="button" class="btn btn-warning" style="width:100%;display:none" id="btnRestaurarCache" onclick="restaurarDesdeCache()">
+      <span>⚡</span> RESTAURAR DESDE CACHÉ INTERNA
+    </button>
   </div>
+
+  <!-- Sección: OTRO DISPOSITIVO -->
+  <div style="font-size:0.78rem;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px;margin:14px 0 6px">Otro celular / Nueva instalación</div>
+  <div class="btn-group" style="margin-top:0;flex-direction:column;gap:8px">
+    <button type="button" class="btn btn-primary" style="width:100%" onclick="abrirImportacion()">
+      <span>🔄</span> RESTAURAR DESDE ARCHIVO
+    </button>
+    <button type="button" class="btn" style="width:100%;background:#546e7a;color:#fff" onclick="abrirAyudaDispositivos()">
+      <span>❓</span> ¿CÓMO ENCONTRAR EL ARCHIVO?
+    </button>
+  </div>
+
   <div class="info-text" style="margin-top:12px">
-    📌 <strong>GUARDAR</strong> descarga un .xlsx a tu carpeta <em>Descargas</em> y guarda caché interna.<br>
-    📌 <strong>RESTAURAR DESDE ARCHIVO</strong>: busca el .xlsx en <em>Descargas</em>.<br>
-    📌 <strong>RESTAURAR DESDE CACHÉ</strong>: recupera el último respaldo sin necesitar el archivo (disponible si no borraste los datos de la app).<br>
-    📌 El respaldo se actualiza automáticamente en cada registro guardado.
+    📌 <strong>GUARDAR / COMPARTIR</strong>: guarda en el celular <em>y</em> te permite enviarlo por WhatsApp, Drive o Email — funciona en cualquier marca.<br>
+    📌 <strong>CACHÉ INTERNA</strong>: restaura sin necesitar el archivo (solo si no borraste los datos de la app).<br>
+    📌 El respaldo se actualiza automáticamente en cada registro.
   </div>
   <!-- Input oculto para importar archivo -->
   <input type="file" id="inputImportExcel" accept=".xlsx" style="display:none" onchange="importarDesdeInputFile(this)">
+</div>
+
+<!-- ============ MODAL AYUDA DISPOSITIVOS ============ -->
+<div class="modal-overlay" id="modalAyudaDispositivos">
+<div class="modal" style="max-width:460px;text-align:left;max-height:88vh;overflow-y:auto;padding:22px">
+  <h3 style="text-align:center;margin-bottom:4px">❓ ¿Dónde está el archivo de respaldo?</h3>
+  <p style="text-align:center;color:#666;font-size:0.82rem;margin-bottom:16px">El nombre es <strong>Registro_Vehicular_Backup_[fecha].xlsx</strong></p>
+
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+
+    <div style="background:#e8f5e9;border-left:4px solid #2e7d32;border-radius:0 10px 10px 0;padding:12px 14px">
+      <div style="font-weight:800;font-size:0.9rem;color:#2e7d32;margin-bottom:6px">📲 Opción 1 — Si lo enviaste por WhatsApp</div>
+      <div style="font-size:0.83rem;color:#333;line-height:1.6">Abre WhatsApp → el chat donde lo enviaste → toca el archivo → <strong>Abrir con</strong> → selecciona esta app (o descárgalo y luego restaura).</div>
+    </div>
+
+    <div style="background:#e3f2fd;border-left:4px solid #1565c0;border-radius:0 10px 10px 0;padding:12px 14px">
+      <div style="font-weight:800;font-size:0.9rem;color:#1565c0;margin-bottom:6px">📁 Opción 2 — Si lo guardaste en el dispositivo</div>
+      <div style="font-size:0.83rem;color:#333;line-height:1.6">
+        <strong>Samsung:</strong> Mis Archivos → Almacenamiento interno → Download<br>
+        <strong>Xiaomi / Redmi:</strong> Mi File Manager → Almacenamiento interno → Download<br>
+        <strong>Motorola:</strong> Archivos → Descargas<br>
+        <strong>Honor / Huawei:</strong> Administrador de archivos → Teléfono → Download<br>
+        <strong>Cualquier marca:</strong> busca la carpeta <em>Descargas</em> o <em>Download</em>
+      </div>
+    </div>
+
+    <div style="background:#fff8e1;border-left:4px solid #f9a825;border-radius:0 10px 10px 0;padding:12px 14px">
+      <div style="font-weight:800;font-size:0.9rem;color:#e65100;margin-bottom:6px">☁️ Opción 3 — Si lo enviaste por Google Drive / Email</div>
+      <div style="font-size:0.83rem;color:#333;line-height:1.6">Abre Drive o tu correo → descarga el archivo → toca <strong>RESTAURAR DESDE ARCHIVO</strong> y selecciónalo desde Descargas.</div>
+    </div>
+
+    <div style="background:#fce4ec;border-left:4px solid #c62828;border-radius:0 10px 10px 0;padding:12px 14px">
+      <div style="font-weight:800;font-size:0.9rem;color:#c62828;margin-bottom:6px">💡 Consejo: cómo hacer el respaldo entre celulares</div>
+      <div style="font-size:0.83rem;color:#333;line-height:1.6">
+        <strong>Celular A</strong> → GUARDAR / COMPARTIR → "Compartir con otra app" → elige WhatsApp o Drive → envíatelo.<br>
+        <strong>Celular B</strong> → abre el archivo desde WhatsApp/Drive → RESTAURAR DESDE ARCHIVO.
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" style="width:100%" onclick="cerrarAyudaDispositivos()">✅ ENTENDIDO</button>
+</div>
 </div>
 
 <div class="card">
@@ -347,13 +407,15 @@ tr:hover{background:#f5f5f5}
 <div class="modal" style="max-width:420px;text-align:center">
   <div id="shareIcon" style="font-size:3rem;margin-bottom:8px">📊</div>
   <h3 id="shareTitulo" style="margin-bottom:6px">Archivo listo</h3>
-  <p id="shareSubtitulo" style="color:#666;font-size:0.85rem;margin-bottom:20px">Elige cómo deseas compartirlo</p>
+  <p id="shareSubtitulo" style="color:#666;font-size:0.85rem;margin-bottom:4px">Elige cómo deseas guardarlo</p>
+  <p id="shareSubtituloExtra" style="display:none;color:#1565c0;font-size:0.78rem;font-weight:700;background:#e3f2fd;border-radius:8px;padding:7px 10px;margin-bottom:14px">📲 "Compartir" abre las apps de tu celular<br>(Drive, WhatsApp, Telegram, Email...)</p>
   <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
     <button id="btnShareGuardar" class="btn btn-primary" style="font-size:1rem;padding:14px" onclick="shareAccion('guardar')">
-      💾 GUARDAR EN DISPOSITIVO
+      💾 GUARDAR EN ESTE DISPOSITIVO
     </button>
-    <button id="btnShareWhatsApp" class="btn btn-success" style="font-size:1rem;padding:14px;background:#25D366;border-color:#25D366" onclick="shareAccion('whatsapp')">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:20px;height:20px;vertical-align:middle;margin-right:6px">COMPARTIR POR WHATSAPP
+    <button id="btnShareWhatsApp" class="btn btn-success" style="font-size:1rem;padding:14px;background:#1976d2;border-color:#1976d2;flex-direction:column;gap:2px" onclick="shareAccion('whatsapp')">
+      <span style="font-size:1rem">📲 COMPARTIR CON OTRA APP</span>
+      <span style="font-size:0.72rem;opacity:0.9;font-weight:500">Drive • WhatsApp • Telegram • Email • etc.</span>
     </button>
     <button id="btnShareEmail" class="btn" style="font-size:1rem;padding:14px;background:#ea4335;border-color:#ea4335;color:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;border:none" onclick="shareAccion('email')">
       ✉️ ENVIAR POR EMAIL
@@ -586,7 +648,7 @@ function blobToBase64(blob) {
     });
 }
 
-// GUARDAR: descarga directa al dispositivo (compatible con WebView) + caché IndexedDB
+// GUARDAR: caché IndexedDB siempre + modal de compartir (manual) o descarga silenciosa (auto)
 async function exportarExcelBackup(silencioso) {
     silencioso = silencioso === true;
     var regs = await obtenerRegistros();
@@ -598,42 +660,46 @@ async function exportarExcelBackup(silencioso) {
     var fecha = new Date().toISOString().split('T')[0];
     var nombre = BACKUP_FILENAME + '_' + fecha + '.xlsx';
 
-    // 1) Descarga al dispositivo
-    try {
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = nombre;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
-    } catch(downloadErr) {
-        console.warn('Error al descargar archivo:', downloadErr);
-    }
-
-    // 2) Guardar caché en IndexedDB (red de seguridad si la descarga falla)
+    // Siempre guardar caché en IndexedDB (funciona en todos los dispositivos)
     try {
         var b64 = await blobToBase64(blob);
         await setConfigValue('backupCacheBlob', b64);
         await setConfigValue('backupCacheFilename', nombre);
         await setConfigValue('backupCacheCount', regs.length);
+        await setConfigValue('backupLastSave', new Date().toISOString());
+        await setConfigValue('backupCount', regs.length);
+        await setConfigValue('backupLastFilename', nombre);
     } catch(cacheErr) {
         console.warn('Error al guardar caché:', cacheErr);
     }
 
-    try {
-        await setConfigValue('backupLastSave', new Date().toISOString());
-        await setConfigValue('backupCount', regs.length);
-        await setConfigValue('backupLastFilename', nombre);
-    } catch(e) {}
-
     await actualizarEstadoBackup();
 
-    if (!silencioso) {
-        mostrarToast('💾 Respaldo guardado: ' + nombre);
+    if (silencioso) {
+        // Auto-backup: intento silencioso de descarga como red de seguridad adicional
+        try {
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = nombre;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
+        } catch(e) { /* silencioso */ }
+    } else {
+        // Backup manual: mostrar modal de compartir para máxima compatibilidad
+        // El usuario elige: guardar en dispositivo, compartir con otra app (Drive/WA/etc), email
+        window._shareBlob  = blob;
+        window._shareNombre = nombre;
+        window._shareTipo  = 'backup';
+        window._shareMime  = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        window._shareTexto = '💾 Copia de Seguridad — Registro Vehicular\n' +
+                             regs.length + ' registros\nFecha: ' + fecha + '\nArchivo: ' + nombre;
+        // esBackup=true → muestra nota explicativa sobre "Compartir con otra app"
+        abrirModalCompartir('💾', 'Respaldo listo para guardar',
+            regs.length + ' registros — ' + nombre, false, true);
     }
-    // En modo silencioso: actualiza la barra visualmente sin toast molesto
 }
 
 // Actualizar barra de estado
@@ -714,15 +780,16 @@ async function restaurarDesdeCache() {
     }
 }
 
-// RESTAURAR DESDE ARCHIVO: abre el selector de archivos nativo de Android
+// MODAL AYUDA DISPOSITIVOS
+function abrirAyudaDispositivos() {
+    document.getElementById('modalAyudaDispositivos').classList.add('active');
+}
+function cerrarAyudaDispositivos() {
+    document.getElementById('modalAyudaDispositivos').classList.remove('active');
+}
+
+// RESTAURAR DESDE ARCHIVO: abre el selector de archivos nativo
 async function abrirImportacion() {
-    var msg = '🔄 RESTAURAR REGISTROS\n\n';
-    msg += '📂 ¿Dónde está el archivo de respaldo?\n';
-    msg += '• Android / Xiaomi: Descargas → Registro_Vehicular_Backup_[fecha].xlsx\n';
-    msg += '• En Xiaomi: abre Mi File Manager → Almacenamiento interno → Download\n\n';
-    msg += 'Solo se agregarán registros nuevos, sin duplicados.\n\n';
-    msg += '¿Continuar y seleccionar el archivo?';
-    if (!window.confirm(msg)) return;
     document.getElementById('inputImportExcel').click();
 }
 
@@ -1034,6 +1101,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             cerrarModal();
             cerrarModalCompartir();
             cerrarModalPDF();
+            cerrarAyudaDispositivos();
         }
     });
 
@@ -1704,11 +1772,14 @@ async function generarPDFFiltrado() {
     abrirModalCompartir('📄', 'PDF generado', filtrados.length + ' registros — ' + nombreArchivo, false);
 }
 
-function abrirModalCompartir(icon, titulo, subtitulo, ocultarEmail) {
+function abrirModalCompartir(icon, titulo, subtitulo, ocultarEmail, esBackup) {
     document.getElementById('shareIcon').textContent = icon;
     document.getElementById('shareTitulo').textContent = titulo;
     document.getElementById('shareSubtitulo').textContent = subtitulo;
     document.getElementById('btnShareEmail').style.display = ocultarEmail ? 'none' : 'flex';
+    // Mostrar nota explicativa solo en modo backup
+    var extra = document.getElementById('shareSubtituloExtra');
+    if (extra) extra.style.display = esBackup ? 'block' : 'none';
     document.getElementById('modalCompartir').classList.add('active');
 }
 
@@ -1721,51 +1792,87 @@ async function shareAccion(accion) {
     const nombre = window._shareNombre;
     const mime = window._shareMime;
     const texto = window._shareTexto || 'Registro Vehicular';
+    const esBackup = window._shareTipo === 'backup';
 
     if (accion === 'guardar') {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = nombre;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
-        cerrarModalCompartir();
-        mostrarToast('💾 Archivo guardado: ' + nombre);
+        // Intento 1: API moderna de guardar archivo (Chrome 86+, Edge, etc.)
+        if (window.showSaveFilePicker) {
+            try {
+                const handle = await window.showSaveFilePicker({
+                    suggestedName: nombre,
+                    types: [{ description: 'Excel', accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] } }]
+                });
+                const writable = await handle.createWritable();
+                await writable.write(blob);
+                await writable.close();
+                cerrarModalCompartir();
+                mostrarToast('💾 Archivo guardado: ' + nombre);
+                return;
+            } catch(e) {
+                if (e.name === 'AbortError') { return; } // usuario canceló
+                // Si falla, caer al método clásico
+            }
+        }
+        // Intento 2: descarga clásica (funciona en todos los navegadores/WebViews)
+        try {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nombre;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+            cerrarModalCompartir();
+            mostrarToast('💾 ' + (esBackup ? 'Respaldo guardado: ' : 'Archivo guardado: ') + nombre);
+        } catch(e2) {
+            mostrarToast('❌ No se pudo guardar: ' + e2.message);
+        }
 
     } else if (accion === 'whatsapp') {
-        if (navigator.share && navigator.canShare) {
+        // Intento 1: Web Share API con archivo (abre el selector nativo del sistema operativo)
+        // Compatible con: Android Chrome, Samsung Internet, Android WebView moderno
+        if (navigator.share) {
             const file = new File([blob], nombre, {type: mime});
-            if (navigator.canShare({files: [file]})) {
+            const puedeCompartirArchivo = navigator.canShare && navigator.canShare({files: [file]});
+            if (puedeCompartirArchivo) {
                 try {
-                    await navigator.share({
-                        title: 'Registro Vehicular',
-                        text: texto,
-                        files: [file]
-                    });
+                    await navigator.share({ title: 'Registro Vehicular', text: texto, files: [file] });
                     cerrarModalCompartir();
                     mostrarToast('✅ Archivo compartido');
                     return;
                 } catch(e) {
-                    if (e.name !== 'AbortError') {
-                        compartirWhatsAppFallback(nombre, texto);
-                    }
+                    if (e.name === 'AbortError') return; // usuario canceló
+                    // Si falla por otro motivo, seguir con fallback
                 }
-                return;
+            } else {
+                // Compartir sin archivo (solo texto + fallback descarga)
+                try {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url; a.download = nombre;
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+                    await navigator.share({ title: 'Registro Vehicular', text: texto + '\n\nArchivo: ' + nombre + ' (ya descargado)' });
+                    cerrarModalCompartir();
+                    mostrarToast('📲 Archivo descargado — adjúntelo al compartir');
+                    return;
+                } catch(e) {
+                    if (e.name === 'AbortError') return;
+                }
             }
         }
-        compartirWhatsAppFallback(nombre, texto);
+        // Fallback para dispositivos sin Web Share API
+        compartirFallback(nombre, texto);
 
     } else if (accion === 'email') {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = nombre;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+        try {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = nombre;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+        } catch(e) {}
         const asunto = encodeURIComponent('Registro Vehicular — ' + nombre);
         const cuerpo = encodeURIComponent(texto + '\n\nArchivo adjunto: ' + nombre + '\n(Adjunte el archivo descargado a este email)');
         setTimeout(function() {
@@ -1776,22 +1883,25 @@ async function shareAccion(accion) {
     }
 }
 
-function compartirWhatsAppFallback(nombre, texto) {
-    const url = URL.createObjectURL(window._shareBlob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = nombre;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+// Fallback para dispositivos sin Web Share API (descarga + abre WhatsApp)
+function compartirFallback(nombre, texto) {
+    try {
+        const url = URL.createObjectURL(window._shareBlob);
+        const a = document.createElement('a');
+        a.href = url; a.download = nombre;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+    } catch(e) {}
     const msg = encodeURIComponent(texto + '\n\nArchivo: ' + nombre + '\n(Adjunte el archivo descargado)');
     setTimeout(function() {
         window.open('https://wa.me/?text=' + msg, '_blank');
     }, 800);
     cerrarModalCompartir();
-    mostrarToast('📲 Archivo descargado — adjúntelo en WhatsApp');
+    mostrarToast('📲 Archivo descargado — adjúntelo al enviarlo');
 }
+
+// Mantener compatibilidad con llamadas antiguas
+function compartirWhatsAppFallback(nombre, texto) { compartirFallback(nombre, texto); }
 
 // 🔧 NUEVO: Reloj en vivo para que la hora no se congele
 function iniciarRelojEnVivo() {
