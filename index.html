@@ -553,8 +553,8 @@ function obtenerRegistros() {
         const request = store.getAll();
         request.onsuccess = function() {
             var sorted = request.result.sort(function(a,b){
-                if(a.fecha !== b.fecha) return a.fecha.localeCompare(b.fecha);
-                return a.hora.localeCompare(b.hora);
+                if(a.fecha !== b.fecha) return b.fecha.localeCompare(a.fecha);
+                return b.hora.localeCompare(a.hora);
             });
             resolve(sorted);
         };
