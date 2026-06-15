@@ -551,7 +551,13 @@ function obtenerRegistros() {
         const tx = db.transaction([STORE_NAME], 'readonly');
         const store = tx.objectStore(STORE_NAME);
         const request = store.getAll();
-        request.onsuccess = function() { resolve(request.result.reverse()); };
+        request.onsuccess = function() {
+            var sorted = request.result.sort(function(a,b){
+                if(a.fecha !== b.fecha) return a.fecha.localeCompare(b.fecha);
+                return a.hora.localeCompare(b.hora);
+            });
+            resolve(sorted);
+        };
         request.onerror = function() { reject(request.error); };
     });
 }
@@ -1263,7 +1269,7 @@ function renderizarTabla(regs) {
         const placa2 = r.segundaPlaca === 'SI' ? r.placa2 : '-';
         // 🔧 NUEVO: Mostrar "SIN PLACA" si aplica
         const placaDisplay = r.sinPlaca === 'SI' ? '<span style="color:#999;font-style:italic">SIN PLACA</span>' : '<strong>' + r.placa + '</strong>';
-        return '<tr onclick="verDetalle(' + r.id + ')"><td>' + (regs.length - i) + '</td><td>' + r.fecha + '</td><td>' + r.hora + '</td><td><span class="badge ' + badge + '">' + r.tipo + '</span></td><td>' + placaDisplay + '</td><td>' + placa2 + '</td><td>' + (r.tipoVehiculo || '-') + '</td><td>' + r.conductor + '</td><td>' + r.empresa + '</td><td>' + r.procedenciaDestino + '</td><td>' + r.materiales + '</td><td title="' + (r.descMateriales || '') + '">' + descMat + '</td><td>' + r.precintos + '</td><td>' + r.guia + '</td><td>' + r.acompanantes + '</td><td>' + fotosHtml + '</td><td><button class="btn" style="padding:6px 16px;font-size:0.85rem;background:var(--primary);color:#fff" onclick="event.stopPropagation();abrirModalEditar(' + r.id + ')">✏️ EDITAR</button></td></tr>';
+        return '<tr onclick="verDetalle(' + r.id + ')"><td>' + (i + 1) + '</td><td>' + r.fecha + '</td><td>' + r.hora + '</td><td><span class="badge ' + badge + '">' + r.tipo + '</span></td><td>' + placaDisplay + '</td><td>' + placa2 + '</td><td>' + (r.tipoVehiculo || '-') + '</td><td>' + r.conductor + '</td><td>' + r.empresa + '</td><td>' + r.procedenciaDestino + '</td><td>' + r.materiales + '</td><td title="' + (r.descMateriales || '') + '">' + descMat + '</td><td>' + r.precintos + '</td><td>' + r.guia + '</td><td>' + r.acompanantes + '</td><td>' + fotosHtml + '</td><td><button class="btn" style="padding:6px 16px;font-size:0.85rem;background:var(--primary);color:#fff" onclick="event.stopPropagation();abrirModalEditar(' + r.id + ')">✏️ EDITAR</button></td></tr>';
     }).join('');
 }
 
