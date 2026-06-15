@@ -1794,8 +1794,11 @@ async function shareAccion(accion) {
     const texto = window._shareTexto || 'Registro Vehicular';
     const esBackup = window._shareTipo === 'backup';
 
+    // ============================================================
+    // GUARDAR EN DISPOSITIVO
+    // ============================================================
     if (accion === 'guardar') {
-        // Intento 1: API moderna de guardar archivo (Chrome 86+, Edge, etc.)
+        // Intento 1: File System Access API (Chrome 86+, Edge)
         if (window.showSaveFilePicker) {
             try {
                 const handle = await window.showSaveFilePicker({
@@ -1810,10 +1813,9 @@ async function shareAccion(accion) {
                 return;
             } catch(e) {
                 if (e.name === 'AbortError') { return; } // usuario canceló
-                // Si falla, caer al método clásico
             }
         }
-        // Intento 2: descarga clásica (funciona en todos los navegadores/WebViews)
+        // Intento 2: descarga clásica con <a download>
         try {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1825,14 +1827,19 @@ async function shareAccion(accion) {
             setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
             cerrarModalCompartir();
             mostrarToast('💾 ' + (esBackup ? 'Respaldo guardado: ' : 'Archivo guardado: ') + nombre);
+            return;
         } catch(e2) {
             mostrarToast('❌ No se pudo guardar: ' + e2.message);
         }
+    }
 
-    } else if (accion === 'compartir') {
+    // ============================================================
+    // COMPARTIR CON OTRA APP
+    // ============================================================
+    if (accion === 'compartir') {
         const file = new File([blob], nombre, {type: mime});
 
-        // Intento 1: Compartir archivo nativamente (abre selector de apps del SO con adjunto real)
+        // PASO 1: Intentar compartir archivo adjunto real (navigator.share moderno)
         if (navigator.share && (!navigator.canShare || navigator.canShare({files: [file]}))) {
             try {
                 await navigator.share({ title: 'Registro Vehicular', text: texto, files: [file] });
@@ -1840,43 +1847,64 @@ async function shareAccion(accion) {
                 mostrarToast('✅ Archivo listo para compartir');
                 return;
             } catch(e) {
-                if (e.name === 'AbortError') return; // usuario canceló
-                // Falló con archivo, continuar al intento 2
+                if (e.name === 'AbortError') { cerrarModalCompartir(); return; }
+                // Falló, continuar al paso 2
             }
         }
 
-        // Intento 2: Guardar archivo y compartir texto (abre selector de apps sin adjunto)
-        // Primero descargamos para que el usuario lo tenga disponible
+        // PASO 2: Guardar archivo localmente (múltiples métodos para WebViews)
+        let guardadoOk = false;
+        let url = null;
         try {
-            const url = URL.createObjectURL(blob);
+            url = URL.createObjectURL(blob);
+            // Método A: <a download>
             const a = document.createElement('a');
-            a.href = url; a.download = nombre;
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+            a.href = url;
+            a.download = nombre;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            guardadoOk = true;
         } catch(e) {
-            mostrarToast('❌ Error al guardar archivo');
+            // Método B: window.open (a veces funciona mejor en WebViews)
+            try {
+                if (url) window.open(url, '_blank');
+                guardadoOk = true;
+            } catch(e2) {}
+        }
+        if (!guardadoOk) {
+            mostrarToast('❌ No se pudo guardar el archivo');
+            cerrarModalCompartir();
             return;
         }
+        setTimeout(function(){ if(url) URL.revokeObjectURL(url); }, 3000);
 
+        // PASO 3: Abrir selector de apps con texto (navigator.share)
         if (navigator.share) {
             try {
                 await navigator.share({
                     title: 'Registro Vehicular',
-                    text: texto + '\n\n📎 Archivo guardado: ' + nombre + '\nAdjúntelo desde su app de mensajería.'
+                    text: texto + '\n\n📎 Archivo: ' + nombre + '\n💡 Abra su app (WhatsApp, Telegram, etc.) y adjunte el archivo desde Descargas.'
                 });
                 cerrarModalCompartir();
                 mostrarToast('📲 Seleccione la app y adjunte el archivo guardado');
                 return;
             } catch(e) {
-                if (e.name === 'AbortError') return;
+                if (e.name === 'AbortError') { cerrarModalCompartir(); return; }
+                // navigator.share existe pero no abrió selector, continuar
             }
         }
 
-        // Fallback final
+        // PASO 4: Fallback final — instrucciones manuales
         cerrarModalCompartir();
-        mostrarToast('💾 Archivo guardado en Descargas. Ábralo desde su app favorita para enviarlo.');
+        mostrarToast('💾 Archivo guardado en Descargas. Ábralo desde WhatsApp/Telegram para enviarlo.');
+        return;
+    }
 
-    } else if (accion === 'email') {
+    // ============================================================
+    // ENVIAR POR EMAIL
+    // ============================================================
+    if (accion === 'email') {
         try {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1894,33 +1922,38 @@ async function shareAccion(accion) {
     }
 }
 
-// Fallback para dispositivos sin Web Share API (descarga + abre WhatsApp)
 function compartirFallback(nombre, texto) {
-    // Descargar archivo primero
+    // Guardar archivo
+    let url = null;
+    let guardadoOk = false;
     try {
-        const url = URL.createObjectURL(window._shareBlob);
+        url = URL.createObjectURL(window._shareBlob);
         const a = document.createElement('a');
         a.href = url; a.download = nombre;
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+        guardadoOk = true;
     } catch(e) {
-        mostrarToast('❌ Error al guardar archivo');
+        try { if(url) window.open(url, '_blank'); guardadoOk = true; } catch(e2){}
+    }
+    if (!guardadoOk) {
+        mostrarToast('❌ No se pudo guardar el archivo');
+        cerrarModalCompartir();
         return;
     }
-    // Si hay Web Share API (solo texto), abrir selector nativo de apps
+    setTimeout(function(){ if(url) URL.revokeObjectURL(url); }, 3000);
+
+    // Intentar abrir selector de apps
     if (navigator.share) {
         try {
             navigator.share({
                 title: 'Registro Vehicular',
-                text: texto + '\n\n📎 Archivo guardado: ' + nombre + '\nAdjúntelo desde su app de mensajería.'
+                text: texto + '\n\n📎 Archivo: ' + nombre + '\n💡 Abra su app y adjunte el archivo desde Descargas.'
             });
             mostrarToast('📲 Seleccione la app y adjunte el archivo guardado');
-        } catch(e) {
-            mostrarToast('💾 Archivo guardado en Descargas. Ábralo desde su app favorita para enviarlo.');
-        }
-    } else {
-        mostrarToast('💾 Archivo guardado en Descargas. Ábralo desde su app favorita para enviarlo.');
+            return;
+        } catch(e) {}
     }
+    mostrarToast('💾 Archivo guardado en Descargas. Ábralo desde su app favorita para enviarlo.');
     cerrarModalCompartir();
 }
 
