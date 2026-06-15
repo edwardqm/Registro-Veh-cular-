@@ -413,7 +413,7 @@ tr:hover{background:#f5f5f5}
     <button id="btnShareGuardar" class="btn btn-primary" style="font-size:1rem;padding:14px" onclick="shareAccion('guardar')">
       💾 GUARDAR EN ESTE DISPOSITIVO
     </button>
-    <button id="btnShareWhatsApp" class="btn btn-success" style="font-size:1rem;padding:14px;background:#1976d2;border-color:#1976d2;flex-direction:column;gap:2px" onclick="shareAccion('whatsapp')">
+    <button id="btnShareWhatsApp" class="btn btn-success" style="font-size:1rem;padding:14px;background:#1976d2;border-color:#1976d2;flex-direction:column;gap:2px" onclick="shareAccion('compartir')">
       <span style="font-size:1rem">📲 COMPARTIR CON OTRA APP</span>
       <span style="font-size:0.72rem;opacity:0.9;font-weight:500">Drive • WhatsApp • Telegram • Email • etc.</span>
     </button>
@@ -1885,19 +1885,32 @@ async function shareAccion(accion) {
 
 // Fallback para dispositivos sin Web Share API (descarga + abre WhatsApp)
 function compartirFallback(nombre, texto) {
+    // Descargar archivo primero
     try {
         const url = URL.createObjectURL(window._shareBlob);
         const a = document.createElement('a');
         a.href = url; a.download = nombre;
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
         setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
-    } catch(e) {}
-    const msg = encodeURIComponent(texto + '\n\nArchivo: ' + nombre + '\n(Adjunte el archivo descargado)');
-    setTimeout(function() {
-        window.open('https://wa.me/?text=' + msg, '_blank');
-    }, 800);
+    } catch(e) {
+        mostrarToast('❌ Error al guardar archivo');
+        return;
+    }
+    // Si hay Web Share API (solo texto), abrir selector nativo de apps
+    if (navigator.share) {
+        try {
+            navigator.share({
+                title: 'Registro Vehicular',
+                text: texto + '\n\n📎 Archivo guardado: ' + nombre + '\nAdjúntelo desde su app de mensajería.'
+            });
+            mostrarToast('📲 Seleccione la app y adjunte el archivo guardado');
+        } catch(e) {
+            mostrarToast('💾 Archivo guardado en Descargas. Ábralo desde su app favorita para enviarlo.');
+        }
+    } else {
+        mostrarToast('💾 Archivo guardado en Descargas. Ábralo desde su app favorita para enviarlo.');
+    }
     cerrarModalCompartir();
-    mostrarToast('📲 Archivo descargado — adjúntelo al enviarlo');
 }
 
 // Mantener compatibilidad con llamadas antiguas
