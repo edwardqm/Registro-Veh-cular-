@@ -82,6 +82,8 @@ tr:hover{background:#f5f5f5}
 .stat-card p{font-size:0.8rem;opacity:0.9;font-weight:500}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:#333;color:#fff;padding:16px 28px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.3);transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);z-index:999;font-weight:600;font-size:0.95rem;max-width:90%;text-align:center}
 .toast.show{transform:translateX(-50%) translateY(0)}
+.btn-del-foto{display:inline-flex;align-items:center;gap:5px;background:#c62828;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:0.82rem;font-weight:700;cursor:pointer;margin-top:7px}
+.btn-del-foto:active{background:#b71c1c}
 .img-thumb{width:48px;height:48px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid var(--border)}
 .img-viewer{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);display:none;justify-content:center;align-items:center;z-index:2000}
 .img-viewer.active{display:flex}
@@ -186,7 +188,7 @@ tr:hover{background:#f5f5f5}
 </div>
 </div>
 <div id="segundaPlacaBox" class="conditional-box hidden">
-<div class="form-group"><label>Segunda Placa</label><input type="text" id="placa2" placeholder="ABC-1234" maxlength="8"><div class="info-text">Formato automatico: 3 letras + guion + numeros</div></div>
+<div class="form-group"><label>Segunda Placa</label><input type="text" id="placa2" list="listaPlacas2" placeholder="ABC-1234" maxlength="8"><div class="info-text">Formato automatico: 3 letras + guion + numeros</div><datalist id="listaPlacas2"></datalist></div>
 </div>
 </div>
 
@@ -233,8 +235,8 @@ tr:hover{background:#f5f5f5}
 </div>
 <div id="precintosBox" class="hidden">
 <div class="grid-2">
-<div class="form-group"><label>Foto Precinto 1</label><div class="file-input-wrapper"><input type="file" id="fotoPrecinto1" accept="image/*"><label for="fotoPrecinto1" class="file-input-label" id="lblPrecinto1"><span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERIA</label></div><img id="previewPrecinto1" class="preview-img hidden"></div>
-<div class="form-group"><label>Foto Precinto 2</label><div class="file-input-wrapper"><input type="file" id="fotoPrecinto2" accept="image/*"><label for="fotoPrecinto2" class="file-input-label" id="lblPrecinto2"><span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERIA</label></div><img id="previewPrecinto2" class="preview-img hidden"></div>
+<div class="form-group"><label>Foto Precinto 1</label><div class="file-input-wrapper"><input type="file" id="fotoPrecinto1" accept="image/*"><label for="fotoPrecinto1" class="file-input-label" id="lblPrecinto1"><span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERIA</label></div><img id="previewPrecinto1" class="preview-img hidden"><button type="button" id="btnDelPrecinto1" class="btn-del-foto hidden" onclick="borrarFoto('fotoPrecinto1','previewPrecinto1','lblPrecinto1','btnDelPrecinto1','📷','TOMAR FOTO O ELEGIR DE GALERIA')">🗑️ BORRAR FOTO</button></div>
+<div class="form-group"><label>Foto Precinto 2</label><div class="file-input-wrapper"><input type="file" id="fotoPrecinto2" accept="image/*"><label for="fotoPrecinto2" class="file-input-label" id="lblPrecinto2"><span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERIA</label></div><img id="previewPrecinto2" class="preview-img hidden"><button type="button" id="btnDelPrecinto2" class="btn-del-foto hidden" onclick="borrarFoto('fotoPrecinto2','previewPrecinto2','lblPrecinto2','btnDelPrecinto2','📷','TOMAR FOTO O ELEGIR DE GALERIA')">🗑️ BORRAR FOTO</button></div>
 </div>
 </div>
 <div class="form-group"><label id="lblGuia">¿Viene con Guia?</label>
@@ -244,7 +246,7 @@ tr:hover{background:#f5f5f5}
 </div>
 </div>
 <div id="guiaBox" class="hidden">
-<div class="form-group"><label>Guia Escaneada / Adjuntada</label><div class="info-text" style="margin-bottom:8px">💡 Use apps como <strong>CamScanner, Adobe Scan, Fotoscan</strong> o su escaner nativo, luego adjunte el archivo PDF o imagen aqui. Tambien puede elegir de la galeria.</div><div class="file-input-wrapper"><input type="file" id="fotoGuia" accept="application/pdf,image/*"><label for="fotoGuia" class="file-input-label" id="lblGuiaFoto"><span class="camera-icon">📄</span>ESCANEAR / ADJUNTAR GUIA O ELEGIR DE GALERIA</label></div><img id="previewGuia" class="preview-img hidden"></div>
+<div class="form-group"><label>Guia Escaneada / Adjuntada</label><div class="info-text" style="margin-bottom:8px">💡 Use apps como <strong>CamScanner, Adobe Scan, Fotoscan</strong> o su escaner nativo, luego adjunte el archivo PDF o imagen aqui. Tambien puede elegir de la galeria.</div><div class="file-input-wrapper"><input type="file" id="fotoGuia" accept="application/pdf,image/*"><label for="fotoGuia" class="file-input-label" id="lblGuiaFoto"><span class="camera-icon">📄</span>ESCANEAR / ADJUNTAR GUIA O ELEGIR DE GALERIA</label></div><img id="previewGuia" class="preview-img hidden"><button type="button" id="btnDelGuia" class="btn-del-foto hidden" onclick="borrarFoto('fotoGuia','previewGuia','lblGuiaFoto','btnDelGuia','📄','ESCANEAR / ADJUNTAR GUIA O ELEGIR DE GALERIA')">🗑️ BORRAR GUIA</button></div>
 </div>
 </div>
 
@@ -1029,10 +1031,12 @@ async function poblarListas() {
     const e = [...new Set(regs.map(function(r) { return r.empresa; }).filter(Boolean))].sort();
     const l = [...new Set(regs.map(function(r) { return r.procedenciaDestino; }).filter(Boolean))].sort();
     const p = [...new Set(regs.map(function(r) { return r.placa; }).filter(Boolean))].sort();
+    const p2 = [...new Set(regs.map(function(r) { return r.placa2; }).filter(Boolean))].sort();
     document.getElementById('listaConductores').innerHTML = c.map(function(x) { return '<option value="' + x + '">'; }).join('');
     document.getElementById('listaEmpresas').innerHTML = e.map(function(x) { return '<option value="' + x + '">'; }).join('');
     document.getElementById('listaLugares').innerHTML = l.map(function(x) { return '<option value="' + x + '">'; }).join('');
     document.getElementById('listaPlacas').innerHTML = p.map(function(x) { return '<option value="' + x + '">'; }).join('');
+    document.getElementById('listaPlacas2').innerHTML = p2.map(function(x) { return '<option value="' + x + '">'; }).join('');
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -1166,9 +1170,9 @@ async function procesarFormulario() {
         data.id = parseInt(editId);
         const ex = await obtenerRegistro(data.id);
         if (ex) {
-            if (!data.fotoPrecinto1 && ex.fotoPrecinto1) data.fotoPrecinto1 = ex.fotoPrecinto1;
-            if (!data.fotoPrecinto2 && ex.fotoPrecinto2) data.fotoPrecinto2 = ex.fotoPrecinto2;
-            if (!data.fotoGuia && ex.fotoGuia) data.fotoGuia = ex.fotoGuia;
+            if (!data.fotoPrecinto1 && ex.fotoPrecinto1 && !_fotosBorradas.fotoPrecinto1) data.fotoPrecinto1 = ex.fotoPrecinto1;
+            if (!data.fotoPrecinto2 && ex.fotoPrecinto2 && !_fotosBorradas.fotoPrecinto2) data.fotoPrecinto2 = ex.fotoPrecinto2;
+            if (!data.fotoGuia && ex.fotoGuia && !_fotosBorradas.fotoGuia) data.fotoGuia = ex.fotoGuia;
         }
     }
 
@@ -1218,6 +1222,13 @@ function limpiarFormulario() {
     document.getElementById('previewPrecinto2').src = '';
     document.getElementById('previewGuia').classList.add('hidden');
     document.getElementById('previewGuia').src = '';
+
+    document.getElementById('btnDelPrecinto1').classList.add('hidden');
+    document.getElementById('btnDelPrecinto2').classList.add('hidden');
+    document.getElementById('btnDelGuia').classList.add('hidden');
+
+    // Resetear tracker de fotos borradas
+    _fotosBorradas = { fotoPrecinto1: false, fotoPrecinto2: false, fotoGuia: false };
 
     document.getElementById('lblPrecinto1').classList.remove('has-file');
     document.getElementById('lblPrecinto1').innerHTML = '<span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERIA';
@@ -1464,6 +1475,8 @@ async function editarRegistro(id) {
         document.getElementById('editId').value = r.id;
         document.getElementById('fecha').value = r.fecha;
         document.getElementById('hora').value = r.hora;
+        // Resetear tracker de fotos borradas al iniciar edición
+        _fotosBorradas = { fotoPrecinto1: false, fotoPrecinto2: false, fotoGuia: false };
         document.getElementById('placa').value = r.placa || '';
         document.getElementById('conductor').value = r.conductor || '';
         document.getElementById('empresa').value = r.empresa || '';
@@ -1516,22 +1529,26 @@ async function editarRegistro(id) {
             document.getElementById('previewPrecinto1').classList.remove('hidden');
             document.getElementById('lblPrecinto1').classList.add('has-file');
             document.getElementById('lblPrecinto1').innerHTML = '<span class="camera-icon">✅</span>FOTO CARGADA';
+            document.getElementById('btnDelPrecinto1').classList.remove('hidden');
         } else {
             document.getElementById('previewPrecinto1').classList.add('hidden');
             document.getElementById('previewPrecinto1').src = '';
             document.getElementById('lblPrecinto1').classList.remove('has-file');
             document.getElementById('lblPrecinto1').innerHTML = '<span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERIA';
+            document.getElementById('btnDelPrecinto1').classList.add('hidden');
         }
         if (r.fotoPrecinto2) {
             document.getElementById('previewPrecinto2').src = r.fotoPrecinto2;
             document.getElementById('previewPrecinto2').classList.remove('hidden');
             document.getElementById('lblPrecinto2').classList.add('has-file');
             document.getElementById('lblPrecinto2').innerHTML = '<span class="camera-icon">✅</span>FOTO CARGADA';
+            document.getElementById('btnDelPrecinto2').classList.remove('hidden');
         } else {
             document.getElementById('previewPrecinto2').classList.add('hidden');
             document.getElementById('previewPrecinto2').src = '';
             document.getElementById('lblPrecinto2').classList.remove('has-file');
             document.getElementById('lblPrecinto2').innerHTML = '<span class="camera-icon">📷</span>TOMAR FOTO O ELEGIR DE GALERIA';
+            document.getElementById('btnDelPrecinto2').classList.add('hidden');
         }
 
         if (r.guia === 'SI') {
@@ -1546,11 +1563,13 @@ async function editarRegistro(id) {
             document.getElementById('previewGuia').classList.remove('hidden');
             document.getElementById('lblGuiaFoto').classList.add('has-file');
             document.getElementById('lblGuiaFoto').innerHTML = '<span class="camera-icon">✅</span>GUIA ADJUNTADA';
+            document.getElementById('btnDelGuia').classList.remove('hidden');
         } else {
             document.getElementById('previewGuia').classList.add('hidden');
             document.getElementById('previewGuia').src = '';
             document.getElementById('lblGuiaFoto').classList.remove('has-file');
             document.getElementById('lblGuiaFoto').innerHTML = '<span class="camera-icon">📄</span>ESCANEAR / ADJUNTAR GUIA O ELEGIR DE GALERIA';
+            document.getElementById('btnDelGuia').classList.add('hidden');
         }
 
         if (r.acompanantes === 'SI') {
@@ -1965,6 +1984,29 @@ function compartirFallback(nombre, texto) {
 
 // Mantener compatibilidad con llamadas antiguas
 function compartirWhatsAppFallback(nombre, texto) { compartirFallback(nombre, texto); }
+
+// 🗑️ BORRAR FOTO en modo edición
+var _fotosBorradas = { fotoPrecinto1: false, fotoPrecinto2: false, fotoGuia: false };
+
+function borrarFoto(inputId, previewId, labelId, btnId, icono, textoDefault) {
+    if (!window.confirm('¿Está seguro de borrar esta foto/imagen? Se eliminará al guardar.')) return;
+    // Limpiar el input de archivo
+    var inp = document.getElementById(inputId);
+    inp.value = '';
+    // Ocultar preview
+    var pre = document.getElementById(previewId);
+    pre.src = '';
+    pre.classList.add('hidden');
+    // Restaurar etiqueta
+    var lbl = document.getElementById(labelId);
+    lbl.classList.remove('has-file');
+    lbl.innerHTML = '<span class="camera-icon">' + icono + '</span>' + textoDefault;
+    // Ocultar botón de borrar
+    document.getElementById(btnId).classList.add('hidden');
+    // Marcar como borrada para que procesarFormulario no restaure la foto original
+    _fotosBorradas[inputId] = true;
+    mostrarToast('🗑️ Foto marcada para eliminar al guardar');
+}
 
 // 🔧 NUEVO: Reloj en vivo para que la hora no se congele
 function iniciarRelojEnVivo() {
