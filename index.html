@@ -165,6 +165,9 @@ tr:hover{background:#f5f5f5}
   <button class="tab-btn" onclick="switchTab('tab-dashboard', this)">
     <span class="tab-icon">📊</span>Dashboard
   </button>
+  <button class="tab-btn" onclick="switchTab('tab-respaldo', this)">
+    <span class="tab-icon">💾</span>Respaldo
+  </button>
 </div>
 <div class="container">
 
@@ -309,7 +312,66 @@ tr:hover{background:#f5f5f5}
 </div>
 </div>
 
-<!-- ============ TARJETA COPIA DE SEGURIDAD ============ -->
+</div>
+</div>
+
+
+<div class="card">
+<div class="card-title">📋 Registros Guardados</div>
+<div class="btn-group" style="margin-bottom:20px">
+<button type="button" class="btn btn-success" onclick="exportarExcel()"><span>📊</span> EXPORTAR EXCEL</button>
+<button type="button" class="btn btn-danger" onclick="exportarPDF()"><span>📄</span> EXPORTAR PDF</button>
+</div>
+<div class="table-container">
+<table id="tablaRegistros">
+<thead><tr><th>#</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Placa</th><th>Placa 2</th><th>Tipo Veh.</th><th>Conductor</th><th>Empresa</th><th>Proc/Dest</th><th>Mat.</th><th>Desc.Mat.</th><th>Prec.</th><th>Guia</th><th>Acomp.</th><th>Fotos</th><th>Accion</th></tr></thead>
+<tbody id="tbodyRegistros"><tr><td colspan="17" class="empty-state">No hay registros guardados</td></tr></tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+<!-- ===== PESTAÑA 3: DASHBOARD ===== -->
+<div class="tab-panel" id="tab-dashboard">
+<div class="stats">
+<div class="stat-card"><h3 id="statTotal">0</h3><p>Total Registros</p></div>
+<div class="stat-card" style="background:linear-gradient(135deg,var(--success) 0%,#43a047 100%)"><h3 id="statIngresos">0</h3><p>Ingresos Hoy</p></div>
+<div class="stat-card" style="background:linear-gradient(135deg,var(--accent) 0%,#ff8f00 100%)"><h3 id="statSalidas">0</h3><p>Salidas Hoy</p></div>
+</div>
+
+
+  <div class="card" style="margin-top:15px">
+    <div class="card-title">📊 Resumen de Actividad</div>
+    <div id="dashboardContent" style="text-align:center;padding:20px;color:#666">
+      <p style="font-size:1rem;margin-bottom:10px">📈 Estadísticas generales del sistema</p>
+      <p style="font-size:0.85rem">Use los filtros en la pestaña <strong>Historial</strong> para análisis detallados.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== PESTAÑA 4: RESPALDO ===== -->
+<div class="tab-panel" id="tab-respaldo">
+
+  <!-- Tarjeta de Acciones Rápidas -->
+  <div class="card">
+    <div class="card-title">🛠️ Acciones Rápidas</div>
+    <div class="btn-group" style="flex-direction:column;gap:10px;margin-top:0">
+      <button type="button" class="btn btn-primary" style="width:100%" onclick="imprimirRegistros()">
+        <span>🖨️</span> IMPRIMIR REGISTROS
+      </button>
+      <button type="button" class="btn btn-success" style="width:100%" onclick="compartirResumenGeneral()">
+        <span>📤</span> COMPARTIR RESUMEN
+      </button>
+    </div>
+    <div class="info-text" style="margin-top:12px">
+      📌 <strong>Imprimir</strong>: genera una versión optimizada para impresora con todos los registros.<br>
+      📌 <strong>Compartir</strong>: envía un resumen textual por WhatsApp, Telegram o Email.
+    </div>
+  </div>
+
+  <!-- ============ TARJETA COPIA DE SEGURIDAD ============ -->
 
 <div class="card" id="backupCard">
   <div class="card-title">💾 Copia de Seguridad</div>
@@ -402,42 +464,8 @@ tr:hover{background:#f5f5f5}
   </div>
 
   <button class="btn btn-primary" style="width:100%" onclick="cerrarAyudaDispositivos()">✅ ENTENDIDO</button>
-</div>
-</div>
 
 
-<div class="card">
-<div class="card-title">📋 Registros Guardados</div>
-<div class="btn-group" style="margin-bottom:20px">
-<button type="button" class="btn btn-success" onclick="exportarExcel()"><span>📊</span> EXPORTAR EXCEL</button>
-<button type="button" class="btn btn-danger" onclick="exportarPDF()"><span>📄</span> EXPORTAR PDF</button>
-</div>
-<div class="table-container">
-<table id="tablaRegistros">
-<thead><tr><th>#</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Placa</th><th>Placa 2</th><th>Tipo Veh.</th><th>Conductor</th><th>Empresa</th><th>Proc/Dest</th><th>Mat.</th><th>Desc.Mat.</th><th>Prec.</th><th>Guia</th><th>Acomp.</th><th>Fotos</th><th>Accion</th></tr></thead>
-<tbody id="tbodyRegistros"><tr><td colspan="17" class="empty-state">No hay registros guardados</td></tr></tbody>
-</table>
-</div>
-</div>
-
-</div>
-
-<!-- ===== PESTAÑA 3: DASHBOARD ===== -->
-<div class="tab-panel" id="tab-dashboard">
-<div class="stats">
-<div class="stat-card"><h3 id="statTotal">0</h3><p>Total Registros</p></div>
-<div class="stat-card" style="background:linear-gradient(135deg,var(--success) 0%,#43a047 100%)"><h3 id="statIngresos">0</h3><p>Ingresos Hoy</p></div>
-<div class="stat-card" style="background:linear-gradient(135deg,var(--accent) 0%,#ff8f00 100%)"><h3 id="statSalidas">0</h3><p>Salidas Hoy</p></div>
-</div>
-
-
-  <div class="card" style="margin-top:15px">
-    <div class="card-title">📊 Resumen de Actividad</div>
-    <div id="dashboardContent" style="text-align:center;padding:20px;color:#666">
-      <p style="font-size:1rem;margin-bottom:10px">📈 Estadísticas generales del sistema</p>
-      <p style="font-size:0.85rem">Use los filtros en la pestaña <strong>Historial</strong> para análisis detallados.</p>
-    </div>
-  </div>
 </div>
 
 </div>
@@ -2086,6 +2114,145 @@ function switchTab(tabId, btn) {
     btn.classList.add('active');
     if (tabId === 'tab-dashboard') actualizarStats();
 }
+
+// ============================================================
+// IMPRIMIR REGISTROS
+// ============================================================
+async function imprimirRegistros() {
+    const regs = await obtenerRegistros();
+    if (regs.length === 0) {
+        mostrarToast('❌ No hay registros para imprimir');
+        return;
+    }
+
+    // Abrir ventana de impresión con contenido formateado
+    const ventana = window.open('', '_blank');
+    const hoy = new Date().toLocaleDateString('es-ES');
+
+    let filas = '';
+    regs.forEach(function(r, i) {
+        const badgeColor = r.tipo === 'INGRESO' ? '#2e7d32' : '#e65100';
+        const badgeBg = r.tipo === 'INGRESO' ? '#e8f5e9' : '#fff3e0';
+        const placaDisplay = r.sinPlaca === 'SI' ? '<em style="color:#999">SIN PLACA</em>' : (r.placa || '-');
+        filas += '<tr style="border-bottom:1px solid #ddd">' +
+            '<td style="padding:8px;font-size:0.8rem">' + (i+1) + '</td>' +
+            '<td style="padding:8px;font-size:0.8rem">' + (r.fecha || '-') + '</td>' +
+            '<td style="padding:8px;font-size:0.8rem">' + (r.hora || '-') + '</td>' +
+            '<td style="padding:8px;font-size:0.8rem"><span style="display:inline-block;padding:3px 8px;border-radius:12px;font-size:0.7rem;font-weight:bold;background:' + badgeBg + ';color:' + badgeColor + ';border:1px solid currentColor">' + r.tipo + '</span></td>' +
+            '<td style="padding:8px;font-size:0.8rem">' + placaDisplay + '</td>' +
+            '<td style="padding:8px;font-size:0.8rem">' + (r.tipoVehiculo || '-') + '</td>' +
+            '<td style="padding:8px;font-size:0.8rem">' + (r.conductor || '-') + '</td>' +
+            '<td style="padding:8px;font-size:0.8rem">' + (r.empresa || '-') + '</td>' +
+            '<td style="padding:8px;font-size:0.8rem">' + (r.procedenciaDestino || '-') + '</td>' +
+            '<td style="padding:8px;font-size:0.8rem">' + (r.materiales || '-') + '</td>' +
+            '<td style="padding:8px;font-size:0.8rem">' + (r.precintos || '-') + '</td>' +
+            '<td style="padding:8px;font-size:0.8rem">' + (r.guia || '-') + '</td>' +
+            '<td style="padding:8px;font-size:0.8rem">' + (r.acompanantes || '-') + '</td>' +
+            '</tr>';
+    });
+
+    ventana.document.write(`
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Registro Vehicular - Impresión</title>
+<style>
+body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; color: #333; }
+.header { text-align: center; margin-bottom: 20px; border-bottom: 3px solid #1a237e; padding-bottom: 15px; }
+.header h1 { color: #1a237e; margin: 0 0 5px 0; font-size: 1.4rem; }
+.header p { margin: 0; color: #666; font-size: 0.85rem; }
+.stats { display: flex; gap: 15px; justify-content: center; margin: 15px 0; }
+.stat { background: #1a237e; color: #fff; padding: 10px 20px; border-radius: 8px; text-align: center; }
+.stat strong { font-size: 1.3rem; display: block; }
+.stat span { font-size: 0.75rem; }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 15px; }
+th { background: #1a237e; color: #fff; padding: 10px 8px; text-align: left; font-size: 0.75rem; text-transform: uppercase; }
+td { padding: 8px; border-bottom: 1px solid #eee; }
+.footer { margin-top: 20px; text-align: center; font-size: 0.75rem; color: #999; border-top: 1px solid #ddd; padding-top: 10px; }
+@media print { .no-print { display: none; } }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🚗 REGISTRO VEHICULAR</h1>
+  <p>Control de Ingreso y Salida de Vehículos</p>
+  <p style="font-size:0.8rem;color:#555;margin-top:5px">Fecha de impresión: ` + hoy + ` | Total: ` + regs.length + ` registros</p>
+</div>
+<div style="text-align:center;margin-bottom:15px">
+  <button class="no-print" onclick="window.print()" style="padding:12px 24px;background:#1a237e;color:#fff;border:none;border-radius:8px;font-size:1rem;cursor:pointer;font-weight:bold">🖨️ Imprimir / Guardar como PDF</button>
+</div>
+<table>
+<thead>
+<tr><th>#</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Placa</th><th>Vehículo</th><th>Conductor</th><th>Empresa</th><th>Proc/Dest</th><th>Mat.</th><th>Prec.</th><th>Guía</th><th>Acomp.</th></tr>
+</thead>
+<tbody>` + filas + `</tbody>
+</table>
+<div class="footer">
+  <p>Desarrollado por <strong>Edward Quezada M.</strong> — Seguridad Patrimonial</p>
+  <p>© 2026 - Todos los derechos reservados</p>
+</div>
+</body>
+</html>`);
+    ventana.document.close();
+    mostrarToast('🖨️ Ventana de impresión abierta');
+}
+
+// ============================================================
+// COMPARTIR RESUMEN GENERAL
+// ============================================================
+async function compartirResumenGeneral() {
+    const regs = await obtenerRegistros();
+    if (regs.length === 0) {
+        mostrarToast('❌ No hay registros para compartir');
+        return;
+    }
+
+    const hoy = new Date().toISOString().split('T')[0];
+    const ingresosHoy = regs.filter(function(r){ return r.fecha === hoy && r.tipo === 'INGRESO'; }).length;
+    const salidasHoy = regs.filter(function(r){ return r.fecha === hoy && r.tipo === 'SALIDA'; }).length;
+
+    // Últimos 5 registros
+    const ultimos = regs.slice(0, 5);
+    let ultimosTxt = '';
+    ultimos.forEach(function(r) {
+        const placa = r.sinPlaca === 'SI' ? 'SIN PLACA' : (r.placa || '-');
+        ultimosTxt += '• ' + r.fecha + ' ' + r.hora + ' | ' + r.tipo + ' | ' + placa + ' | ' + (r.conductor || '-') + '\n';
+    });
+
+    const texto = '🚗 *REGISTRO VEHICULAR — RESUMEN*\n\n' +
+        '📅 Fecha: ' + new Date().toLocaleDateString('es-ES') + '\n' +
+        '📊 Total registros: ' + regs.length + '\n' +
+        '📥 Ingresos hoy: ' + ingresosHoy + '\n' +
+        '📤 Salidas hoy: ' + salidasHoy + '\n\n' +
+        '*Últimos registros:*\n' + ultimosTxt + '\n' +
+        '_Generado desde Registro Vehicular App_';
+
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: 'Resumen Registro Vehicular',
+                text: texto
+            });
+            mostrarToast('✅ Resumen compartido');
+            return;
+        } catch(e) {
+            if (e.name === 'AbortError') return;
+        }
+    }
+
+    // Fallback: copiar al portapapeles o abrir mailto
+    try {
+        await navigator.clipboard.writeText(texto.replace(/\n/g, '\n').replace(/\*/g, ''));
+        mostrarToast('📋 Resumen copiado al portapapeles');
+    } catch(e) {
+        const asunto = encodeURIComponent('Resumen Registro Vehicular');
+        const cuerpo = encodeURIComponent(texto.replace(/\n/g, '\n').replace(/\*/g, ''));
+        window.location.href = 'mailto:?subject=' + asunto + '&body=' + cuerpo;
+        mostrarToast('✉️ Abriendo email...');
+    }
+}
+
 </script>
 </body>
 </html>
