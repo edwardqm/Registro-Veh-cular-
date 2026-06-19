@@ -2149,27 +2149,38 @@ async function compartirResumenGeneral() {
         '📤 Salidas hoy: ' + salidasHoy + '\n\n' +
         '*Últimos registros:*\n' + ultimosTxt + '\n' +
         '_Generado desde Registro Vehicular App_';
+
+    // 1. Web Share API (HTTPS / localhost — abre cajón nativo si el contexto lo permite)
     if (navigator.share) {
         try {
-            await navigator.share({
-                title: 'Resumen Registro Vehicular',
-                text: texto
-            });
+            await navigator.share({ title: 'Resumen Registro Vehicular', text: texto });
             mostrarToast('✅ Resumen compartido');
             return;
         } catch(e) {
             if (e.name === 'AbortError') return;
+            // Falla en file:// → sigue al Intent nativo
         }
     }
-    try {
-        await navigator.clipboard.writeText(texto);
-        mostrarToast('📋 Resumen copiado al portapapeles');
-    } catch(e) {
-        const asunto = encodeURIComponent('Resumen Registro Vehicular');
-        const cuerpo = encodeURIComponent(texto);
-        window.location.href = 'mailto:?subject=' + asunto + '&body=' + cuerpo;
-        mostrarToast('✉️ Abriendo email...');
-    }
+
+    // 2. Intent nativo Android: fuerza el cajón de apps
+    //    (WhatsApp, Telegram, Gmail, Drive, Messenger, etc.)
+    const subject = encodeURIComponent('Resumen Registro Vehicular');
+    const body    = encodeURIComponent(texto);
+    const intentUri =
+        'intent:#Intent' +
+        ';action=android.intent.action.SEND' +
+        ';type=text%2Fplain' +
+        ';S.android.intent.extra.SUBJECT=' + subject +
+        ';S.android.intent.extra.TEXT='    + body +
+        ';end';
+
+    // Usamos un <a> invisible para no navegar fuera de la página
+    const anchor = document.createElement('a');
+    anchor.setAttribute('href', intentUri);
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    mostrarToast('📤 Abriendo opciones de compartir...');
 }
 </script>
 </body>
