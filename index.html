@@ -527,7 +527,11 @@ tr:hover{background:#f5f5f5}
 <div class="detail-overlay" id="modalDetalle">
   <div class="detail-header">
     <h2>📋 Detalle del Registro</h2>
-    <button class="btn-close-detail" onclick="cerrarDetalle()">✕</button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn-close-detail" onclick="imprimirUnicoDesdeDetalle()" title="Imprimir registro" style="width:auto;padding:0 14px;font-size:1.1rem">🖨️</button>
+      <button class="btn-close-detail" onclick="generarPDFUnicoDesdeDetalle()" title="Exportar PDF" style="width:auto;padding:0 14px;font-size:1.1rem">📄</button>
+      <button class="btn-close-detail" onclick="cerrarDetalle()" title="Cerrar">✕</button>
+    </div>
   </div>
   <div class="detail-body" id="detalleContenido">
     <!-- contenido dinámico -->
@@ -549,6 +553,7 @@ const DB_VERSION = 4;
 const STORE_NAME = 'registros';
 let db = null;
 let pendingId = null;
+window._detalleIdActual = null;
 
 function initDB() {
     return new Promise(function(resolve, reject) {
@@ -1323,6 +1328,7 @@ function verImagen(src) {
 
 async function verDetalle(id) {
     try {
+        window._detalleIdActual = id;
         const r = await obtenerRegistro(id);
         if (!r) return;
         const cont = document.getElementById('detalleContenido');
@@ -1384,6 +1390,7 @@ async function verDetalle(id) {
 function cerrarDetalle() {
     document.getElementById('modalDetalle').classList.remove('active');
     document.body.style.overflow = '';
+    window._detalleIdActual = null;
 }
 
 function cerrarApp() {
@@ -2181,6 +2188,207 @@ async function compartirResumenGeneral() {
     anchor.click();
     document.body.removeChild(anchor);
     mostrarToast('📤 Abriendo opciones de compartir...');
+}
+
+// ============================================================
+// IMPRIMIR / PDF DESDE DETALLE (doble-click / solo lectura)
+// ============================================================
+async function imprimirUnicoDesdeDetalle() {
+    if (!window._detalleIdActual) return;
+    const r = await obtenerRegistro(window._detalleIdActual);
+    if (!r) return;
+
+    const placaDisplay = r.sinPlaca === 'SI' ? '<em style="color:#999">SIN PLACA</em>' : (r.placa || '-');
+    const placa2 = r.segundaPlaca === 'SI' ? (r.placa2 || '-') : 'NO APLICA';
+    const tipoClass = r.tipo === 'INGRESO' ? 'detail-badge-ingreso' : 'detail-badge-salida';
+
+    let filas = '';
+    const campos = [
+        ['Fecha', r.fecha || '-'],
+        ['Hora', r.hora || '-'],
+        ['Tipo de Movimiento', '<span class="' + tipoClass + '">' + (r.tipo || '-') + '</span>'],
+        ['Placa', placaDisplay],
+        ['Segunda Placa', placa2],
+        ['Tipo de Vehículo', r.tipoVehiculo || '-'],
+        ['Conductor', r.conductor || '-'],
+        ['Empresa', r.empresa || '-'],
+        [r.tipo === 'INGRESO' ? 'Procedencia' : 'Destino', r.procedenciaDestino || '-'],
+        ['¿Materiales?', r.materiales || '-'],
+        ['Descripción Materiales', r.descMateriales || '-'],
+        ['¿Precintos?', r.precintos || '-'],
+        ['¿Guía?', r.guia || '-'],
+        ['¿Acompañantes?', r.acompanantes || '-'],
+        ['Personas Acompañantes', r.personasAcompanantes || '-'],
+        ['Observaciones', r.observaciones || '-']
+    ];
+
+    campos.forEach(function(c) {
+        if (c[1] === '-' || c[1] === 'NO APLICA') return;
+        filas += '<tr><td style="padding:10px 14px;background:#f5f5f5;font-weight:700;color:#1a237e;width:35%;border:1px solid #ddd">' + c[0] + '</td><td style="padding:10px 14px;border:1px solid #ddd">' + c[1] + '</td></tr>';
+    });
+
+    let fotosHtml = '';
+    if (r.fotoPrecinto1) {
+        fotosHtml += '<div style="margin-bottom:10px"><div style="font-size:0.75rem;color:#666;font-weight:700;margin-bottom:4px">FOTO PRECINTO 1</div><img src="' + r.fotoPrecinto1 + '" style="max-width:100%;max-height:200px;border-radius:8px;border:2px solid #ddd"></div>';
+    }
+    if (r.fotoPrecinto2) {
+        fotosHtml += '<div style="margin-bottom:10px"><div style="font-size:0.75rem;color:#666;font-weight:700;margin-bottom:4px">FOTO PRECINTO 2</div><img src="' + r.fotoPrecinto2 + '" style="max-width:100%;max-height:200px;border-radius:8px;border:2px solid #ddd"></div>';
+    }
+    if (r.fotoGuia) {
+        const isPdf = r.fotoGuia.indexOf('data:application/pdf') >= 0 || r.fotoGuia.indexOf('pdf') >= 0;
+        if (isPdf) {
+            fotosHtml += '<div style="margin-bottom:10px"><div style="font-size:0.75rem;color:#666;font-weight:700;margin-bottom:4px">GUÍA (PDF)</div><div style="padding:20px;background:#ffebee;border-radius:8px;text-align:center;color:#c62828;font-weight:700">📄 PDF ADJUNTO<br><span style="font-size:0.8rem;font-weight:500">Disponible en la app</span></div></div>';
+        } else {
+            fotosHtml += '<div style="margin-bottom:10px"><div style="font-size:0.75rem;color:#666;font-weight:700;margin-bottom:4px">GUÍA</div><img src="' + r.fotoGuia + '" style="max-width:100%;max-height:200px;border-radius:8px;border:2px solid #ddd"></div>';
+        }
+    }
+
+    const htmlContent = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Registro Vehicular - Detalle</title><style>' +
+        'body{font-family:Segoe UI,Arial,sans-serif;margin:20px;color:#333;max-width:700px;margin:20px auto}' +
+        '.header{text-align:center;margin-bottom:20px;border-bottom:3px solid #1a237e;padding-bottom:15px}' +
+        '.header h1{color:#1a237e;margin:0 0 5px 0;font-size:1.4rem}' +
+        '.header p{margin:0;color:#666;font-size:0.85rem}' +
+        'table{width:100%;border-collapse:collapse;font-size:0.9rem;margin-top:15px}' +
+        'td{padding:10px 14px;border:1px solid #ddd}' +
+        '.badge-ingreso{display:inline-block;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;padding:6px 14px;border-radius:20px;font-size:0.85rem;font-weight:800}' +
+        '.badge-salida{display:inline-block;background:#fff3e0;color:#e65100;border:1px solid #ffcc80;padding:6px 14px;border-radius:20px;font-size:0.85rem;font-weight:800}' +
+        '.footer{margin-top:20px;text-align:center;font-size:0.75rem;color:#999;border-top:1px solid #ddd;padding-top:10px}' +
+        '.fotos-section{margin-top:20px;padding-top:15px;border-top:2px solid #eee}' +
+        '.fotos-title{font-size:1rem;color:#1a237e;font-weight:700;margin-bottom:12px}' +
+        '@media print{.no-print{display:none}}' +
+        '</style></head><body>' +
+        '<div class="header"><h1>🚗 REGISTRO VEHICULAR</h1><p>Detalle de Registro #' + r.id + '</p>' +
+        '<p style="font-size:0.8rem;color:#555;margin-top:5px">Fecha de impresión: ' + new Date().toLocaleDateString('es-ES') + '</p></div>' +
+        '<div style="text-align:center;margin-bottom:15px"><button class="no-print" onclick="window.print()" style="padding:12px 24px;background:#1a237e;color:#fff;border:none;border-radius:8px;font-size:1rem;cursor:pointer;font-weight:bold">🖨️ Imprimir / Guardar como PDF</button></div>' +
+        '<table><tbody>' + filas + '</tbody></table>' +
+        (fotosHtml ? '<div class="fotos-section"><div class="fotos-title">📷 Fotos Adjuntas</div>' + fotosHtml + '</div>' : '') +
+        '<div class="footer"><p>Desarrollado por <strong>Edward Quezada M.</strong> — Seguridad Patrimonial</p><p>© 2026 - Todos los derechos reservados</p></div>' +
+        '<scr' + 'ipt>window.onload=function(){setTimeout(function(){window.print();},500);};</scr' + 'ipt>' +
+        '</body></html>';
+
+    const blob = new Blob([htmlContent], {type: 'text/html'});
+    const url = URL.createObjectURL(blob);
+    const ventana = window.open(url, '_blank');
+    if (!ventana) {
+        mostrarToast('⚠️ Ventana bloqueada. Permita pop-ups.');
+    } else {
+        mostrarToast('🖨️ Ventana de impresión abierta');
+    }
+    setTimeout(function() { URL.revokeObjectURL(url); }, 15000);
+}
+
+async function generarPDFUnicoDesdeDetalle() {
+    if (!window._detalleIdActual) return;
+    const r = await obtenerRegistro(window._detalleIdActual);
+    if (!r) return;
+
+    const jsPDF = window.jspdf.jsPDF;
+    const doc = new jsPDF();
+
+    // Header
+    doc.setFillColor(26, 35, 126);
+    doc.rect(0, 0, 210, 28, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(16);
+    doc.text('REGISTRO VEHICULAR', 105, 12, {align: 'center'});
+    doc.setFontSize(10);
+    doc.text('Detalle de Registro #' + r.id + '  |  ' + (r.fecha || '-') + ' ' + (r.hora || '-'), 105, 22, {align: 'center'});
+
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(9);
+    doc.text('Generado: ' + new Date().toLocaleString('es-ES'), 14, 36);
+
+    const campos = [
+        ['Fecha', r.fecha || '-'],
+        ['Hora', r.hora || '-'],
+        ['Tipo de Movimiento', r.tipo || '-'],
+        ['Placa', r.sinPlaca === 'SI' ? 'SIN PLACA' : (r.placa || '-')],
+        ['Segunda Placa', r.segundaPlaca === 'SI' ? (r.placa2 || '-') : 'NO APLICA'],
+        ['Tipo de Vehículo', r.tipoVehiculo || '-'],
+        ['Conductor', r.conductor || '-'],
+        ['Empresa', r.empresa || '-'],
+        [r.tipo === 'INGRESO' ? 'Procedencia' : 'Destino', r.procedenciaDestino || '-'],
+        ['¿Materiales?', r.materiales || '-'],
+        ['Descripción Materiales', r.descMateriales || '-'],
+        ['¿Precintos?', r.precintos || '-'],
+        ['¿Guía?', r.guia || '-'],
+        ['¿Acompañantes?', r.acompanantes || '-'],
+        ['Personas Acompañantes', r.personasAcompanantes || '-'],
+        ['Observaciones', r.observaciones || '-']
+    ];
+
+    const body = [];
+    campos.forEach(function(c) {
+        if (c[1] !== '-' && c[1] !== 'NO APLICA') {
+            body.push([c[0], c[1]]);
+        }
+    });
+
+    doc.autoTable({
+        startY: 42,
+        body: body,
+        styles: {fontSize: 10, cellPadding: 3},
+        columnStyles: {
+            0: {cellWidth: 60, fontStyle: 'bold', fillColor: [245, 245, 245]},
+            1: {cellWidth: 120}
+        },
+        theme: 'grid'
+    });
+
+    let y = doc.lastAutoTable.finalY + 10;
+
+    if (r.fotoPrecinto1 || r.fotoPrecinto2 || r.fotoGuia) {
+        doc.setFontSize(12);
+        doc.setTextColor(26, 35, 126);
+        doc.text('Fotos Adjuntas', 14, y);
+        doc.setTextColor(0, 0, 0);
+        y += 8;
+
+        if (r.fotoPrecinto1) {
+            try {
+                doc.addImage(r.fotoPrecinto1, 'JPEG', 14, y, 80, 50);
+                doc.setFontSize(8);
+                doc.text('Precinto 1', 14, y - 2);
+                y += 55;
+            } catch(e) {}
+        }
+        if (r.fotoPrecinto2) {
+            try {
+                if (y > 240) { doc.addPage(); y = 20; }
+                doc.addImage(r.fotoPrecinto2, 'JPEG', 14, y, 80, 50);
+                doc.setFontSize(8);
+                doc.text('Precinto 2', 14, y - 2);
+                y += 55;
+            } catch(e) {}
+        }
+        if (r.fotoGuia) {
+            try {
+                if (y > 240) { doc.addPage(); y = 20; }
+                const isPdf = r.fotoGuia.indexOf('data:application/pdf') >= 0;
+                if (!isPdf) {
+                    doc.addImage(r.fotoGuia, 'JPEG', 14, y, 80, 50);
+                    doc.setFontSize(8);
+                    doc.text('Guía', 14, y - 2);
+                } else {
+                    doc.setFontSize(10);
+                    doc.text('📄 Guía adjunta en PDF (ver en la aplicación)', 14, y);
+                }
+            } catch(e) {}
+        }
+    }
+
+    const pageCount = doc.internal.getNumberOfPages();
+    for (var i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(7);
+        doc.setTextColor(150);
+        doc.text('Página ' + i + ' de ' + pageCount, 105, doc.internal.pageSize.height - 8, {align: 'center'});
+        doc.text('Edward Quezada M. — Seguridad Patrimonial', 14, doc.internal.pageSize.height - 8);
+    }
+
+    const nombre = 'Registro_Detalle_' + (r.sinPlaca === 'SI' ? 'SIN_PLACA' : (r.placa || 'SIN_PLACA')) + '_' + r.fecha + '.pdf';
+    doc.save(nombre);
+    mostrarToast('📄 PDF generado: ' + nombre);
 }
 </script>
 </body>
