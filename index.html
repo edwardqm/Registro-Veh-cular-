@@ -684,6 +684,13 @@ function generarBlobExcel(regs) {
 }
 
 // Convertir Blob a base64 (para guardar en caché IndexedDB)
+function getFechaLocal(d) {
+    d = d || new Date();
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+}
 function blobToBase64(blob) {
     return new Promise(function(resolve, reject) {
         var reader = new FileReader();
@@ -702,7 +709,7 @@ async function exportarExcelBackup(silencioso) {
         return;
     }
     var blob = generarBlobExcel(regs);
-    var fecha = new Date().toISOString().split('T')[0];
+    var fecha = getFechaLocal();
     var nombre = BACKUP_FILENAME + '_' + fecha + '.xlsx';
 
     // Siempre guardar caché en IndexedDB (funciona en todos los dispositivos)
@@ -1081,7 +1088,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     await initDirectoryHandle();
 
     const n = new Date();
-    document.getElementById('fecha').value = n.toISOString().split('T')[0];
+    document.getElementById('fecha').value = getFechaLocal(n);
     document.getElementById('hora').value = n.toTimeString().slice(0, 5);
 
     // 🔧 NUEVO: Actualizar hora automáticamente cada 30 segundos
@@ -1093,7 +1100,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             const ahora = new Date();
             document.getElementById('hora').value = ahora.toTimeString().slice(0, 5);
             // Si cambió de día, actualizar fecha también
-            document.getElementById('fecha').value = ahora.toISOString().split('T')[0];
+            document.getElementById('fecha').value = getFechaLocal(ahora);
         }
     });
 
@@ -1240,7 +1247,7 @@ function limpiarFormulario() {
     document.getElementById('btnCancelar').style.display = 'none';
 
     const n = new Date();
-    document.getElementById('fecha').value = n.toISOString().split('T')[0];
+    document.getElementById('fecha').value = getFechaLocal(n);
     document.getElementById('hora').value = n.toTimeString().slice(0, 5);
 
     // 🔧 NUEVO: Resetear checkbox sin placa y mostrar placas
@@ -1654,7 +1661,7 @@ function resaltarFila(id) {
 
 async function actualizarStats() {
     const regs = await obtenerRegistros();
-    const hoy = new Date().toISOString().split('T')[0];
+    const hoy = getFechaLocal();
     document.getElementById('statTotal').textContent = regs.length;
     document.getElementById('statIngresos').textContent = regs.filter(function(r) { return r.fecha === hoy && r.tipo === 'INGRESO'; }).length;
     document.getElementById('statSalidas').textContent = regs.filter(function(r) { return r.fecha === hoy && r.tipo === 'SALIDA'; }).length;
@@ -1691,7 +1698,7 @@ async function exportarExcel() {
         XLSX.utils.book_append_sheet(wb, ws, 'Registros');
         const wbout = XLSX.write(wb, {bookType: 'xlsx', type: 'array'});
         const blob = new Blob([wbout], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-        const nombreArchivo = 'Registro_Vehicular_' + new Date().toISOString().split('T')[0] + '.xlsx';
+        const nombreArchivo = 'Registro_Vehicular_' + getFechaLocal() + '.xlsx';
         window._shareBlob = blob;
         window._shareNombre = nombreArchivo;
         window._shareTipo = 'excel';
@@ -1825,7 +1832,7 @@ async function generarPDFFiltrado() {
         doc.text('Página ' + i + ' de ' + pageCount, 148, doc.internal.pageSize.height - 5, {align: 'center'});
     }
 
-    const fecha = new Date().toISOString().split('T')[0];
+    const fecha = getFechaLocal();
     const nombreArchivo = 'Registro_Vehicular_' + tipoLabel + '_' + fecha + '.pdf';
     const pdfBlob = doc.output('blob');
     window._shareBlob = pdfBlob;
@@ -2060,7 +2067,7 @@ function iniciarRelojEnVivo() {
 
         horaInput.value = ahora.toTimeString().slice(0, 5);
 
-        const nuevaFecha = ahora.toISOString().split('T')[0];
+        const nuevaFecha = getFechaLocal(ahora);
         if (fechaInput.value !== nuevaFecha) {
             fechaInput.value = nuevaFecha;
         }
@@ -2140,7 +2147,7 @@ async function compartirResumenGeneral() {
         mostrarToast('❌ No hay registros para compartir');
         return;
     }
-    const hoy = new Date().toISOString().split('T')[0];
+    const hoy = getFechaLocal();
     const ingresosHoy = regs.filter(function(r){ return r.fecha === hoy && r.tipo === 'INGRESO'; }).length;
     const salidasHoy = regs.filter(function(r){ return r.fecha === hoy && r.tipo === 'SALIDA'; }).length;
     const ultimos = regs.slice(0, 5);
