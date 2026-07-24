@@ -892,7 +892,8 @@ async function importarDesdeExcel(file) {
             nuevos++;
         }
 
-        await cargarRegistros();
+        marcarHistorialSucio();
+        await cargarRegistros(true);
         await poblarListas();
         actualizarStats();
 
@@ -957,12 +958,42 @@ function fmtPlaca(e) {
     e.target.value = val;
 }
 
+// 🔧 Redimensiona y comprime la imagen antes de convertirla a base64.
+// Evita guardar fotos de 3-8MB de la cámara, que son las que hacen
+// que el historial se congele en teléfonos de gama baja.
+function comprimirImagen(file, maxDim, calidad) {
+    maxDim = maxDim || 1280;
+    calidad = calidad || 0.7;
+    return new Promise(function(resolve, reject) {
+        const img = new Image();
+        const urlTemp = URL.createObjectURL(file);
+        img.onload = function() {
+            URL.revokeObjectURL(urlTemp);
+            let w = img.width, h = img.height;
+            if (w > h && w > maxDim) { h = Math.round(h * (maxDim / w)); w = maxDim; }
+            else if (h > maxDim) { w = Math.round(w * (maxDim / h)); h = maxDim; }
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', calidad));
+        };
+        img.onerror = function() {
+            URL.revokeObjectURL(urlTemp);
+            const reader = new FileReader();
+            reader.onload = function(e) { resolve(e.target.result); };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        };
+        img.src = urlTemp;
+    });
+}
+
 function leerImg(file) {
     return new Promise(function(resolve) {
         if (!file) return resolve(null);
-        const reader = new FileReader();
-        reader.onload = function(e) { resolve(e.target.result); };
-        reader.readAsDataURL(file);
+        comprimirImagen(file, 1280, 0.7).then(resolve).catch(function() { resolve(null); });
     });
 }
 
@@ -973,14 +1004,16 @@ function preview(inputId, previewId, labelId, txtOk, txtDefault) {
     inp.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-            pre.src = ev.target.result;
+        lbl.innerHTML = '<span class="camera-icon">⏳</span>Procesando...';
+        comprimirImagen(file, 1280, 0.7).then(function(dataUrl) {
+            pre.src = dataUrl;
             pre.classList.remove('hidden');
             lbl.classList.add('has-file');
             lbl.innerHTML = '<span class="camera-icon">✅</span>' + txtOk;
-        };
-        reader.readAsDataURL(file);
+        }).catch(function() {
+            mostrarToast('❌ Error al procesar la foto');
+            lbl.innerHTML = '<span class="camera-icon">📷</span>' + txtDefault;
+        });
     });
 }
 
@@ -1000,15 +1033,16 @@ function previewGuia() {
             pre.style.objectFit = 'contain';
             lbl.innerHTML = '<span class="camera-icon">✅</span>PDF ADJUNTADO';
         } else {
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                pre.src = ev.target.result;
+            lbl.innerHTML = '<span class="camera-icon">⏳</span>Procesando...';
+            comprimirImagen(file, 1280, 0.7).then(function(dataUrl) {
+                pre.src = dataUrl;
                 pre.classList.remove('hidden');
                 pre.style.maxHeight = '160px';
                 pre.style.width = 'auto';
                 lbl.innerHTML = '<span class="camera-icon">✅</span>GUIA ADJUNTADA';
-            };
-            reader.readAsDataURL(file);
+            }).catch(function() {
+                mostrarToast('❌ Error al procesar la foto');
+            });
         }
     });
 }
@@ -1228,7 +1262,8 @@ async function procesarFormulario() {
     const idEditado = esEdicion ? parseInt(editId) : null;
     mostrarToast(esEdicion ? '✅ Registro actualizado correctamente' : '✅ Registro guardado');
     limpiarFormulario();
-    await cargarRegistros();
+    marcarHistorialSucio();
+    await cargarRegistros(true);
     await poblarListas();
     actualizarStats();
     if (esEdicion && idEditado) {
@@ -1291,9 +1326,17 @@ function limpiarFormulario() {
     document.getElementById('lblProcedenciaDestino').textContent = 'Procedencia / Destino';
 }
 
-async function cargarRegistros() {
+// 🔧 Bandera para no re-leer/re-renderizar el historial completo si
+// no ha cambiado desde la última vez (evita trabajo repetido e
+// innecesario cada vez que se toca la pestaña en gama baja).
+window._historialSucio = true;
+function marcarHistorialSucio() { window._historialSucio = true; }
+
+async function cargarRegistros(forzar) {
+    if (!forzar && !window._historialSucio) return;
     const regs = await obtenerRegistros();
     renderizarTabla(regs);
+    window._historialSucio = false;
 }
 
 function renderizarTabla(regs) {
@@ -1463,7 +1506,7 @@ function limpiarFiltros() {
     document.getElementById('searchPlaca').value = '';
     document.getElementById('searchConductor').value = '';
     document.getElementById('searchFecha').value = '';
-    cargarRegistros();
+    cargarRegistros(true);
 }
 
 function abrirModalEditar(id) {
@@ -2076,11 +2119,23 @@ function iniciarRelojEnVivo() {
 
 // ===== SISTEMA DE PESTAÑAS =====
 function switchTab(tabId, btn) {
+    // 1) Cambio visual inmediato: solo clases CSS, sin tocar datos.
+    //    Esto es lo que el usuario percibe como "tocar la pestaña",
+    //    así que debe pintarse en el siguiente frame sin esperar nada.
     document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
     document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
     document.getElementById(tabId).classList.add('active');
     btn.classList.add('active');
-    if (tabId === 'tab-dashboard') actualizarStats();
+
+    // 2) El trabajo pesado (leer IndexedDB, reconstruir la tabla con
+    //    fotos, calcular estadísticas) se difiere al siguiente frame
+    //    para no competir con el repintado del cambio de pestaña.
+    //    En CPUs de gama baja esto es lo que evita el "congelamiento".
+    if (tabId === 'tab-dashboard') {
+        requestAnimationFrame(function() { actualizarStats(); });
+    } else if (tabId === 'tab-history') {
+        requestAnimationFrame(function() { cargarRegistros(); });
+    }
 }
 
 
