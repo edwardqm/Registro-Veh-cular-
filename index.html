@@ -2484,14 +2484,17 @@ let googleTokenClient = null;
 let hojaCalculoId = null; // se guarda en IndexedDB (config) una vez creada
 const SHEET_HEADERS = ['ID','Fecha','Hora','Tipo','SinPlaca','Placa','TienePlaca2','Placa2','TipoVehiculo','Conductor','Empresa','ProcedenciaDestino','Materiales','DescMateriales','Precintos','Guia','Acompanantes','PersonasAcompanantes','Observaciones','Timestamp'];
 
-// --- Carga diferida de las librerías de Google (GIS + GAPI) ---
+// --- Carga diferida de las librerías de Google (GIS + GAPI), con timeout para no colgarse ---
 function cargarScriptGoogle(src) {
     return new Promise(function(resolve, reject) {
         if (document.querySelector('script[src="' + src + '"]')) { resolve(); return; }
         const s = document.createElement('script');
         s.src = src;
-        s.onload = resolve;
-        s.onerror = reject;
+        const timeoutId = setTimeout(function() {
+            reject(new Error('timeout cargando ' + src));
+        }, 12000);
+        s.onload = function() { clearTimeout(timeoutId); resolve(); };
+        s.onerror = function() { clearTimeout(timeoutId); reject(new Error('fallo de red cargando ' + src)); };
         document.head.appendChild(s);
     });
 }
@@ -2499,8 +2502,16 @@ function cargarScriptGoogle(src) {
 async function iniciarLoginGoogle(silencioso) {
     try {
         if (!silencioso) mostrarToast('⏳ Conectando con Google...');
-        await cargarScriptGoogle('https://accounts.google.com/gsi/client');
-        await cargarScriptGoogle('https://apis.google.com/js/api.js');
+        try {
+            await cargarScriptGoogle('https://accounts.google.com/gsi/client');
+        } catch (e) {
+            throw new Error('No se pudo cargar accounts.google.com (revisa conexión a internet o bloqueo de red)');
+        }
+        try {
+            await cargarScriptGoogle('https://apis.google.com/js/api.js');
+        } catch (e) {
+            throw new Error('No se pudo cargar apis.google.com (revisa conexión a internet o bloqueo de red)');
+        }
         await new Promise(function(resolve) { gapi.load('client', resolve); });
         await gapi.client.init({
             discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4']
@@ -2511,7 +2522,7 @@ async function iniciarLoginGoogle(silencioso) {
             scope: GOOGLE_SCOPES,
             callback: async function(resp) {
                 if (resp.error) {
-                    if (!silencioso) mostrarToast('❌ No se pudo iniciar sesión con Google');
+                    if (!silencioso) mostrarToast('❌ No se pudo iniciar sesión: ' + resp.error);
                     // si la reconexión silenciosa falla, mostramos el botón para que el usuario reconecte manualmente
                     if (silencioso) {
                         document.getElementById('btnGoogleLogin').style.display = 'flex';
@@ -2532,7 +2543,7 @@ async function iniciarLoginGoogle(silencioso) {
         googleTokenClient.requestAccessToken({ prompt: silencioso ? '' : 'consent' });
     } catch (e) {
         console.error(e);
-        if (!silencioso) mostrarToast('❌ Error cargando servicios de Google');
+        if (!silencioso) mostrarToast('❌ ' + (e && e.message ? e.message : 'Error cargando servicios de Google'));
     }
 }
 
