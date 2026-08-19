@@ -1209,6 +1209,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     await poblarListas();
     actualizarStats();
 
+    // Reconexión automática y silenciosa con Google si el usuario ya había conectado antes
+    intentarReconexionAutomatica().catch(function(){});
+
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('data:text/javascript;base64,' + btoa("self.addEventListener('install',function(e){self.skipWaiting()});self.addEventListener('activate',function(e){e.waitUntil(clients.claim())});self.addEventListener('fetch',function(e){e.respondWith(fetch(e.request).catch(function(){return new Response('Offline')}))});"));
     }
@@ -2493,9 +2496,9 @@ function cargarScriptGoogle(src) {
     });
 }
 
-async function iniciarLoginGoogle() {
+async function iniciarLoginGoogle(silencioso) {
     try {
-        mostrarToast('⏳ Conectando con Google...');
+        if (!silencioso) mostrarToast('⏳ Conectando con Google...');
         await cargarScriptGoogle('https://accounts.google.com/gsi/client');
         await cargarScriptGoogle('https://apis.google.com/js/api.js');
         await new Promise(function(resolve) { gapi.load('client', resolve); });
@@ -2508,22 +2511,39 @@ async function iniciarLoginGoogle() {
             scope: GOOGLE_SCOPES,
             callback: async function(resp) {
                 if (resp.error) {
-                    mostrarToast('❌ No se pudo iniciar sesión con Google');
+                    if (!silencioso) mostrarToast('❌ No se pudo iniciar sesión con Google');
+                    // si la reconexión silenciosa falla, mostramos el botón para que el usuario reconecte manualmente
+                    if (silencioso) {
+                        document.getElementById('btnGoogleLogin').style.display = 'flex';
+                        document.getElementById('googleUserInfo').style.display = 'none';
+                    }
                     return;
                 }
                 googleAccessToken = resp.access_token;
                 gapi.client.setToken({ access_token: googleAccessToken });
                 await obtenerPerfilGoogle();
                 await asegurarHojaCalculo();
-                await sincronizarTodoAHoja();
-                mostrarToast('✅ Conectado con Google Sheets');
+                if (!silencioso) await sincronizarTodoAHoja();
+                await guardarConfigGoogle('sesionGoogleActiva', true);
+                if (!silencioso) mostrarToast('✅ Conectado con Google Sheets');
             }
         });
-        googleTokenClient.requestAccessToken({ prompt: 'consent' });
+        // Primera vez: pide consentimiento explícito. Reconexiones posteriores: intenta sin mostrar pantalla.
+        googleTokenClient.requestAccessToken({ prompt: silencioso ? '' : 'consent' });
     } catch (e) {
         console.error(e);
-        mostrarToast('❌ Error cargando servicios de Google');
+        if (!silencioso) mostrarToast('❌ Error cargando servicios de Google');
     }
+}
+
+// --- Al cargar la app, si hubo sesión antes, reconecta en segundo plano sin mostrar login ---
+async function intentarReconexionAutomatica() {
+    try {
+        const activa = await leerConfigGoogle('sesionGoogleActiva');
+        if (activa) {
+            await iniciarLoginGoogle(true);
+        }
+    } catch (e) { /* silencioso: si falla, simplemente se muestra el botón de login normal */ }
 }
 
 async function obtenerPerfilGoogle() {
@@ -2547,6 +2567,7 @@ function cerrarSesionGoogle() {
     }
     googleAccessToken = null;
     hojaCalculoId = null;
+    guardarConfigGoogle('sesionGoogleActiva', false).catch(function(){});
     document.getElementById('btnGoogleLogin').style.display = 'flex';
     document.getElementById('googleUserInfo').style.display = 'none';
     mostrarToast('Sesión de Google cerrada');
