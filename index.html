@@ -153,6 +153,18 @@ tr:hover{background:#f5f5f5}
 <header>
   <h1>🚗 REGISTRO VEHICULAR</h1>
   <p>Control de Ingreso y Salida de Vehiculos</p>
+  <div id="googleAuthBar" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;">
+    <button id="btnGoogleLogin" onclick="iniciarLoginGoogle()" style="background:#fff;color:#3c4043;border:1px solid #dadce0;border-radius:6px;padding:8px 14px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;cursor:pointer;">
+      <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20.5H24v7h11.3C33.7 31.7 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.3 2.7l5.2-5.2C33.1 7.8 28.8 6 24 6 14.6 6 7 13.6 7 23s7.6 17 17 17c9.4 0 16.5-6.8 16.5-17 0-1.1-.1-2.3-.3-3.5z"/><path fill="#FF3D00" d="M9.5 14.6l5.8 4.2C16.9 15.9 20.2 13 24 13c2.8 0 5.3 1 7.3 2.7l5.2-5.2C33.1 7.8 28.8 6 24 6c-6.6 0-12.2 3.8-15 9.3z"/><path fill="#4CAF50" d="M24 40c5.2 0 9.9-1.9 13.4-5.2l-6.2-5.1C29.2 31.4 26.7 32 24 32c-5.3 0-9.7-3.3-11.3-8l-6.5 5C9.6 36.1 16.2 40 24 40z"/><path fill="#1976D2" d="M43.6 20.5H42V20.5H24v7h11.3c-.8 2.4-2.4 4.4-4.4 5.7l6.2 5.1C40.5 35.4 43 30 43 23c0-1.1-.1-2.3-.3-3.5z"/></svg>
+      Iniciar sesión con Google
+    </button>
+    <div id="googleUserInfo" style="display:none;align-items:center;gap:8px;background:rgba(255,255,255,0.15);padding:6px 12px;border-radius:20px;font-size:12px;color:#fff;">
+      <img id="googleUserPhoto" src="" style="width:22px;height:22px;border-radius:50%;">
+      <span id="googleUserName"></span>
+      <span id="syncStatus" title="Estado de sincronización">☁️</span>
+      <button onclick="cerrarSesionGoogle()" style="background:none;border:none;color:#fff;cursor:pointer;font-size:12px;text-decoration:underline;">Salir</button>
+    </div>
+  </div>
 </header>
 
 <div class="tabs-nav">
@@ -1254,10 +1266,14 @@ async function procesarFormulario() {
         }
     }
 
-    await guardarRegistro(data);
+    const idGuardado = await guardarRegistro(data);
     // ---- COPIA DE SEGURIDAD AUTOMÁTICA ----
     exportarExcelBackup(true).catch(function(){});
     // ----------------------------------------
+    // ---- SINCRONIZACIÓN CON GOOGLE SHEETS (si hay sesión activa) ----
+    if (!data.id) data.id = idGuardado;
+    sincronizarRegistroAHoja(data).catch(function(){});
+    // -------------------------------------------------------------------
     const esEdicion = !!editId;
     const idEditado = esEdicion ? parseInt(editId) : null;
     mostrarToast(esEdicion ? '✅ Registro actualizado correctamente' : '✅ Registro guardado');
@@ -2452,6 +2468,222 @@ async function generarPDFUnicoDesdeDetalle() {
     doc.save(nombre);
     mostrarToast('📄 PDF generado: ' + nombre);
 }
+
+/* ==========================================================================
+   INTEGRACIÓN GOOGLE: Login + Google Sheets
+   ========================================================================== */
+const GOOGLE_CLIENT_ID = '148773091561-105dahekfks72ci0n255i62kdav3hhq3.apps.googleusercontent.com';
+const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
+const SHEET_NAME = 'Registro Vehicular - Datos';
+
+let googleAccessToken = null;
+let googleTokenClient = null;
+let hojaCalculoId = null; // se guarda en IndexedDB (config) una vez creada
+const SHEET_HEADERS = ['ID','Fecha','Hora','Tipo','SinPlaca','Placa','TienePlaca2','Placa2','TipoVehiculo','Conductor','Empresa','ProcedenciaDestino','Materiales','DescMateriales','Precintos','Guia','Acompanantes','PersonasAcompanantes','Observaciones','Timestamp'];
+
+// --- Carga diferida de las librerías de Google (GIS + GAPI) ---
+function cargarScriptGoogle(src) {
+    return new Promise(function(resolve, reject) {
+        if (document.querySelector('script[src="' + src + '"]')) { resolve(); return; }
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+    });
+}
+
+async function iniciarLoginGoogle() {
+    try {
+        mostrarToast('⏳ Conectando con Google...');
+        await cargarScriptGoogle('https://accounts.google.com/gsi/client');
+        await cargarScriptGoogle('https://apis.google.com/js/api.js');
+        await new Promise(function(resolve) { gapi.load('client', resolve); });
+        await gapi.client.init({
+            discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4']
+        });
+
+        googleTokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_CLIENT_ID,
+            scope: GOOGLE_SCOPES,
+            callback: async function(resp) {
+                if (resp.error) {
+                    mostrarToast('❌ No se pudo iniciar sesión con Google');
+                    return;
+                }
+                googleAccessToken = resp.access_token;
+                gapi.client.setToken({ access_token: googleAccessToken });
+                await obtenerPerfilGoogle();
+                await asegurarHojaCalculo();
+                await sincronizarTodoAHoja();
+                mostrarToast('✅ Conectado con Google Sheets');
+            }
+        });
+        googleTokenClient.requestAccessToken({ prompt: 'consent' });
+    } catch (e) {
+        console.error(e);
+        mostrarToast('❌ Error cargando servicios de Google');
+    }
+}
+
+async function obtenerPerfilGoogle() {
+    try {
+        const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { Authorization: 'Bearer ' + googleAccessToken }
+        });
+        const perfil = await r.json();
+        document.getElementById('btnGoogleLogin').style.display = 'none';
+        const info = document.getElementById('googleUserInfo');
+        info.style.display = 'flex';
+        document.getElementById('googleUserName').textContent = perfil.name || perfil.email || 'Conectado';
+        if (perfil.picture) document.getElementById('googleUserPhoto').src = perfil.picture;
+        await guardarConfigGoogle('googleUserEmail', perfil.email || '');
+    } catch (e) { console.error(e); }
+}
+
+function cerrarSesionGoogle() {
+    if (googleAccessToken) {
+        google.accounts.oauth2.revoke(googleAccessToken, function() {});
+    }
+    googleAccessToken = null;
+    hojaCalculoId = null;
+    document.getElementById('btnGoogleLogin').style.display = 'flex';
+    document.getElementById('googleUserInfo').style.display = 'none';
+    mostrarToast('Sesión de Google cerrada');
+}
+
+// --- Config persistida en el store 'config' de IndexedDB (mismo que usa la app) ---
+function guardarConfigGoogle(key, value) {
+    return new Promise(function(resolve, reject) {
+        const tx = db.transaction(['config'], 'readwrite');
+        tx.objectStore('config').put({ key: key, value: value });
+        tx.oncomplete = function() { resolve(); };
+        tx.onerror = function() { reject(tx.error); };
+    });
+}
+function leerConfigGoogle(key) {
+    return new Promise(function(resolve, reject) {
+        const tx = db.transaction(['config'], 'readonly');
+        const req = tx.objectStore('config').get(key);
+        req.onsuccess = function() { resolve(req.result ? req.result.value : null); };
+        req.onerror = function() { reject(req.error); };
+    });
+}
+
+// --- Crea la hoja de cálculo si no existe, o reutiliza el ID guardado ---
+async function asegurarHojaCalculo() {
+    const idGuardado = await leerConfigGoogle('hojaCalculoId');
+    if (idGuardado) {
+        try {
+            await gapi.client.sheets.spreadsheets.get({ spreadsheetId: idGuardado });
+            hojaCalculoId = idGuardado;
+            return hojaCalculoId;
+        } catch (e) {
+            // la hoja guardada ya no existe o no es accesible; se creará una nueva
+        }
+    }
+    const resp = await gapi.client.sheets.spreadsheets.create({
+        properties: { title: SHEET_NAME },
+        sheets: [{ properties: { title: 'Registros' } }]
+    });
+    hojaCalculoId = resp.result.spreadsheetId;
+    await gapi.client.sheets.spreadsheets.values.update({
+        spreadsheetId: hojaCalculoId,
+        range: 'Registros!A1',
+        valueInputOption: 'RAW',
+        resource: { values: [SHEET_HEADERS] }
+    });
+    await guardarConfigGoogle('hojaCalculoId', hojaCalculoId);
+    return hojaCalculoId;
+}
+
+function filaDesdeRegistro(r) {
+    return [
+        r.id || '', r.fecha || '', r.hora || '', r.tipo || '', r.sinPlaca || '',
+        r.placa || '', r.segundaPlaca || '', r.placa2 || '', r.tipoVehiculo || '',
+        r.conductor || '', r.empresa || '', r.procedenciaDestino || '',
+        r.materiales || '', r.descMateriales || '', r.precintos || '', r.guia || '',
+        r.acompanantes || '', r.personasAcompanantes || '', r.observaciones || '',
+        r.timestamp || ''
+    ];
+}
+
+// --- Sube o actualiza UN registro en la hoja (buscando por ID en la columna A) ---
+async function sincronizarRegistroAHoja(registro) {
+    if (!googleAccessToken || !hojaCalculoId) return; // no conectado: no hace nada
+    try {
+        setEstadoSync('sync');
+        const lectura = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: hojaCalculoId,
+            range: 'Registros!A:A'
+        });
+        const columnaA = (lectura.result.values || []).map(function(f){ return String(f[0]); });
+        const fila = filaDesdeRegistro(registro);
+        const idxExistente = columnaA.indexOf(String(registro.id));
+
+        if (idxExistente > 0) { // existe (idx 0 es el header)
+            const numFila = idxExistente + 1;
+            await gapi.client.sheets.spreadsheets.values.update({
+                spreadsheetId: hojaCalculoId,
+                range: 'Registros!A' + numFila,
+                valueInputOption: 'RAW',
+                resource: { values: [fila] }
+            });
+        } else {
+            await gapi.client.sheets.spreadsheets.values.append({
+                spreadsheetId: hojaCalculoId,
+                range: 'Registros!A:T',
+                valueInputOption: 'RAW',
+                insertDataOption: 'INSERT_ROWS',
+                resource: { values: [fila] }
+            });
+        }
+        setEstadoSync('ok');
+    } catch (e) {
+        console.error('Error sincronizando con Sheets:', e);
+        setEstadoSync('error');
+        mostrarToast('⚠️ No se pudo sincronizar con Google Sheets (se guardó localmente)');
+    }
+}
+
+// --- Sube TODOS los registros locales existentes (usado al conectar por primera vez) ---
+async function sincronizarTodoAHoja() {
+    if (!googleAccessToken || !hojaCalculoId) return;
+    try {
+        setEstadoSync('sync');
+        const registros = await obtenerRegistros();
+        if (!registros.length) { setEstadoSync('ok'); return; }
+        const filas = registros
+            .slice()
+            .sort(function(a,b){ return a.id - b.id; })
+            .map(filaDesdeRegistro);
+        await gapi.client.sheets.spreadsheets.values.update({
+            spreadsheetId: hojaCalculoId,
+            range: 'Registros!A2',
+            valueInputOption: 'RAW',
+            resource: { values: filas }
+        });
+        setEstadoSync('ok');
+    } catch (e) {
+        console.error('Error en sincronización completa:', e);
+        setEstadoSync('error');
+    }
+}
+
+function setEstadoSync(estado) {
+    const el = document.getElementById('syncStatus');
+    if (!el) return;
+    if (estado === 'sync') { el.textContent = '⏳'; el.title = 'Sincronizando...'; }
+    else if (estado === 'ok') { el.textContent = '☁️✅'; el.title = 'Sincronizado con Google Sheets'; }
+    else { el.textContent = '⚠️'; el.title = 'Error al sincronizar'; }
+}
+
+// --- Reconectar automáticamente si ya había sesión (token dura ~1 hora, así que
+//     esto solo evita mostrar el botón de login si el usuario ya conectó antes
+//     en la misma sesión del navegador; para reconexión completa debe tocar el botón) ---
+document.addEventListener('DOMContentLoaded', async function() {
+    // nada por ahora: initDB ya se ejecuta en el bloque original DOMContentLoaded
+});
 </script>
 </body>
 </html>
