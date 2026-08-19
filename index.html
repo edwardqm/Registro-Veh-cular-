@@ -9,8 +9,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="https://apis.google.com/js/api.js" async defer></script>
 <style>
 :root{--primary:#1a237e;--primary-light:#3949ab;--accent:#ff6f00;--danger:#c62828;--success:#2e7d32;--warning:#f9a825;--bg:#f5f5f5;--card:#fff;--text:#212121;--border:#e0e0e0}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,-apple-system,sans-serif}
@@ -2476,93 +2474,84 @@ async function generarPDFUnicoDesdeDetalle() {
 
 /* ==========================================================================
    INTEGRACIÓN GOOGLE: Login + Google Sheets
+   Usamos el flujo de "redirect" directo al endpoint de OAuth de Google
+   (sin depender del script accounts.google.com/gsi/client, que algunos
+   WebViews empaquetados como Median bloquean silenciosamente). El login
+   se abre como navegación normal, que Median enruta a Chrome externo
+   por la regla de Link Handling, y Google redirige de vuelta a esta
+   misma página con el token en el fragmento de la URL (#access_token=...).
    ========================================================================== */
 const GOOGLE_CLIENT_ID = '148773091561-105dahekfks72ci0n255i62kdav3hhq3.apps.googleusercontent.com';
-const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
+const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 const SHEET_NAME = 'Registro Vehicular - Datos';
+// El redirect_uri debe ser EXACTAMENTE esta misma página, y su origen debe
+// estar registrado en "Orígenes autorizados de JavaScript" en Google Cloud.
+const GOOGLE_REDIRECT_URI = window.location.origin + window.location.pathname;
 
 let googleAccessToken = null;
-let googleTokenClient = null;
 let hojaCalculoId = null; // se guarda en IndexedDB (config) una vez creada
 const SHEET_HEADERS = ['ID','Fecha','Hora','Tipo','SinPlaca','Placa','TienePlaca2','Placa2','TipoVehiculo','Conductor','Empresa','ProcedenciaDestino','Materiales','DescMateriales','Precintos','Guia','Acompanantes','PersonasAcompanantes','Observaciones','Timestamp'];
+const GAPI_SHEETS_BASE = 'https://sheets.googleapis.com/v4/spreadsheets';
 
-// --- Los scripts de Google se cargan desde el <head> (async). Aquí solo esperamos
-//     con reintentos a que los objetos globales existan, porque en algunos WebViews
-//     el evento 'onload' del script contenedor no garantiza que el objeto ya esté listo. ---
-function esperarObjetoGlobal(nombreVar, checkFn, timeoutMs) {
-    return new Promise(function(resolve, reject) {
-        const inicio = Date.now();
-        (function intento() {
-            if (checkFn()) { resolve(); return; }
-            if (Date.now() - inicio > timeoutMs) {
-                reject(new Error('No se pudo inicializar ' + nombreVar + ' (bloqueado o sin conexión)'));
-                return;
-            }
-            setTimeout(intento, 200);
-        })();
+// --- Inicia sesión navegando directamente al endpoint de Google (no usa gapi/GIS) ---
+function iniciarLoginGoogle() {
+    mostrarToast('⏳ Abriendo Google...');
+    const params = new URLSearchParams({
+        client_id: GOOGLE_CLIENT_ID,
+        redirect_uri: GOOGLE_REDIRECT_URI,
+        response_type: 'token',
+        scope: GOOGLE_SCOPES,
+        include_granted_scopes: 'true',
+        prompt: 'consent',
+        state: 'login_registro_vehicular'
     });
+    window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
 }
 
-async function iniciarLoginGoogle(silencioso) {
-    try {
-        if (!silencioso) mostrarToast('⏳ Conectando con Google...');
-        try {
-            await esperarObjetoGlobal('google.accounts', function() {
-                return typeof google !== 'undefined' && google.accounts && google.accounts.oauth2;
-            }, 15000);
-        } catch (e) {
-            throw new Error('No se pudo inicializar accounts.google.com (bloqueado por la app o sin conexión)');
-        }
-        try {
-            await esperarObjetoGlobal('gapi', function() {
-                return typeof gapi !== 'undefined';
-            }, 15000);
-        } catch (e) {
-            throw new Error('No se pudo inicializar apis.google.com (bloqueado por la app o sin conexión)');
-        }
-        await new Promise(function(resolve) { gapi.load('client', resolve); });
-        await gapi.client.init({
-            discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4']
-        });
+// --- Al cargar la página, revisa si venimos de vuelta de Google con un token en el fragmento ---
+async function procesarRetornoDeGoogle() {
+    if (!window.location.hash || window.location.hash.indexOf('access_token=') === -1) return false;
+    const frag = new URLSearchParams(window.location.hash.substring(1));
+    const token = frag.get('access_token');
+    const state = frag.get('state');
+    if (!token || state !== 'login_registro_vehicular') return false;
 
-        googleTokenClient = google.accounts.oauth2.initTokenClient({
-            client_id: GOOGLE_CLIENT_ID,
-            scope: GOOGLE_SCOPES,
-            callback: async function(resp) {
-                if (resp.error) {
-                    if (!silencioso) mostrarToast('❌ No se pudo iniciar sesión: ' + resp.error);
-                    // si la reconexión silenciosa falla, mostramos el botón para que el usuario reconecte manualmente
-                    if (silencioso) {
-                        document.getElementById('btnGoogleLogin').style.display = 'flex';
-                        document.getElementById('googleUserInfo').style.display = 'none';
-                    }
-                    return;
-                }
-                googleAccessToken = resp.access_token;
-                gapi.client.setToken({ access_token: googleAccessToken });
-                await obtenerPerfilGoogle();
-                await asegurarHojaCalculo();
-                if (!silencioso) await sincronizarTodoAHoja();
-                await guardarConfigGoogle('sesionGoogleActiva', true);
-                if (!silencioso) mostrarToast('✅ Conectado con Google Sheets');
-            }
-        });
-        // Primera vez: pide consentimiento explícito. Reconexiones posteriores: intenta sin mostrar pantalla.
-        googleTokenClient.requestAccessToken({ prompt: silencioso ? '' : 'consent' });
-    } catch (e) {
-        console.error(e);
-        if (!silencioso) mostrarToast('❌ ' + (e && e.message ? e.message : 'Error cargando servicios de Google'));
-    }
+    // Limpiar el fragmento de la URL para no dejar el token visible ni reprocesarlo al recargar
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+
+    googleAccessToken = token;
+    await obtenerPerfilGoogle();
+    await asegurarHojaCalculo();
+    await sincronizarTodoAHoja();
+    await guardarConfigGoogle('sesionGoogleActiva', true);
+    mostrarToast('✅ Conectado con Google Sheets');
+    return true;
 }
 
-// --- Al cargar la app, si hubo sesión antes, reconecta en segundo plano sin mostrar login ---
+// --- Al abrir la app, si hubo sesión antes, intenta reconectar en silencio (sin mostrar pantalla) ---
 async function intentarReconexionAutomatica() {
     try {
+        // si acabamos de volver de Google con un token nuevo, no hace falta hacer nada más
+        const vinoDeGoogle = await procesarRetornoDeGoogle();
+        if (vinoDeGoogle) return;
+
         const activa = await leerConfigGoogle('sesionGoogleActiva');
-        if (activa) {
-            await iniciarLoginGoogle(true);
-        }
-    } catch (e) { /* silencioso: si falla, simplemente se muestra el botón de login normal */ }
+        if (!activa) return;
+        // Reconexión silenciosa: usamos prompt=none, que NO muestra ninguna pantalla si
+        // la sesión de Google del navegador sigue activa; si no, Google redirige con error
+        // y simplemente dejamos visible el botón normal de login.
+        const params = new URLSearchParams({
+            client_id: GOOGLE_CLIENT_ID,
+            redirect_uri: GOOGLE_REDIRECT_URI,
+            response_type: 'token',
+            scope: GOOGLE_SCOPES,
+            prompt: 'none',
+            state: 'login_registro_vehicular'
+        });
+        // Nota: esto navega fuera de la app. Si falla (prompt=none sin sesión), Google
+        // redirige de vuelta con error=... y el usuario simplemente ve el botón de login normal.
+        window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
+    } catch (e) { /* silencioso */ }
 }
 
 async function obtenerPerfilGoogle() {
@@ -2582,7 +2571,8 @@ async function obtenerPerfilGoogle() {
 
 function cerrarSesionGoogle() {
     if (googleAccessToken) {
-        google.accounts.oauth2.revoke(googleAccessToken, function() {});
+        // Revocar el token vía REST (no dependemos del script GIS)
+        fetch('https://oauth2.googleapis.com/revoke?token=' + googleAccessToken, { method: 'POST' }).catch(function(){});
     }
     googleAccessToken = null;
     hojaCalculoId = null;
@@ -2610,28 +2600,48 @@ function leerConfigGoogle(key) {
     });
 }
 
+// --- Helper: llamada autenticada a la API REST de Google Sheets (sin usar gapi) ---
+async function sheetsFetch(path, options) {
+    options = options || {};
+    const headers = Object.assign({
+        'Authorization': 'Bearer ' + googleAccessToken,
+        'Content-Type': 'application/json'
+    }, options.headers || {});
+    const r = await fetch(GAPI_SHEETS_BASE + path, {
+        method: options.method || 'GET',
+        headers: headers,
+        body: options.body ? JSON.stringify(options.body) : undefined
+    });
+    if (!r.ok) {
+        const texto = await r.text().catch(function(){ return ''; });
+        throw new Error('Sheets API ' + r.status + ': ' + texto);
+    }
+    return r.json();
+}
+
 // --- Crea la hoja de cálculo si no existe, o reutiliza el ID guardado ---
 async function asegurarHojaCalculo() {
     const idGuardado = await leerConfigGoogle('hojaCalculoId');
     if (idGuardado) {
         try {
-            await gapi.client.sheets.spreadsheets.get({ spreadsheetId: idGuardado });
+            await sheetsFetch('/' + idGuardado);
             hojaCalculoId = idGuardado;
             return hojaCalculoId;
         } catch (e) {
             // la hoja guardada ya no existe o no es accesible; se creará una nueva
         }
     }
-    const resp = await gapi.client.sheets.spreadsheets.create({
-        properties: { title: SHEET_NAME },
-        sheets: [{ properties: { title: 'Registros' } }]
+    const resp = await sheetsFetch('', {
+        method: 'POST',
+        body: {
+            properties: { title: SHEET_NAME },
+            sheets: [{ properties: { title: 'Registros' } }]
+        }
     });
-    hojaCalculoId = resp.result.spreadsheetId;
-    await gapi.client.sheets.spreadsheets.values.update({
-        spreadsheetId: hojaCalculoId,
-        range: 'Registros!A1',
-        valueInputOption: 'RAW',
-        resource: { values: [SHEET_HEADERS] }
+    hojaCalculoId = resp.spreadsheetId;
+    await sheetsFetch('/' + hojaCalculoId + '/values/Registros!A1?valueInputOption=RAW', {
+        method: 'PUT',
+        body: { values: [SHEET_HEADERS] }
     });
     await guardarConfigGoogle('hojaCalculoId', hojaCalculoId);
     return hojaCalculoId;
@@ -2653,29 +2663,21 @@ async function sincronizarRegistroAHoja(registro) {
     if (!googleAccessToken || !hojaCalculoId) return; // no conectado: no hace nada
     try {
         setEstadoSync('sync');
-        const lectura = await gapi.client.sheets.spreadsheets.values.get({
-            spreadsheetId: hojaCalculoId,
-            range: 'Registros!A:A'
-        });
-        const columnaA = (lectura.result.values || []).map(function(f){ return String(f[0]); });
+        const lectura = await sheetsFetch('/' + hojaCalculoId + '/values/Registros!A:A');
+        const columnaA = (lectura.values || []).map(function(f){ return String(f[0]); });
         const fila = filaDesdeRegistro(registro);
         const idxExistente = columnaA.indexOf(String(registro.id));
 
         if (idxExistente > 0) { // existe (idx 0 es el header)
             const numFila = idxExistente + 1;
-            await gapi.client.sheets.spreadsheets.values.update({
-                spreadsheetId: hojaCalculoId,
-                range: 'Registros!A' + numFila,
-                valueInputOption: 'RAW',
-                resource: { values: [fila] }
+            await sheetsFetch('/' + hojaCalculoId + '/values/Registros!A' + numFila + '?valueInputOption=RAW', {
+                method: 'PUT',
+                body: { values: [fila] }
             });
         } else {
-            await gapi.client.sheets.spreadsheets.values.append({
-                spreadsheetId: hojaCalculoId,
-                range: 'Registros!A:T',
-                valueInputOption: 'RAW',
-                insertDataOption: 'INSERT_ROWS',
-                resource: { values: [fila] }
+            await sheetsFetch('/' + hojaCalculoId + '/values/Registros!A:T:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS', {
+                method: 'POST',
+                body: { values: [fila] }
             });
         }
         setEstadoSync('ok');
@@ -2697,11 +2699,9 @@ async function sincronizarTodoAHoja() {
             .slice()
             .sort(function(a,b){ return a.id - b.id; })
             .map(filaDesdeRegistro);
-        await gapi.client.sheets.spreadsheets.values.update({
-            spreadsheetId: hojaCalculoId,
-            range: 'Registros!A2',
-            valueInputOption: 'RAW',
-            resource: { values: filas }
+        await sheetsFetch('/' + hojaCalculoId + '/values/Registros!A2?valueInputOption=RAW', {
+            method: 'PUT',
+            body: { values: filas }
         });
         setEstadoSync('ok');
     } catch (e) {
@@ -2717,13 +2717,6 @@ function setEstadoSync(estado) {
     else if (estado === 'ok') { el.textContent = '☁️✅'; el.title = 'Sincronizado con Google Sheets'; }
     else { el.textContent = '⚠️'; el.title = 'Error al sincronizar'; }
 }
-
-// --- Reconectar automáticamente si ya había sesión (token dura ~1 hora, así que
-//     esto solo evita mostrar el botón de login si el usuario ya conectó antes
-//     en la misma sesión del navegador; para reconexión completa debe tocar el botón) ---
-document.addEventListener('DOMContentLoaded', async function() {
-    // nada por ahora: initDB ya se ejecuta en el bloque original DOMContentLoaded
-});
 </script>
 </body>
 </html>
