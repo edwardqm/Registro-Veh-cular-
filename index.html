@@ -2893,6 +2893,27 @@ async function abrirCarpetaDrive() {
     }
 }
 
+// -------- Configurar Median (APK empaquetado) para abrir el login de Google
+// en el navegador del sistema, ya que Google bloquea OAuth dentro de WebViews
+// embebidos (política "disallowed_useragent" desde 2021). Sin esto, el botón
+// de login simplemente no funciona dentro del APK, aunque sí funcione en Chrome.
+function configurarMedianParaLoginGoogle() {
+    if (typeof median === 'undefined' || !median.internalExternal) return;
+    try {
+        var rulesArray = [
+            { id: 1, regex: 'https?://accounts\\.google\\.com.*', mode: 'external' },
+            { id: 2, regex: 'https?://([-\\w]+\\.)*googleapis\\.com.*', mode: 'external' },
+            { id: 3, regex: 'https?://([-\\w]+\\.)*googleusercontent\\.com.*', mode: 'external' }
+        ];
+        median.internalExternal.set({ rules: rulesArray });
+    } catch(e) {
+        console.warn('No se pudo configurar reglas de Median para Google:', e);
+    }
+}
+document.addEventListener('median.library.ready', configurarMedianParaLoginGoogle);
+// Fallback por si el evento ya disparó antes de registrar el listener
+if (typeof median !== 'undefined') configurarMedianParaLoginGoogle();
+
 // -------- Arranque del módulo Google al cargar la app --------
 (async function iniciarModuloGoogle() {
     // Espera a que initDB() del arranque principal ya haya corrido (ver DOMContentLoaded más abajo)
